@@ -25,5 +25,6 @@
     },
     "support": {
         "email": "hello@ponticlaro.com"
-    }
+    },
+    "minimum-stability": "dev"
 }

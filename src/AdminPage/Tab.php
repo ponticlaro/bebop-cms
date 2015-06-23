@@ -44,15 +44,17 @@ class Tab {
 
     /**
      * Instantiates a new tab
-     * 
+     *
+     * @param string   $id
      * @param string   $title    
      * @param callable $function
      */
-    public function __construct($title, $function)
+    public function __construct($id, $title, $function)
     {
         $this->options = new Collection();
         $this->data    = new Collection();
 
+        $this->setId($id);
         $this->setTitle($title);
         $this->setFunction($function);
 

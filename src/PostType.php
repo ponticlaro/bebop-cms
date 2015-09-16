@@ -119,7 +119,7 @@ class PostType extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
         $this->taxonomies = new Collection();
 
         // Instantiate rewrite configuration object
-        $this->rewrite_config = Bebop::Collection([
+        $this->rewrite_config = new Collection([
             'with_front' => false, // Defaults to 'false' so that we can use the Permalinks menu to change permalinks for the built-in post post-type
         ]);
 

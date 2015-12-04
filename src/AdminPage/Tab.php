@@ -58,13 +58,6 @@ class Tab {
         $this->setTitle($title);
         $this->setFunction($function);
 
-        // Fet control elements name attribute from function
-        $names = Utils::getControlNamesFromCallable($function, array($this->data));
-        
-        // Define options if there are control names
-        if ($names)
-            $this->setOptions($names);
-
         // Register Settings
         add_action('admin_init', array($this, '__handleSettingsRegistration'));
     }
@@ -181,6 +174,13 @@ class Tab {
      */
     public function __handleSettingsRegistration()
     {
+        // Fetch control elements name attribute from function
+        $names = Utils::getControlNamesFromCallable($this->getFunction(), array($this->data));
+        
+        // Define options if there are control names
+        if ($names)
+            $this->setOptions($names);
+
         $options = $this->options->getAll();
 
         if ($options) {

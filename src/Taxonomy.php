@@ -306,7 +306,8 @@ class Taxonomy extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
      */
     public function setPostTypes(array $post_types = array())
     {
-        $this->post_types->set($post_types);
+        $this->post_types->clear();
+        $this->addPostTypes($post_types);
 
         return $this;
     }
@@ -341,7 +342,7 @@ class Taxonomy extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
         if (!is_string($post_type))
             throw new \Exception('Taxonomy post type must be either a string or a \Ponticlaro\Bebop\PostType instance.');          
 
-        $this->post_types->push($post_type);
+        $this->post_types->push(Utils::slugify($post_type));
 
         return $this;
     }

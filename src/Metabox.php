@@ -204,7 +204,7 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
     {
         if (is_string($post_type)) {
 
-            $this->post_types->push($post_type);
+            $this->post_types->push(Utils::slugify($post_type));
 
         } elseif(is_object($post_type) && is_a($post_type, 'Ponticlaro\Bebop\PostType')) {
 

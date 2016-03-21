@@ -625,31 +625,4 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 		// Return merged preset config with custom config 
 		return $preset_config ? array_replace_recursive($preset_config, $config) : $config;
 	}
-
-	/**
-	 * Fixes scripts and styles actions order.
-	 * This forces 'enqueue' to be in first place, 
-	 * so that we know on which hook to register scripts and styles
-	 * 
-	 * @param  array  $config Original scripts or styles configuration array
-	 * @return array          Sorted scripts or styles configuration array
-	 */
-	protected function fixScriptsAndStylesActionsOrder(array $config)
-	{
-		$new_config = [];
-
-		if (isset($config['enqueue']) && $config['enqueue'])
-			$new_config['enqueue'] = $config['enqueue'];
-
-		if (isset($config['dequeue']) && $config['dequeue'])
-			$new_config['dequeue'] = $config['dequeue'];
-
-		if (isset($config['deregister']) && $config['deregister'])
-			$new_config['deregister'] = $config['deregister'];
-
-		if (isset($config['register']) && $config['register'])
-			$new_config['register'] = $config['register'];
-
-		return $new_config;
-	}
 }

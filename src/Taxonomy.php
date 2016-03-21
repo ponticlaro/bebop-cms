@@ -686,6 +686,38 @@ class Taxonomy extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
     }
 
     /**
+     * Applies a register_taxonomy $args configuration array to this Taxonomy
+     * 
+     * @param  array $args Same $args used for register_taxonomy
+     * @return void
+     */
+    public function applyRawArgs(array $args = array())
+    {
+        // Intercept labels
+        if (isset($args['labels']) && is_array($args['labels'])) {
+
+            $this->setLabels($args['labels']);
+            unset($args['labels']);
+        }
+
+        // Intercept capabilities
+        if (isset($args['capabilities']) && is_array($args['capabilities'])) {
+
+            $this->setCapabilities($args['capabilities']);
+            unset($args['capabilities']);
+        }
+
+        // Intercept rewrite
+        if (isset($args['rewrite']) && is_array($args['rewrite'])) {
+
+            $this->setRewrite($args['rewrite']);
+            unset($args['rewrite']);
+        }
+
+        $this->config->set($args);
+    }
+
+    /**
      * Returns built configuration array
      * 
      * @return array

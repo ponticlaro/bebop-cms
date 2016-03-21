@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "ponticlaro/bebop-common": "dev-master"
+        "ponticlaro/bebop-common": "dev-master",
+        "ponticlaro/bebop-scripts-loader": "dev-master"
     },
     "autoload": {
         "psr-4": {

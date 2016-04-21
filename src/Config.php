@@ -107,8 +107,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     $this->config = new Collection();
 
     // Build configuration on the after_setup_theme hook
-    $this->build();
-    //add_action('after_setup_theme', [$this, 'build']);
+    add_action('after_setup_theme', [$this, 'build']);
   }
 
   /**

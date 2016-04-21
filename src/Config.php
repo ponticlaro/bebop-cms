@@ -33,6 +33,14 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @var array
    */
   protected $config_section_map = [
+    'admin_pages' => [
+      'process' => 'processAdminPage',
+      'build'   => 'buildAdminPage'
+    ],
+    'metaboxes' => [
+      'process' => 'processMetabox',
+      'build'   => 'buildMetabox'
+    ],
     'paths' => [
       'process' => 'processPath',
       'build'   => 'buildPath'
@@ -99,7 +107,8 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     $this->config = new Collection();
 
     // Build configuration on the after_setup_theme hook
-    add_action('after_setup_theme', [$this, '__build']);
+    $this->build();
+    //add_action('after_setup_theme', [$this, 'build']);
   }
 
   /**
@@ -182,7 +191,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * 
    * @return object This class instance
    */
-  public function __build()
+  public function build()
   {
     if ($this->already_built)
       return $this;
@@ -205,10 +214,104 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   }
 
   /**
+   * Processes a single admin page configuration
+   *
+   * @param  array  $index  Configuration array index
+   * @param  array  $config Configuration array
+   * @param  string $hook   Hook ID
+   * @param  string $env    Environment ID
+   * @return void
+   */
+  protected function processAdminPage($index, array $config, $hook = 'build', $env = 'all')
+  {
+    // Get preset, if we're dealing with one
+    if (isset($config['preset']) && $config['preset'])
+      $config = $this->getPreset('admin_pages', $config['preset'], $config, $env);
+    
+    // Check if item is valid
+    if (!$this->isConfigItemValid('admin_pages', $index, $config))
+      return $this;
+
+    // Get id & path
+    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['title']);
+    $path = "$hook.$env.admin_pages.$id";
+
+    // Upsert item
+    $this->upsertConfigItem($path, $config);
+  }
+
+  /**
+   * Builds a single admin page
+   * 
+   * @param  string $id     AdminPage configuration ID
+   * @param  array  $config AdminPage configuration array
+   * @return void
+   */
+  protected function buildAdminPage($id, array $config)
+  {
+    // Merge current environment config with main config
+    if ($current_env_config = $this->config->get("build.$this->current_env.admin_pages.$id"))
+      $config = array_replace_recursive($config, $current_env_config);
+
+    // Register custom admin page
+    $title = $config['title'];
+    unset($config['title']);
+
+    new AdminPage($title, $config);
+  }
+
+  /**
+   * Processes a single metabox configuration
+   *
+   * @param  array  $index  Configuration array index
+   * @param  array  $config Configuration array
+   * @param  string $hook   Hook ID
+   * @param  string $env    Environment ID
+   * @return void
+   */
+  protected function processMetabox($index, array $config, $hook = 'build', $env = 'all')
+  {
+    // Get preset, if we're dealing with one
+    if (isset($config['preset']) && $config['preset'])
+      $config = $this->getPreset('metaboxes', $config['preset'], $config, $env);
+    
+    // Check if item is valid
+    if (!$this->isConfigItemValid('metaboxes', $index, $config))
+      return $this;
+
+    // Get id & path
+    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['name']);
+    $path = "$hook.$env.metaboxes.$id";
+
+    // Upsert item
+    $this->upsertConfigItem($path, $config);
+  }
+
+  /**
+   * Builds a single metabox
+   * 
+   * @param  string $id     Metabox configuration ID
+   * @param  array  $config Metabox configuration array
+   * @return void
+   */
+  protected function buildMetabox($id, array $config)
+  {
+    // Merge current environment config with main config
+    if ($current_env_config = $this->config->get("build.$this->current_env.metaboxes.$id"))
+      $config = array_replace_recursive($config, $current_env_config);
+
+    // Register custom metabox
+    $name = $config['name'];
+    unset($config['name']);
+
+    new Metabox($name, $config);
+  }
+
+  /**
    * Processes a single path configuration
    *
    * @param  array  $id   Path ID
-   * @param  array  $url  Path
+   * @param  array  $path Path
    * @param  string $hook Hook ID
    * @param  string $env  Environment ID
    * @return void
@@ -226,8 +329,8 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Builds a single path
    * 
-   * @param  string $id     Path ID
-   * @param  array  $config Path
+   * @param  string $id   Path ID
+   * @param  array  $path Path
    * @return void
    */
   protected function buildPath($id, $path)
@@ -557,6 +660,14 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected function isConfigItemValid($section, $index, $config = [])
   {
     switch ($section) {
+
+      case 'admin_pages':
+        return !isset($config['title']) || !$config['title'] || !is_string($config['title']) ? false : true;
+        break;
+
+      case 'metaboxes':
+        return !isset($config['name']) || !$config['name'] || !isset($config['types']) || !$config['types'] ? false : true;
+        break;
 
       case 'scripts':
       case 'styles':

@@ -82,9 +82,7 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
     $this->sections    = (new Collection())->disableDottedNotation();
     $this->data        = new MetaboxData;
 
-    // Check if $title is in fact a configuration array:
-    // - $title should be a string
-    // - $args should be associative
+    // Check if $title is in fact a configuration array
     if ($title && is_array($title)) {
         $args  = $title;
         $title = null;

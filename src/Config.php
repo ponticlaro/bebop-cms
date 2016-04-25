@@ -253,10 +253,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = array_replace_recursive($config, $current_env_config);
 
     // Register custom admin page
-    $title = $config['title'];
-    unset($config['title']);
-
-    new AdminPage($title, $config);
+    new AdminPage($config);
   }
 
   /**

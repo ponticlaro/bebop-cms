@@ -82,13 +82,18 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
     $this->sections    = (new Collection())->disableDottedNotation();
     $this->data        = new MetaboxData;
 
-    // Set Title
-    $this->setTitle($title);
+    // Check if $title is in fact a configuration array:
+    // - $title should be a string
+    // - $args should be associative
+    if ($title && is_array($title)) {
+        $args  = $title;
+        $title = null;
+    }
 
     // Check if $post_types is in fact a configuration array:
     // - $post_types should be indexed
-    // - $config should be associative
-    if ($post_types && is_array($post_types)) {
+    // - $args should be associative
+    elseif ($post_types && is_array($post_types)) {
 
       foreach ($post_types as $key => $value) { 
         if (is_string($key)) {
@@ -98,6 +103,10 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
         }  
       }
     }
+
+    // Set Title
+    if ($title)
+      $this->setTitle($title);
 
     // Set Post types
     if (!is_null($post_types)) {

@@ -276,7 +276,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id & path
-    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['name']);
+    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['title']);
     $path = "$hook.$env.metaboxes.$id";
 
     // Upsert item
@@ -659,7 +659,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         break;
 
       case 'metaboxes':
-        return !isset($config['name']) || !$config['name'] || !isset($config['types']) || !$config['types'] ? false : true;
+        return !isset($config['title']) || !$config['title'] || !isset($config['types']) || !$config['types'] ? false : true;
         break;
 
       case 'scripts':

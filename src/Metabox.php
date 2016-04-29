@@ -146,16 +146,16 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
 
   public function applyArgs(array $args = [])
   {
-    // Handle 'id'
-    if (isset($args['id']) && is_string($args['id'])) {
-      $this->setId($args['id']);
-      unset($args['id']);
-    }
-
     // Handle 'title'
     if (isset($args['title']) && is_string($args['title'])) {
       $this->setTitle($args['title']);
       unset($args['title']);
+    }
+
+    // Handle 'id'
+    if (isset($args['id']) && is_string($args['id'])) {
+      $this->setId($args['id']);
+      unset($args['id']);
     }
 
     // Handle 'fn'
@@ -614,7 +614,6 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
   public function __register()
   {
     foreach ($this->getPostTypes() as $post_type) {
-
       add_meta_box( 
         $this->getId(),
         $this->getTitle(),

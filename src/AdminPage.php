@@ -91,6 +91,12 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
     // Set data object
     $this->data = new Collection();
 
+    // Check if $title is in fact a configuration array
+    if ($title && is_array($title)) {
+        $args  = $title;
+        $title = null;
+    }
+
     // Set Page Title
     if ($title)
       $this->setPageTitle($title);
@@ -145,7 +151,7 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
 
     // Handle 'title'
     if (isset($args['title']) && $args['title']) {
-      $this->setTitle($args['title']);
+      $this->setPageTitle($args['title']);
       unset($args['title']);
     }
 

@@ -15,15 +15,20 @@ class ShortcodeFactory {
    * @var array
    */
   protected static $manufacturable = array(
-    'faq_list'  => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\FaqList',
-    'forms'     => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Forms',
-    'galleries' => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Galleries',
-    'calendars' => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Calendars',
-    'maps'      => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Maps',
-    'images'    => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Images',
-    'quotes'    => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Quotes',
-    'social'    => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Social',
-    'videos'    => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Videos',
+    'facebook_post'   => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\FacebookPost',
+    'faq_list'        => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\FaqList',
+    'form'            => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Form',
+    'formstack'       => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Formstack',
+    'gallery'         => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Gallery',
+    'google_calendar' => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\GoogleCalendar',
+    'google_map'      => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\GoogleMap',
+    'image'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image',
+    'pardot_form'     => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\PardotForm',
+    'quote'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Quote',
+    'soundcloud'      => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Soundcloud',
+    'tweet'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Tweet',
+    'vimeo'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Vimeo',
+    'youtube'         => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Youtube',
   );
 
   /**

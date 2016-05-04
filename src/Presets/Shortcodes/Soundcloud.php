@@ -2,14 +2,14 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class FaqList extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
+class Soundcloud extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID
    * 
    * @var string
    */
-  protected $id = 'faq_list';
+  protected $id = 'soundcloud';
 
   /**
    * Shortcode default attributes
@@ -26,8 +26,8 @@ class FaqList extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract 
    * @param  string $tag     Shortcode tag
    * @return void
    */
-	public function render($attrs, $content = null, $tag)
-	{
+  public function render($attrs, $content = null, $tag)
+  {
 
-	}
+  }
 }

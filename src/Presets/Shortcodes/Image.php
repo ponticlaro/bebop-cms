@@ -2,14 +2,14 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class FaqList extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
+class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID
    * 
    * @var string
    */
-  protected $id = 'faq_list';
+  protected $id = 'image';
 
   /**
    * Shortcode default attributes

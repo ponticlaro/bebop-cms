@@ -2,6 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms;
 
+use Ponticlaro\Bebop\Cms\Helpers\ShortcodeFactory;
 use Ponticlaro\Bebop\Common\Collection;
 use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
@@ -48,6 +49,10 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     'scripts' => [
       'process' => 'processScriptAction',
       'build'   => 'buildScript'
+    ],
+    'shortcodes' => [
+      'process' => 'processShortcode',
+      'build'   => 'buildShortcode'
     ],
     'styles' => [
       'process' => 'processStyleAction',
@@ -428,6 +433,51 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   }
 
   /**
+   * Processes shortcode groups
+   * 
+   * @param  string $index        Configuration array index
+   * @param  string $shortcode_id Configuration array
+   * @param  string $hook         Hook ID
+   * @param  string $env          Environment ID
+   * @return void
+   */
+  protected function processShortcode($index, array $config, $hook = 'build', $env = 'all')
+  {
+    // Get preset, if we're dealing with one
+    if (isset($config['preset']) && $config['preset'])
+      $config = $this->getPreset('shortcodes', $config['preset'], $config, $env);
+    
+    // Check if item is valid
+    if (!$this->isConfigItemValid('shortcodes', $index, $config))
+      return $this;
+
+    // Upsert item
+    $this->upsertConfigItem("$hook.$env.shortcodes.". $config['id'], $config);
+  }
+
+  /**
+   * Registers shortcodes within shortcode groups
+   * 
+   * @param  string $group  Shortcode Group name
+   * @param  mixed  $config Shortcode Group configuration
+   * @return void
+   */
+  protected function buildShortcode($id, array $config)
+  {
+    // Merge current environment config with main config
+    if ($current_env_config = $this->config->get("build.$this->current_env.shortcodes.$id"))
+      $config = array_replace_recursive($config, $current_env_config);
+    
+    if (ShortcodeFactory::canManufacture($id)) {
+      
+      $shortcode = ShortcodeFactory::create($id);
+
+      if ($shortcode)
+        $shortcode->register();
+    }
+  }
+
+  /**
    * Processes a single style action
    *
    * @param  array  $action Style action
@@ -660,6 +710,10 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
       case 'metaboxes':
         return !isset($config['title']) || !$config['title'] || !isset($config['types']) || !$config['types'] ? false : true;
+        break;
+
+      case 'shortcodes':
+        return isset($config['id']) && is_string($config['id']) ? true : false;
         break;
 
       case 'scripts':

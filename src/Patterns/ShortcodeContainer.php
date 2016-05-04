@@ -39,6 +39,26 @@ abstract class ShortcodeContainerAbstract {
   }
 
   /**
+   * Returns all defined shortcode configs
+   * 
+   * @return array List of shortcode configs
+   */
+  final public function getShortcode($id)
+  {
+    return is_string($id) ? $this->shortcode_configs->get($id) : null;
+  }
+
+  /**
+   * Returns all defined shortcode configs
+   * 
+   * @return array List of shortcode configs
+   */
+  final public function getAllShortcodes()
+  {
+    return $this->shortcode_configs->getAll();
+  }
+
+  /**
    * Registers a single shortcode config
    * 
    * @param  string $id Shortcode config ID

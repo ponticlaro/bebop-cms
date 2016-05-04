@@ -34,7 +34,15 @@ class ShortcodeConfig {
    */
   public function __construct($id, $callable, array $default_attrs = [])
   {
-    $this->shortcodes = new Collection();
+    if (!is_string($id))
+      throw new \Exception('$id must be a string');
+
+    if (!is_callable($callable))
+      throw new \Exception('$callable must be a callable');
+
+    $this->id            = $id;
+    $this->callable      = $callable;
+    $this->default_attrs = $default_attrs;
   }
 
   /**

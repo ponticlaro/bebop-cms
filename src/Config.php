@@ -38,6 +38,10 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       'process' => 'processAdminPage',
       'build'   => 'buildAdminPage'
     ],
+    'image_sizes' => [
+      'process' => 'processImageSize',
+      'build'   => 'buildImageSize'
+    ],
     'metaboxes' => [
       'process' => 'processMetabox',
       'build'   => 'buildMetabox'
@@ -259,6 +263,54 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Register custom admin page
     new AdminPage($config);
+  }
+
+  /**
+   * Processes a single image size configuration
+   *
+   * @param  array  $index  Configuration array index
+   * @param  array  $config Configuration array
+   * @param  string $hook   Hook ID
+   * @param  string $env    Environment ID
+   * @return void
+   */
+  protected function processImageSize($index, array $config, $hook = 'build', $env = 'all')
+  {
+    // Get preset, if we're dealing with one
+    if (isset($config['preset']) && $config['preset'])
+      $config = $this->getPreset('image_sizes', $config['preset'], $config, $env);
+    
+    // Add 'crop' as false by default
+    if (!isset($config['crop']))
+      $config['crop'] = false;
+
+    // Check if item is valid
+    if (!$this->isConfigItemValid('image_sizes', $index, $config))
+      return $this;
+
+    // Get id & path
+    $id   = Utils::slugify($config['name']);
+    $path = "$hook.$env.image_sizes.$id";
+
+    // Upsert item
+    $this->upsertConfigItem($path, $config);
+  }
+
+  /**
+   * Builds a single image size
+   * 
+   * @param  string $id     Image size configuration ID
+   * @param  array  $config Image size configuration array
+   * @return void
+   */
+  protected function buildImageSize($id, array $config)
+  {
+    // Merge current environment config with main config
+    if ($current_env_config = $this->config->get("build.$this->current_env.image_sizes.$id"))
+      $config = array_replace_recursive($config, $current_env_config);
+
+    // Register custom image size
+    add_image_size($config['name'], $config['width'], $config['height'], $config['crop']);
   }
 
   /**
@@ -706,6 +758,25 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
       case 'admin_pages':
         return !isset($config['title']) || !$config['title'] || !is_string($config['title']) ? false : true;
+        break;
+
+      case 'image_sizes':
+
+        $valid = true;
+
+        if (!isset($config['name']) && $config['name'])
+          $valid = false;
+
+        if (!isset($config['width']))
+          $valid = false;
+
+        if (!isset($config['height']))
+          $valid = false;
+
+        if (!is_bool($config['crop']) && !is_array($config['crop']))
+          $valid = false;
+
+        return $valid;
         break;
 
       case 'metaboxes':

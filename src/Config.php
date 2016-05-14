@@ -89,6 +89,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @var boolean
    */
   protected $already_built = false;
+  
+  /**
+   * Array used to resolve enqueue hooks for script/style dependencies
+   * 
+   * @var array
+   */
+  protected $resolve_deps = [];
 
   /**
    * Instantiates this class
@@ -209,6 +216,17 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if ($this->config->count()) {
       foreach ($this->config->get('build.all') as $section => $configs) {
         foreach ($configs as $id => $config) {
+
+          // Making sure 'register' actions are the first to be processed
+          if (in_array($section, ['scripts', 'styles'])) {
+
+            $config = [
+              'register'   => isset($config['register']) ? $config['register'] : [],
+              'enqueue'    => isset($config['enqueue']) ? $config['enqueue'] : [],
+              'deregister' => isset($config['deregister']) ? $config['deregister'] : [],
+              'dequeue'    => isset($config['dequeue']) ? $config['dequeue'] : []
+            ];
+          }
 
           if (isset($this->config_section_map[$section]) && isset($this->config_section_map[$section]['build']))
             call_user_func_array([$this, $this->config_section_map[$section]['build']], [$id, $config]);
@@ -415,8 +433,15 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         if (!$this->isConfigItemValid('scripts', $action, $script))
           return $this;
 
+        // Get script ID
+        $script_id = static::__getScriptId($script['handle']);
+
+        // Collect dependencies
+        if (isset($script['deps']) && is_array($script['deps']))
+          $this->collectScriptDependencies('js', $script['handle'], $script['deps']);
+
         // Upsert item
-        $this->upsertConfigItem("$hook.$env.scripts.". $script['handle'] .".$action", $script);
+        $this->upsertConfigItem("$hook.$env.scripts.$script_id.$action", $script);
       }
     }
 
@@ -425,14 +450,22 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       foreach ($config as $script_hook_name => $script_hook_config) {
         foreach ($script_hook_config as $script_handle) {
 
-          $path = "$hook.$env.scripts.$script_handle.$action";
+          // Get script ID
+          $script_id = static::__getScriptId($script_handle);
+
+          // Collect dependencies enqueue hooks
+          $this->collectScriptDependencyHook('js', $script_handle, $script_hook_name);
+
+          // Set script config action path
+          $path = "$hook.$env.scripts.$script_id.$action";
 
           // Create array if it doesn't exist
           if (!$this->config->hasKey($path))
             $this->config->set($path, []);
 
           // Add new hook to list
-          $this->config->push($script_hook_name, $path);
+          if (!$this->config->hasValue($script_hook_name, $path))
+            $this->config->push($script_hook_name, $path);
         }
       }
     }
@@ -454,6 +487,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if ($current_env_config = $this->config->get("build.$this->current_env.scripts.$handle"))
       $config = array_replace_recursive($config, $current_env_config);
 
+    // Check if script have enqueue hooks as a dependency
+    if ($enqueue_hooks_as_dep = $this->getScriptEnqueueHooksAsDependency('js', $handle)) {
+      foreach ($enqueue_hooks_as_dep as $hook) {
+        $config['enqueue'][] = $hook;
+      }
+    }
+
     // Handle register and enqueue
     if (isset($config['enqueue']) && $config['enqueue'] && 
         isset($config['register']) && $config['register']) {
@@ -462,7 +502,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         
         $js->getHook($script_hook_name)
            ->register(
-              $handle,
+              $config['register']['handle'],
               $config['register']['src'], 
               isset($config['register']['deps']) ? $config['register']['deps']: [], 
               isset($config['register']['version']) ? $config['register']['version']: null, 
@@ -478,7 +518,6 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     // Handle deregister and dequeue
     foreach ($config as $action => $action_config) {
       foreach ($action_config as $script_hook_name) {
-        
         $js->getHook($script_hook_name)->$action($handle);
       }
     }
@@ -551,8 +590,15 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         if (!$this->isConfigItemValid('styles', $action, $script))
           return $this;
 
+        // Get script ID
+        $script_id = static::__getScriptId($script['handle']);
+
+        // Collect dependencies
+        if (isset($script['deps']) && is_array($script['deps']))
+          $this->collectScriptDependencies('js', $script['handle'], $script['deps']);
+
         // Upsert item
-        $this->upsertConfigItem("$hook.$env.styles.". $script['handle'] .".$action", $script);
+        $this->upsertConfigItem("$hook.$env.styles.$script_id.$action", $script);
       }
     }
 
@@ -561,7 +607,14 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       foreach ($config as $script_hook_name => $script_hook_config) {
         foreach ($script_hook_config as $script_handle) {
 
-          $path = "$hook.$env.styles.$script_handle.$action";
+          // Get script ID
+          $script_id = static::__getScriptId($script_handle);
+
+          // Collect dependencies enqueue hooks
+          $this->collectScriptDependencyHook('js', $script_handle, $script_hook_name);
+
+          // Get script config action path
+          $path = "$hook.$env.styles.$script_id.$action";
 
           // Create array if it doesn't exist
           if (!$this->config->hasKey($path))
@@ -590,6 +643,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if ($current_env_config = $this->config->get("build.$this->current_env.styles.$handle"))
       $config = array_replace_recursive($config, $current_env_config);
 
+    // Check if script have enqueue hooks as a dependency
+    if ($enqueue_hooks_as_dep = $this->getScriptEnqueueHooksAsDependency('css', $handle)) {
+      foreach ($enqueue_hooks_as_dep as $hook) {
+        $config['enqueue'][] = $hook;
+      }
+    }
+
     // Handle register and enqueue
     if (isset($config['enqueue']) && $config['enqueue'] && 
         isset($config['register']) && $config['register']) {
@@ -598,7 +658,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         
         $css->getHook($script_hook_name)
             ->register(
-              $handle,
+              $config['register']['handle'],
               $config['register']['src'], 
               isset($config['register']['deps']) ? $config['register']['deps']: [], 
               isset($config['register']['version']) ? $config['register']['version']: null, 
@@ -853,5 +913,87 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Return merged preset config with custom config 
     return $preset_config ? array_replace_recursive($preset_config, $config) : $config;
+  }
+
+  /**
+   * Returns safe script ID from its handle
+   * 
+   * @param  string $handle Script handle
+   * @return string         Script ID
+   */
+  protected static function __getScriptId($handle)
+  {
+    return str_replace('.', '_', $handle);
+  }
+
+  /**
+   * Collects script dependencies
+   * 
+   * @param  string $type   Script type: CSS or JS
+   * @param  string $handle Script handle
+   * @param  array  $deps   Script dependencies
+   * @return object         This class instance
+   */
+  protected function collectScriptDependencies($type, $handle, array $deps = [])
+  {
+    if (is_string($type) && is_string($handle) && $deps) {
+      if (!isset($this->resolve_deps[$type])) {
+
+        $this->resolve_deps[$type] = [
+          'main' => [],
+          'deps' => []
+        ];
+      }
+
+      if (!isset($this->resolve_deps[$type]['main'][$handle]))
+        $this->resolve_deps[$type]['main'][$handle] = [];
+
+      foreach ($deps as $dep_handle) {
+        $this->resolve_deps[$type]['main'][$handle][] = $this->__getScriptId($dep_handle);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * Collects a single enqueue hook for all depencencies of the target script
+   * 
+   * @param  string $type   Script type: CSS or JS
+   * @param  string $handle Script handle
+   * @param  string $hook   Enqueue hook to be added
+   * @return object         This class instance
+   */
+  protected function collectScriptDependencyHook($type, $handle, $hook)
+  {
+    if (is_string($type) && is_string($handle) && is_string($hook)) {
+      if (isset($this->resolve_deps[$type]) && $this->resolve_deps[$type]['main'][$handle]) {
+        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
+          
+          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
+            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
+
+          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
+            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
+          }
+        }
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * Returns script enqueue hooks, when used as a script dependency
+   * 
+   * @param  string $handle Script handle
+   * @return array          Script enqueue hooks
+   */
+  protected function getScriptEnqueueHooksAsDependency($type, $handle)
+  {
+    if (is_string($type) && is_string($handle) && $this->resolve_deps[$type]['deps'][$handle])
+        return $this->resolve_deps[$type]['deps'][$handle];
+
+    return [];
   }
 }

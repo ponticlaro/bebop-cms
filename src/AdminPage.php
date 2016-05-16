@@ -830,15 +830,18 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
       <?php } ?>
     </h2>
 
-    <?php foreach ($tabs as $tab) {
-        
-      if ($current_tab == $tab->getId()) {
+    <div style="padding-top:30px;">
+      <?php foreach ($tabs as $tab) {
+          
+        if ($current_tab == $tab->getId()) {
 
-        settings_fields($tab->getId());
-        $tab->render();
-      }
-    }
-  }
+          settings_fields($tab->getId());
+          $tab->render();
+        }
+      } ?>
+    </div>
+
+  <?php }
 
   /**
    * Renders single page UI

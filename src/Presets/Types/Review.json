@@ -1,0 +1,14 @@
+{
+	"environments" : {
+		"all": {
+			"types": [
+				{
+					"name" : "Review",
+					"requires": {
+						
+					}	
+				}
+			]
+		}
+	}
+}

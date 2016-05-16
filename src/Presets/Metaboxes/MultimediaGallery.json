@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Multimedia Gallery",
+					"sections": [
+						{
+							"ui": "multimediagallery",
+							"name": "multimedia_gallery"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

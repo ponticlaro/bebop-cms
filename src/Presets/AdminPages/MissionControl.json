@@ -1,0 +1,15 @@
+{
+	"environments" : {
+		"all": {
+			"admin_pages": [
+				{
+					"title" : "Mission Control",
+					"position": "3.1",
+					"requires": {
+						
+					}	
+				}
+			]
+		}
+	}
+}

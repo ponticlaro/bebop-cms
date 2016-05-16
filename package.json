@@ -1,0 +1,7 @@
+{
+  "name": "bebop_cms",
+  "dependencies": {
+    "grunt": "~0.4.5",
+    "grunt-merge-json": "^0.9.5"
+  }
+}

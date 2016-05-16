@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Page Sections",
+					"sections": [
+						{
+							"ui": "pagesections",
+							"name": "sections"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"types": [
+				{
+					"name" : [
+						"Person",
+						"People"
+					],
+					"requires": {
+						
+					}	
+				}
+			]
+		}
+	}
+}

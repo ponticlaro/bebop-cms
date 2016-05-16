@@ -1,0 +1,15 @@
+{
+	"environments" : {
+		"all": {
+			"admin_pages": [
+				{
+					"title" : "Docs",
+					"position": "3.2",
+					"requires": {
+						
+					}	
+				}
+			]
+		}
+	}
+}

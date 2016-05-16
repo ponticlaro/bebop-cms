@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Audio",
+					"sections": [
+						{
+							"ui": "audio",
+							"name": "audio"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

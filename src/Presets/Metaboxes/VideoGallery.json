@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Video Gallery",
+					"sections": [
+						{
+							"ui": "videogallery",
+							"name": "video_gallery"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Links",
+					"sections": [
+						{
+							"ui": "linkslist",
+							"name": "links"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

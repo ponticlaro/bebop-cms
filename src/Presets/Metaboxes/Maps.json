@@ -1,0 +1,17 @@
+{
+	"environments" : {
+		"all": {
+			"metaboxes": [
+				{
+					"title" : "Maps",
+					"sections": [
+						{
+							"ui": "mapslist",
+							"name": "maps"
+						}	
+					]
+				}
+			]
+		}
+	}
+}

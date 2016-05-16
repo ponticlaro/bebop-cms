@@ -1,0 +1,22 @@
+{
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : [
+            "Gallery",
+            "Galleries"
+          ],
+          "requires": {
+            "metaboxes": [
+              {
+                "preset": "Image Gallery",
+                "types": "Gallery"
+              }
+            ]
+          } 
+        }
+      ]
+    }
+  }
+}

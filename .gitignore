@@ -22,6 +22,9 @@ nbproject
 *.sublime-project
 *.sublime-workspace
 
+# NPM
+/node_modules
+
 # Composer
 /vendor
 composer.lock

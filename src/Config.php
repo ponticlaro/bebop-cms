@@ -112,6 +112,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     // Create hooks base structure 
     $this->hooks = new Collection([
       'presets' => [
+        __DIR__ .'/presets.json',
         $paths->get('theme', 'bebop-presets.json')
       ],
       'build' => [
@@ -255,7 +256,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = $this->getPreset('admin_pages', $config['preset'], $config, $env);
     
     // Check if item is valid
-    if (!$this->isConfigItemValid('admin_pages', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'admin_pages', $index, $config))
       return $this;
 
     // Get id & path
@@ -303,7 +304,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config['crop'] = false;
 
     // Check if item is valid
-    if (!$this->isConfigItemValid('image_sizes', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'image_sizes', $index, $config))
       return $this;
 
     // Get id & path
@@ -347,7 +348,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = $this->getPreset('metaboxes', $config['preset'], $config, $env);
     
     // Check if item is valid
-    if (!$this->isConfigItemValid('metaboxes', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'metaboxes', $index, $config))
       return $this;
 
     // Get id & path
@@ -387,7 +388,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected function processPath($id, $path, $hook = 'build', $env = 'all')
   {
     // Check if item is valid
-    if (!$this->isConfigItemValid('paths', $index, $path))
+    if (!$this->isConfigItemValid($hook, 'paths', $index, $path))
       return $this;
 
     // Upsert item
@@ -430,7 +431,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
           $config = $this->getPreset('scripts', $config['preset'], $config, $env);
 
         // Check if item is valid
-        if (!$this->isConfigItemValid('scripts', $action, $script))
+        if (!$this->isConfigItemValid($hook, 'scripts', $action, $script))
           return $this;
 
         // Get script ID
@@ -539,7 +540,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = $this->getPreset('shortcodes', $config['preset'], $config, $env);
     
     // Check if item is valid
-    if (!$this->isConfigItemValid('shortcodes', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'shortcodes', $index, $config))
       return $this;
 
     // Upsert item
@@ -587,7 +588,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
           $config = $this->getPreset('styles', $config['preset'], $config, $env);
 
         // Check if item is valid
-        if (!$this->isConfigItemValid('styles', $action, $script))
+        if (!$this->isConfigItemValid($hook, 'styles', $action, $script))
           return $this;
 
         // Get script ID
@@ -696,7 +697,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = $this->getPreset('taxonomies', $config['preset'], $config, $env);
     
     // Check if item is valid
-    if (!$this->isConfigItemValid('taxonomies', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'taxonomies', $index, $config))
       return $this;
 
     // Get id & path
@@ -740,7 +741,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = $this->getPreset('types', $config['preset'], $config, $env);
     
     // Check if item is valid
-    if (!$this->isConfigItemValid('types', $index, $config))
+    if (!$this->isConfigItemValid($hook, 'types', $index, $config))
       return $this;
 
     // Get id
@@ -780,7 +781,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected function processUrl($id, $url, $hook = 'build', $env = 'all')
   {
     // Check if item is valid
-    if (!$this->isConfigItemValid('urls', $index, $url))
+    if (!$this->isConfigItemValid($hook, 'urls', $index, $url))
       return $this;
 
     // Upsert item
@@ -812,8 +813,12 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @param  array   $config  Configuration array
    * @return boolean          True if valid, false otherwise
    */
-  protected function isConfigItemValid($section, $index, $config = [])
+  protected function isConfigItemValid($hook, $section, $index, $config = [])
   {
+    // Always return valid for presets
+    if ($hook == 'presets')
+      return true;
+
     switch ($section) {
 
       case 'admin_pages':
@@ -910,9 +915,14 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   {
     // Get preset config
     $preset_config = $this->config->get("presets.$env.$section.". Utils::slugify($id));
+    $config        = $preset_config ? array_replace_recursive($preset_config, $config) : $config;
+
+    // Check if preset have a requirements configuration
+    if (isset($config['requires']) && is_array($config['requires']) && $config['requires'])
+      $this->processHookEnvConfig('build', 'all', $config['requires']);
 
     // Return merged preset config with custom config 
-    return $preset_config ? array_replace_recursive($preset_config, $config) : $config;
+    return $config;
   }
 
   /**

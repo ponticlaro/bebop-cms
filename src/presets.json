@@ -1,246 +1,246 @@
 {
-	"environments": {
-		"all": {
-			"admin_pages": [
-				{
-					"title": "Docs",
-					"position": "3.2",
-					"requires": {}
-				},
-				{
-					"title": "Shortcodes",
-					"parent": "Docs",
-					"requires": {
-						"admin_pages": [
-							{
-								"preset": "Docs"
-							}
-						]
-					}
-				},
-				{
-					"title": "Mission Control",
-					"position": "3.1",
-					"requires": {}
-				}
-			],
-			"metaboxes": [
-				{
-					"title": "Audio",
-					"sections": [
-						{
-							"ui": "audio",
-							"name": "audio"
-						}
-					]
-				},
-				{
-					"title": "Audio Gallery",
-					"sections": [
-						{
-							"ui": "audiogallery",
-							"name": "audio_gallery"
-						}
-					]
-				},
-				{
-					"title": "Documents",
-					"sections": [
-						{
-							"ui": "documentlist",
-							"name": "documents"
-						}
-					]
-				},
-				{
-					"title": "Image",
-					"sections": [
-						{
-							"ui": "image",
-							"name": "image"
-						}
-					]
-				},
-				{
-					"title": "Image Gallery",
-					"sections": [
-						{
-							"ui": "imagegallery",
-							"name": "image_gallery"
-						}
-					]
-				},
-				{
-					"title": "Links",
-					"sections": [
-						{
-							"ui": "linkslist",
-							"name": "links"
-						}
-					]
-				},
-				{
-					"title": "Maps",
-					"sections": [
-						{
-							"ui": "mapslist",
-							"name": "maps"
-						}
-					]
-				},
-				{
-					"title": "Multimedia Gallery",
-					"sections": [
-						{
-							"ui": "multimediagallery",
-							"name": "multimedia_gallery"
-						}
-					]
-				},
-				{
-					"title": "Page Sections",
-					"sections": [
-						{
-							"ui": "pagesections",
-							"name": "sections"
-						}
-					]
-				},
-				{
-					"title": "PDF",
-					"sections": [
-						{
-							"ui": "pdf",
-							"name": "pdf"
-						}
-					]
-				},
-				{
-					"title": "Tickets",
-					"sections": []
-				},
-				{
-					"title": "Video",
-					"sections": [
-						{
-							"ui": "video",
-							"name": "video"
-						}
-					]
-				},
-				{
-					"title": "Video Gallery",
-					"sections": [
-						{
-							"ui": "videogallery",
-							"name": "video_gallery"
-						}
-					]
-				}
-			],
-			"types": [
-				{
-					"name": "Article",
-					"requires": {}
-				},
-				{
-					"name": "Audio",
-					"requires": {}
-				},
-				{
-					"name": "Before and After",
-					"requires": {}
-				},
-				{
-					"name": "Block",
-					"requires": {}
-				},
-				{
-					"name": "Customer",
-					"requires": {}
-				},
-				{
-					"name": "Event",
-					"requires": {}
-				},
-				{
-					"name": "Form",
-					"requires": {}
-				},
-				{
-					"name": [
-						"Gallery",
-						"Galleries"
-					],
-					"requires": {
-						"metaboxes": [
-							{
-								"preset": "Image Gallery",
-								"types": "Gallery"
-							}
-						]
-					}
-				},
-				{
-					"name": "Issue",
-					"requires": {}
-				},
-				{
-					"name": "Job",
-					"requires": {}
-				},
-				{
-					"name": "Location",
-					"requires": {}
-				},
-				{
-					"name": "Map",
-					"requires": {}
-				},
-				{
-					"name": "Order",
-					"requires": {}
-				},
-				{
-					"name": [
-						"Person",
-						"People"
-					],
-					"requires": {}
-				},
-				{
-					"name": "Press Release",
-					"requires": {}
-				},
-				{
-					"name": "Project",
-					"requires": {}
-				},
-				{
-					"name": "Quote",
-					"requires": {}
-				},
-				{
-					"name": "Review",
-					"requires": {}
-				},
-				{
-					"name": "Social Post",
-					"requires": {}
-				},
-				{
-					"name": "Sponsor",
-					"requires": {}
-				},
-				{
-					"name": "Venue",
-					"requires": {}
-				},
-				{
-					"name": "Video",
-					"requires": {}
-				}
-			]
-		}
-	}
+  "environments": {
+    "all": {
+      "admin_pages": [
+        {
+          "title": "Docs",
+          "position": "3.2",
+          "requires": {}
+        },
+        {
+          "title": "Shortcodes",
+          "parent": "Docs",
+          "requires": {
+            "admin_pages": [
+              {
+                "preset": "Docs"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Mission Control",
+          "position": "3.1",
+          "requires": {}
+        }
+      ],
+      "metaboxes": [
+        {
+          "title": "Audio",
+          "sections": [
+            {
+              "ui": "audio",
+              "name": "audio"
+            }
+          ]
+        },
+        {
+          "title": "Audio Gallery",
+          "sections": [
+            {
+              "ui": "audiogallery",
+              "name": "audio_gallery"
+            }
+          ]
+        },
+        {
+          "title": "Documents",
+          "sections": [
+            {
+              "ui": "documentlist",
+              "name": "documents"
+            }
+          ]
+        },
+        {
+          "title": "Image",
+          "sections": [
+            {
+              "ui": "image",
+              "name": "image"
+            }
+          ]
+        },
+        {
+          "title": "Image Gallery",
+          "sections": [
+            {
+              "ui": "imagegallery",
+              "name": "image_gallery"
+            }
+          ]
+        },
+        {
+          "title": "Links",
+          "sections": [
+            {
+              "ui": "linkslist",
+              "name": "links"
+            }
+          ]
+        },
+        {
+          "title": "Maps",
+          "sections": [
+            {
+              "ui": "mapslist",
+              "name": "maps"
+            }
+          ]
+        },
+        {
+          "title": "Multimedia Gallery",
+          "sections": [
+            {
+              "ui": "multimediagallery",
+              "name": "multimedia_gallery"
+            }
+          ]
+        },
+        {
+          "title": "Page Sections",
+          "sections": [
+            {
+              "ui": "pagesections",
+              "name": "sections"
+            }
+          ]
+        },
+        {
+          "title": "PDF",
+          "sections": [
+            {
+              "ui": "pdf",
+              "name": "pdf"
+            }
+          ]
+        },
+        {
+          "title": "Tickets",
+          "sections": []
+        },
+        {
+          "title": "Video",
+          "sections": [
+            {
+              "ui": "video",
+              "name": "video"
+            }
+          ]
+        },
+        {
+          "title": "Video Gallery",
+          "sections": [
+            {
+              "ui": "videogallery",
+              "name": "video_gallery"
+            }
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "Article",
+          "requires": {}
+        },
+        {
+          "name": "Audio",
+          "requires": {}
+        },
+        {
+          "name": "Before and After",
+          "requires": {}
+        },
+        {
+          "name": "Block",
+          "requires": {}
+        },
+        {
+          "name": "Customer",
+          "requires": {}
+        },
+        {
+          "name": "Event",
+          "requires": {}
+        },
+        {
+          "name": "Form",
+          "requires": {}
+        },
+        {
+          "name": [
+            "Gallery",
+            "Galleries"
+          ],
+          "requires": {
+            "metaboxes": [
+              {
+                "preset": "Image Gallery",
+                "types": "Gallery"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Issue",
+          "requires": {}
+        },
+        {
+          "name": "Job",
+          "requires": {}
+        },
+        {
+          "name": "Location",
+          "requires": {}
+        },
+        {
+          "name": "Map",
+          "requires": {}
+        },
+        {
+          "name": "Order",
+          "requires": {}
+        },
+        {
+          "name": [
+            "Person",
+            "People"
+          ],
+          "requires": {}
+        },
+        {
+          "name": "Press Release",
+          "requires": {}
+        },
+        {
+          "name": "Project",
+          "requires": {}
+        },
+        {
+          "name": "Quote",
+          "requires": {}
+        },
+        {
+          "name": "Review",
+          "requires": {}
+        },
+        {
+          "name": "Social Post",
+          "requires": {}
+        },
+        {
+          "name": "Sponsor",
+          "requires": {}
+        },
+        {
+          "name": "Venue",
+          "requires": {}
+        },
+        {
+          "name": "Video",
+          "requires": {}
+        }
+      ]
+    }
+  }
 }

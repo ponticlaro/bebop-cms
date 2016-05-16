@@ -8,7 +8,10 @@ module.exports = function(grunt) {
         src: [ 
           "src/Presets/**/*.json"
         ],
-        dest: "src/presets.json"
+        dest: "src/presets.json",
+        options: {
+          space: 2
+        } 
       }
     }
   });

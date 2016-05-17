@@ -1,17 +1,17 @@
 {
-	"environments" : {
-		"all": {
-			"metaboxes": [
-				{
-					"title" : "Documents",
-					"sections": [
-						{
-							"ui": "documentlist",
-							"name": "documents"
-						}	
-					]
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "Documents",
+          "sections": [
+            {
+              "ui": "documentlist",
+              "name": "documents"
+            } 
+          ]
+        }
+      ]
+    }
+  }
 }

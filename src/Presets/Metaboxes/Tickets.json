@@ -1,14 +1,14 @@
 {
-	"environments" : {
-		"all": {
-			"metaboxes": [
-				{
-					"title" : "Tickets",
-					"sections": [
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "Tickets",
+          "sections": [
 
-					]
-				}
-			]
-		}
-	}
+          ]
+        }
+      ]
+    }
+  }
 }

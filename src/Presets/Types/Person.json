@@ -1,17 +1,17 @@
 {
-	"environments" : {
-		"all": {
-			"types": [
-				{
-					"name" : [
-						"Person",
-						"People"
-					],
-					"requires": {
-						
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : [
+            "Person",
+            "People"
+          ],
+          "requires": {
+            
+          } 
+        }
+      ]
+    }
+  }
 }

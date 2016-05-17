@@ -1,17 +1,17 @@
 {
-	"environments" : {
-		"all": {
-			"metaboxes": [
-				{
-					"title" : "PDF",
-					"sections": [
-						{
-							"ui": "pdf",
-							"name": "pdf"
-						}	
-					]
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "PDF",
+          "sections": [
+            {
+              "ui": "pdf",
+              "name": "pdf"
+            } 
+          ]
+        }
+      ]
+    }
+  }
 }

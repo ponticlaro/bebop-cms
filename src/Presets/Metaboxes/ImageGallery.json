@@ -1,17 +1,17 @@
 {
-	"environments" : {
-		"all": {
-			"metaboxes": [
-				{
-					"title" : "Image Gallery",
-					"sections": [
-						{
-							"ui": "imagegallery",
-							"name": "image_gallery"
-						}	
-					]
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "Image Gallery",
+          "sections": [
+            {
+              "ui": "imagegallery",
+              "name": "image_gallery"
+            } 
+          ]
+        }
+      ]
+    }
+  }
 }

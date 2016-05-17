@@ -1,14 +1,14 @@
 {
-	"environments" : {
-		"all": {
-			"types": [
-				{
-					"name" : "Before and After",
-					"requires": {
-						
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : "Before and After",
+          "requires": {
+            
+          } 
+        }
+      ]
+    }
+  }
 }

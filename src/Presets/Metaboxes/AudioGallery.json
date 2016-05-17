@@ -1,17 +1,17 @@
 {
-	"environments" : {
-		"all": {
-			"metaboxes": [
-				{
-					"title" : "Audio Gallery",
-					"sections": [
-						{
-							"ui": "audiogallery",
-							"name": "audio_gallery"
-						}	
-					]
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "Audio Gallery",
+          "sections": [
+            {
+              "ui": "audiogallery",
+              "name": "audio_gallery"
+            } 
+          ]
+        }
+      ]
+    }
+  }
 }

@@ -1,14 +1,14 @@
 {
-	"environments" : {
-		"all": {
-			"types": [
-				{
-					"name" : "Project",
-					"requires": {
-						
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : "Project",
+          "requires": {
+            
+          } 
+        }
+      ]
+    }
+  }
 }

@@ -1,14 +1,14 @@
 {
-	"environments" : {
-		"all": {
-			"types": [
-				{
-					"name" : "Video",
-					"requires": {
-						
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : "Video",
+          "requires": {
+            
+          } 
+        }
+      ]
+    }
+  }
 }

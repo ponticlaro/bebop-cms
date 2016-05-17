@@ -1,14 +1,14 @@
 {
-	"environments" : {
-		"all": {
-			"types": [
-				{
-					"name" : "Audio",
-					"requires": {
-						
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : "Audio",
+          "requires": {
+            
+          } 
+        }
+      ]
+    }
+  }
 }

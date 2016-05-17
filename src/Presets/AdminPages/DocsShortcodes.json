@@ -1,19 +1,19 @@
 {
-	"environments" : {
-		"all": {
-			"admin_pages": [
-				{
-					"title" : "Shortcodes",
-					"parent": "Docs",
-					"requires": {
-						"admin_pages": [
-							{
-								"preset": "Docs"
-							}
-						]
-					}	
-				}
-			]
-		}
-	}
+  "environments" : {
+    "all": {
+      "admin_pages": [
+        {
+          "title" : "Shortcodes",
+          "parent": "Docs",
+          "requires": {
+            "admin_pages": [
+              {
+                "preset": "Docs"
+              }
+            ]
+          } 
+        }
+      ]
+    }
+  }
 }

@@ -4,8 +4,30 @@
       "types": [
         {
           "name" : "Block",
+          "public": false,
+          "has_archive": false,
+          "publicly_queryable": false,
+          "supports": [
+            "title",
+            "revisions"
+          ],
           "requires": {
-            
+            "metaboxes": [
+              {
+                "_id": "__block_type__html",
+                "title": "HTML",
+                "types": "Block",
+                "sections": [
+                  {
+                    "ui": "textarea",
+                    "name": "html",
+                    "attrs": {
+                      "rows": 20
+                    }
+                  }
+                ]
+              }
+            ]
           } 
         }
       ]

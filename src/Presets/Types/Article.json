@@ -5,7 +5,57 @@
         {
           "name" : "Article",
           "requires": {
-            
+            "types": [
+              {
+                "preset": "Location"
+              }
+            ],
+            "metaboxes": [
+              {
+                "_id": "__article_type__main_image",
+                "title": "Main Image",
+                "context": "side",
+                "types": "Article",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "main_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__article_type__small_image",
+                "title": "Small Image",
+                "context": "side",
+                "types": "Article",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "small_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__article_type__associated_locations",
+                "preset": "Associated Locations",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_people",
+                "preset": "Associated People",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_events",
+                "preset": "Associated Events",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_sponsors",
+                "preset": "Associated Sponsors",
+                "types": "Article"
+              }
+            ]
           } 
         }
       ]

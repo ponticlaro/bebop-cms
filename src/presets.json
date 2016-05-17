@@ -26,6 +26,54 @@
       ],
       "metaboxes": [
         {
+          "title": "Associated Events",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_events",
+              "query": {
+                "type": "tribe_events"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Locations",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_locations",
+              "query": {
+                "type": "location"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated People",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_people",
+              "query": {
+                "type": "person"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Sponsors",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_sponsors",
+              "query": {
+                "type": "sponsor"
+              }
+            }
+          ]
+        },
+        {
           "title": "Audio",
           "sections": [
             {
@@ -141,7 +189,59 @@
       "types": [
         {
           "name": "Article",
-          "requires": {}
+          "requires": {
+            "types": [
+              {
+                "preset": "Location"
+              }
+            ],
+            "metaboxes": [
+              {
+                "_id": "__article_type__main_image",
+                "title": "Main Image",
+                "context": "side",
+                "types": "Article",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "main_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__article_type__small_image",
+                "title": "Small Image",
+                "context": "side",
+                "types": "Article",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "small_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__article_type__associated_locations",
+                "preset": "Associated Locations",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_people",
+                "preset": "Associated People",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_events",
+                "preset": "Associated Events",
+                "types": "Article"
+              },
+              {
+                "_id": "__article_type__associated_sponsors",
+                "preset": "Associated Sponsors",
+                "types": "Article"
+              }
+            ]
+          }
         },
         {
           "name": "Audio",
@@ -216,7 +316,105 @@
         },
         {
           "name": "Location",
-          "requires": {}
+          "requires": {
+            "metaboxes": [
+              {
+                "_id": "__location_type__main_image",
+                "title": "Main Image",
+                "types": "Location",
+                "context": "side",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "main_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__geo_coordinates",
+                "title": "Geographic Coordinates",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "Latitude"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Longitude"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__address",
+                "title": "Address",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "Country"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "State"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "City"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Postal Code"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Street"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__contacts",
+                "title": "Contacts",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "itemlist",
+                    "name": "contacts",
+                    "item_views": {
+                      "browse": [
+                        {
+                          "ui": "rawHtml",
+                          "html": "{{name}}"
+                        }
+                      ],
+                      "edit": [
+                        {
+                          "ui": "input",
+                          "label": "Name"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Website"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Email"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Fax"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Fax"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Map",

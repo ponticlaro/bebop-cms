@@ -5,7 +5,103 @@
         {
           "name" : "Location",
           "requires": {
-            
+            "metaboxes": [
+              {
+                "_id": "__location_type__main_image",
+                "title": "Main Image",
+                "types": "Location",
+                "context": "side",
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "main_image"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__geo_coordinates",
+                "title": "Geographic Coordinates",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "Latitude"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Longitude"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__address",
+                "title": "Address",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "Country"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "State"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "City"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Postal Code"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Street"
+                  }
+                ]
+              },
+              {
+                "_id": "__location_type__contacts",
+                "title": "Contacts",
+                "types": "Location",
+                "sections": [
+                  {
+                    "ui": "itemlist",
+                    "name": "contacts",
+                    "item_views": {
+                      "browse": [
+                        {
+                          "ui": "rawHtml",
+                          "html": "{{name}}"
+                        }
+                      ],
+                      "edit": [
+                        {
+                          "ui": "input",
+                          "label": "Name"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Website"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Email"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Fax"
+                        },
+                        {
+                          "ui": "input",
+                          "label": "Fax"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
           } 
         }
       ]

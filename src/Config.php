@@ -33,46 +33,56 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * 
    * @var array
    */
-  protected $config_section_map = [
+  protected static $config_section_map = [
     'admin_pages' => [
-      'process' => 'processAdminPage',
-      'build'   => 'buildAdminPage'
+      'identifier' => 'title',
+      'process'    => 'processAdminPage',
+      'build'      => 'buildAdminPage'
     ],
     'image_sizes' => [
-      'process' => 'processImageSize',
-      'build'   => 'buildImageSize'
+      'identifier' => 'name',
+      'process'    => 'processImageSize',
+      'build'      => 'buildImageSize'
     ],
     'metaboxes' => [
-      'process' => 'processMetabox',
-      'build'   => 'buildMetabox'
+      'identifier' => 'title',
+      'process'    => 'processMetabox',
+      'build'      => 'buildMetabox'
     ],
     'paths' => [
-      'process' => 'processPath',
-      'build'   => 'buildPath'
+      'identifier' => 'id',
+      'process'    => 'processPath',
+      'build'      => 'buildPath'
     ],
     'scripts' => [
-      'process' => 'processScriptAction',
-      'build'   => 'buildScript'
+      'identifier' => 'handle',
+      'process'    => 'processScriptAction',
+      'build'      => 'buildScript'
     ],
     'shortcodes' => [
-      'process' => 'processShortcode',
-      'build'   => 'buildShortcode'
+      'identifier' => 'id',
+      'process'    => 'processShortcode',
+      'build'      => 'buildShortcode'
     ],
     'styles' => [
-      'process' => 'processStyleAction',
-      'build'   => 'buildStyle'
+      'identifier' => 'handle',
+      'process'    => 'processStyleAction',
+      'build'      => 'buildStyle'
     ],
     'taxonomies' => [
-      'process' => 'processTaxonomy',
-      'build'   => 'buildTaxonomy'
+      'identifier' => 'name',
+      'process'    => 'processTaxonomy',
+      'build'      => 'buildTaxonomy'
     ],
     'types' => [
-      'process' => 'processType',
-      'build'   => 'buildType'
+      'identifier' => 'name',
+      'process'    => 'processType',
+      'build'      => 'buildType'
     ],
     'urls' => [
-      'process' => 'processUrl',
-      'build'   => 'buildUrl'
+      'identifier' => 'id',
+      'process'    => 'processUrl',
+      'build'      => 'buildUrl'
     ]
   ];
 
@@ -196,8 +206,8 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   {
     foreach ($env_config as $section => $configs) {
       foreach ($configs as $index => $config) {
-        if (isset($this->config_section_map[$section]) && isset($this->config_section_map[$section]['process']))
-          call_user_func_array([$this, $this->config_section_map[$section]['process']], [$index, $config, $hook, $env]);
+        if (isset(static::$config_section_map[$section]) && isset(static::$config_section_map[$section]['process']))
+          call_user_func_array([$this, static::$config_section_map[$section]['process']], [$index, $config, $hook, $env]);
       }
     }   
   }
@@ -229,8 +239,8 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
             ];
           }
 
-          if (isset($this->config_section_map[$section]) && isset($this->config_section_map[$section]['build']))
-            call_user_func_array([$this, $this->config_section_map[$section]['build']], [$id, $config]);
+          if (isset(static::$config_section_map[$section]) && isset(static::$config_section_map[$section]['build']))
+            call_user_func_array([$this, static::$config_section_map[$section]['build']], [$id, $config]);
         }
       }
     }
@@ -260,7 +270,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id & path
-    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['title']);
+    $id   = static::getConfigId('admin_pages', $config);
     $path = "$hook.$env.admin_pages.$id";
 
     // Upsert item
@@ -308,7 +318,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id & path
-    $id   = Utils::slugify($config['name']);
+    $id   = static::getConfigId('image_sizes', $config);
     $path = "$hook.$env.image_sizes.$id";
 
     // Upsert item
@@ -352,7 +362,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id & path
-    $id   = Utils::slugify(isset($config['id']) ? $config['id'] : $config['title']);
+    $id   = static::getConfigId('metaboxes', $config);
     $path = "$hook.$env.metaboxes.$id";
 
     // Upsert item
@@ -391,8 +401,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if (!$this->isConfigItemValid($hook, 'paths', $index, $path))
       return $this;
 
+    // Get id
+    $id = static::getConfigId('paths', [
+      'id' => $id
+    ]);
+
     // Upsert item
-    $this->upsertConfigItem("$hook.$env.paths.". Utils::slugify($id), $path);
+    $this->upsertConfigItem("$hook.$env.paths.$id", $path);
   }
 
   /**
@@ -435,11 +450,11 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
           return $this;
 
         // Get script ID
-        $script_id = static::__getScriptId($script['handle']);
+        $script_id = static::getConfigId('scripts', $script);
 
         // Collect dependencies
         if (isset($script['deps']) && is_array($script['deps']))
-          $this->collectScriptDependencies('js', $script['handle'], $script['deps']);
+          $this->collectScriptDependencies('scripts', $script['handle'], $script['deps']);
 
         // Upsert item
         $this->upsertConfigItem("$hook.$env.scripts.$script_id.$action", $script);
@@ -452,10 +467,12 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         foreach ($script_hook_config as $script_handle) {
 
           // Get script ID
-          $script_id = static::__getScriptId($script_handle);
+          $script_id = static::getConfigId('scripts', [
+            'handle' => $script_handle
+          ]);
 
           // Collect dependencies enqueue hooks
-          $this->collectScriptDependencyHook('js', $script_handle, $script_hook_name);
+          $this->collectScriptDependencyHook('scripts', $script_handle, $script_hook_name);
 
           // Set script config action path
           $path = "$hook.$env.scripts.$script_id.$action";
@@ -592,11 +609,11 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
           return $this;
 
         // Get script ID
-        $script_id = static::__getScriptId($script['handle']);
+        $script_id = static::getConfigId('styles', $script);
 
         // Collect dependencies
         if (isset($script['deps']) && is_array($script['deps']))
-          $this->collectScriptDependencies('js', $script['handle'], $script['deps']);
+          $this->collectScriptDependencies('styles', $script['handle'], $script['deps']);
 
         // Upsert item
         $this->upsertConfigItem("$hook.$env.styles.$script_id.$action", $script);
@@ -609,10 +626,12 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         foreach ($script_hook_config as $script_handle) {
 
           // Get script ID
-          $script_id = static::__getScriptId($script_handle);
+          $script_id = static::getConfigId('styles', [
+            'handle' => $script_handle
+          ]);
 
           // Collect dependencies enqueue hooks
-          $this->collectScriptDependencyHook('js', $script_handle, $script_hook_name);
+          $this->collectScriptDependencyHook('styles', $script_handle, $script_hook_name);
 
           // Get script config action path
           $path = "$hook.$env.styles.$script_id.$action";
@@ -701,7 +720,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id & path
-    $id   = Utils::slugify(is_array($config['name']) ? $config['name'][0] : $config['name']);
+    $id   = static::getConfigId('taxonomies', $config);
     $path = "$hook.$env.taxonomies.$id";
 
     // Upsert item
@@ -745,7 +764,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       return $this;
 
     // Get id
-    $id   = Utils::slugify(is_array($config['name']) ? $config['name'][0] : $config['name']);
+    $id   = static::getConfigId('types', $config);
     $path = "$hook.$env.types.$id";
 
     // Upsert item
@@ -784,8 +803,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if (!$this->isConfigItemValid($hook, 'urls', $index, $url))
       return $this;
 
+    // Get id
+    $id = static::getConfigId('urls', [
+      'id' => $id
+    ]);
+
     // Upsert item
-    $this->upsertConfigItem("$hook.$env.urls.". Utils::slugify($id), $url);
+    $this->upsertConfigItem("$hook.$env.urls.$id", $url);
   }
 
   /**
@@ -803,6 +827,169 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Register url
     UrlManager::getInstance()->set($id, $url);
+  }
+
+  /**
+   * Inserts or updates configuration item
+   * 
+   * @param  string $path   Path to configuration item
+   * @param  mixed  $config Item Configuration
+   * @return void
+   */
+  protected function upsertConfigItem($path, $config)
+  {
+    $prev_config = $this->config->get($path);
+
+    if ($prev_config && is_array($prev_config))
+        $config = array_replace_recursive($prev_config, $config);
+
+    $this->config->set($path, $config);
+  }
+
+  /**
+   * Returns preset configuration merged with custom config
+   * 
+   * @param  string $section Configuration section ID
+   * @param  string $id      Item ID
+   * @param  array  $config  Item configuration
+   * @param  string $env     Environment ID
+   * @return array           Preset config
+   */
+  protected function getPreset($section, $id, array $config, $env = 'all')
+  {
+    // Get preset config
+    $id = static::getConfigId($section, [
+      '_id' => $id
+    ]);
+    $preset_config = $this->config->get("presets.$env.$section.$id");
+    $config        = $preset_config ? array_replace_recursive($preset_config, $config) : $config;
+
+    // Check if preset have a requirements configuration
+    if (isset($config['requires']) && is_array($config['requires']) && $config['requires'])
+      $this->processHookEnvConfig('build', 'all', $config['requires']);
+
+    // Return merged preset config with custom config 
+    return $config;
+  }
+
+  /**
+   * Returns safe config ID from its configuration array
+   * 
+   * @param  string $section Config section
+   * @param  string $config Config
+   * @return string         Config ID
+   */
+  protected static function getConfigId($section, array $config)
+  {
+    // Check if config have a 'preset' property
+    $preset = isset($config['preset']) && $config['preset'] ? $config['preset'] : null;
+
+    // Check if config have an '_id' property
+    $id = isset($config['_id']) && $config['_id'] ? $config['_id'] : null;
+
+    // Check if config have a value on its identifier property
+    if (!$id) {
+
+      // Get identifier property
+      $identifier = isset(static::$config_section_map[$section]) ? static::$config_section_map[$section]['identifier'] : null;
+      
+      // Get raw id
+      $id = $identifier && isset($config[$identifier]) ? $config[$identifier] : null;
+    }
+
+    // Set 'id' as 'preset', if we have one
+    if (!$id && $preset)
+      $id = $preset;
+
+    // Return if there is no ID
+    if (!$id)
+      return null;
+
+    // Making sure types and taxonomies get their IDs from the singular name
+    if (is_array($id))
+        $id = reset($id);
+
+    // Slugify ID
+    $id = Utils::slugify($id);
+
+    // Making sure scripts and styles IDs do not have dots in them
+    if ($id && in_array($section, ['scripts', 'styles']))
+      $id = str_replace('.', '_', $id);
+
+    return $id;
+  }
+
+  /**
+   * Collects script dependencies
+   * 
+   * @param  string $type   Script type: CSS or JS
+   * @param  string $handle Script handle
+   * @param  array  $deps   Script dependencies
+   * @return object         This class instance
+   */
+  protected function collectScriptDependencies($type, $handle, array $deps = [])
+  {
+    if (is_string($type) && is_string($handle) && $deps) {
+      if (!isset($this->resolve_deps[$type])) {
+
+        $this->resolve_deps[$type] = [
+          'main' => [],
+          'deps' => []
+        ];
+      }
+
+      if (!isset($this->resolve_deps[$type]['main'][$handle]))
+        $this->resolve_deps[$type]['main'][$handle] = [];
+
+      foreach ($deps as $dep_handle) {
+        $this->resolve_deps[$type]['main'][$handle][] = $this->getConfigId($type, [
+          'handle' => $dep_handle
+        ]);
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * Collects a single enqueue hook for all depencencies of the target script
+   * 
+   * @param  string $type   Script type: CSS or JS
+   * @param  string $handle Script handle
+   * @param  string $hook   Enqueue hook to be added
+   * @return object         This class instance
+   */
+  protected function collectScriptDependencyHook($type, $handle, $hook)
+  {
+    if (is_string($type) && is_string($handle) && is_string($hook)) {
+      if (isset($this->resolve_deps[$type]) && $this->resolve_deps[$type]['main'][$handle]) {
+        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
+          
+          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
+            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
+
+          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
+            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
+          }
+        }
+      }
+    }
+
+    return $this;
+  }
+
+  /**
+   * Returns script enqueue hooks, when used as a script dependency
+   * 
+   * @param  string $handle Script handle
+   * @return array          Script enqueue hooks
+   */
+  protected function getScriptEnqueueHooksAsDependency($type, $handle)
+  {
+    if (is_string($type) && is_string($handle) && $this->resolve_deps[$type]['deps'][$handle])
+        return $this->resolve_deps[$type]['deps'][$handle];
+
+    return [];
   }
 
   /**
@@ -883,127 +1070,5 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         return true;
         break;
     }
-  }
-
-  /**
-   * Inserts or updates configuration item
-   * 
-   * @param  string $path   Path to configuration item
-   * @param  mixed  $config Item Configuration
-   * @return void
-   */
-  protected function upsertConfigItem($path, $config)
-  {
-    $prev_config = $this->config->get($path);
-
-    if ($prev_config && is_array($prev_config))
-        $config = array_replace_recursive($prev_config, $config);
-
-    $this->config->set($path, $config);
-  }
-
-  /**
-   * Returns preset configuration merged with custom config
-   * 
-   * @param  string $section Configuration section ID
-   * @param  string $id      Item ID
-   * @param  array  $config  Item configuration
-   * @param  string $env     Environment ID
-   * @return array           Preset config
-   */
-  protected function getPreset($section, $id, array $config, $env = 'all')
-  {
-    // Get preset config
-    $preset_config = $this->config->get("presets.$env.$section.". Utils::slugify($id));
-    $config        = $preset_config ? array_replace_recursive($preset_config, $config) : $config;
-
-    // Check if preset have a requirements configuration
-    if (isset($config['requires']) && is_array($config['requires']) && $config['requires'])
-      $this->processHookEnvConfig('build', 'all', $config['requires']);
-
-    // Return merged preset config with custom config 
-    return $config;
-  }
-
-  /**
-   * Returns safe script ID from its handle
-   * 
-   * @param  string $handle Script handle
-   * @return string         Script ID
-   */
-  protected static function __getScriptId($handle)
-  {
-    return str_replace('.', '_', $handle);
-  }
-
-  /**
-   * Collects script dependencies
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  array  $deps   Script dependencies
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencies($type, $handle, array $deps = [])
-  {
-    if (is_string($type) && is_string($handle) && $deps) {
-      if (!isset($this->resolve_deps[$type])) {
-
-        $this->resolve_deps[$type] = [
-          'main' => [],
-          'deps' => []
-        ];
-      }
-
-      if (!isset($this->resolve_deps[$type]['main'][$handle]))
-        $this->resolve_deps[$type]['main'][$handle] = [];
-
-      foreach ($deps as $dep_handle) {
-        $this->resolve_deps[$type]['main'][$handle][] = $this->__getScriptId($dep_handle);
-      }
-    }
-
-    return $this;
-  }
-
-  /**
-   * Collects a single enqueue hook for all depencencies of the target script
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  string $hook   Enqueue hook to be added
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencyHook($type, $handle, $hook)
-  {
-    if (is_string($type) && is_string($handle) && is_string($hook)) {
-      if (isset($this->resolve_deps[$type]) && $this->resolve_deps[$type]['main'][$handle]) {
-        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
-          
-          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
-            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
-
-          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
-            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
-          }
-        }
-      }
-    }
-
-    return $this;
-  }
-
-  /**
-   * Returns script enqueue hooks, when used as a script dependency
-   * 
-   * @param  string $handle Script handle
-   * @return array          Script enqueue hooks
-   */
-  protected function getScriptEnqueueHooksAsDependency($type, $handle)
-  {
-    if (is_string($type) && is_string($handle) && $this->resolve_deps[$type]['deps'][$handle])
-        return $this->resolve_deps[$type]['deps'][$handle];
-
-    return [];
   }
 }

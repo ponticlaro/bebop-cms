@@ -10,6 +10,7 @@
           "requires": {
             "metaboxes": [
               {
+                "_id": "__gallery_type__image_gallery",
                 "preset": "Image Gallery",
                 "types": "Gallery"
               }

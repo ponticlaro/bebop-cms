@@ -1,1 +1,20 @@
-{}
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title": "Associated Before and Afters",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_before_and_afters",
+              "query": {
+                "type": "before_and_after"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

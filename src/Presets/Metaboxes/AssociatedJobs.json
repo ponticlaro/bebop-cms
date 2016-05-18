@@ -1,1 +1,20 @@
-{}
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title": "Associated Jobs",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_jobs",
+              "query": {
+                "type": "job"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

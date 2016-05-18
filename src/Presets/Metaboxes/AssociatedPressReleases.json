@@ -1,1 +1,20 @@
-{}
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title": "Associated Press Releases",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_press_releases",
+              "query": {
+                "type": "press_release"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

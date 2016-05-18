@@ -26,6 +26,42 @@
       ],
       "metaboxes": [
         {
+          "title": "Associated Articles",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_articles",
+              "query": {
+                "type": "article"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Audios",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_audios",
+              "query": {
+                "type": "audio"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Before and Afters",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_before_and_afters",
+              "query": {
+                "type": "before_and_after"
+              }
+            }
+          ]
+        },
+        {
           "title": "Associated Events",
           "sections": [
             {
@@ -33,6 +69,54 @@
               "name": "associated_events",
               "query": {
                 "type": "tribe_events"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Forms",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_forms",
+              "query": {
+                "type": "form"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Galleries",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_galleries",
+              "query": {
+                "type": "gallery"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Issues",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_issues",
+              "query": {
+                "type": "issue"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Jobs",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_jobs",
+              "query": {
+                "type": "job"
               }
             }
           ]
@@ -50,6 +134,18 @@
           ]
         },
         {
+          "title": "Associated Maps",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_maps",
+              "query": {
+                "type": "map"
+              }
+            }
+          ]
+        },
+        {
           "title": "Associated People",
           "sections": [
             {
@@ -62,6 +158,78 @@
           ]
         },
         {
+          "title": "Associated Posts",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_posts",
+              "query": {
+                "type": "post"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Press Releases",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_press_releases",
+              "query": {
+                "type": "press_release"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Projects",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_projects",
+              "query": {
+                "type": "project"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Quotes",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_quotes",
+              "query": {
+                "type": "quote"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Reviews",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_reviews",
+              "query": {
+                "type": "review"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Social Posts",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_social_posts",
+              "query": {
+                "type": "social_post"
+              }
+            }
+          ]
+        },
+        {
           "title": "Associated Sponsors",
           "sections": [
             {
@@ -69,6 +237,30 @@
               "name": "associated_sponsors",
               "query": {
                 "type": "sponsor"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Venues",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_venues",
+              "query": {
+                "type": "venue"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Associated Videos",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_videos",
+              "query": {
+                "type": "video"
               }
             }
           ]

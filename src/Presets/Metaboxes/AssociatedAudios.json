@@ -1,1 +1,20 @@
-{}
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title": "Associated Audios",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_audios",
+              "query": {
+                "type": "audio"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

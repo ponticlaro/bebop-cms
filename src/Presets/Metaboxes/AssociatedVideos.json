@@ -1,1 +1,20 @@
-{}
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title": "Associated Videos",
+          "sections": [
+            {
+              "ui": "associatedtypes",
+              "name": "associated_videos",
+              "query": {
+                "type": "video"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -856,6 +856,8 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
    */
   protected function renderSinglePage()
   {
+    echo '<div style="padding-top:30px;">';
+    
     settings_fields($this->getId());
     $this->__setData();
 
@@ -871,5 +873,7 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
         $section->render($this->data->getAll());
       }
     }
+
+    echo '</div>';
   }
 }

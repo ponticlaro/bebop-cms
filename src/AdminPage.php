@@ -167,6 +167,12 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
       unset($args['menu_title']);
     }
 
+    // Handle 'menu_slug'
+    if (isset($args['menu_slug']) && $args['menu_slug']) {
+      $this->setMenuSlug($args['menu_slug']);
+      unset($args['menu_slug']);
+    }
+
     // Handle 'parent'
     if (isset($args['parent']) && $args['parent']) {
       $this->setParent($args['parent']);

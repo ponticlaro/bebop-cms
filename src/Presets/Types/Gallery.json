@@ -10,9 +10,23 @@
           "requires": {
             "metaboxes": [
               {
-                "_id": "__gallery_type__image_gallery",
-                "preset": "Image Gallery",
-                "types": "Gallery"
+                "_id": "__gallery_type__gallery",
+                "preset": "Multimedia Gallery",
+                "title": "Gallery",
+                "types": "Gallery",
+                "sections": [
+                  {
+                    "media_sources": {
+                      "internal": true,
+                      "google_map": false,
+                      "soundcloud_track": false,
+                      "soundcloud_playlist": false,
+                      "vimeo": false,
+                      "youtube_video": false,
+                      "youtube_playlist": false
+                    }
+                  }
+                ]
               }
             ]
           } 

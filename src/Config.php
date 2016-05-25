@@ -506,7 +506,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = array_replace_recursive($config, $current_env_config);
 
     // Check if script have enqueue hooks as a dependency
-    if ($enqueue_hooks_as_dep = $this->getScriptEnqueueHooksAsDependency('js', $handle)) {
+    if ($enqueue_hooks_as_dep = $this->getScriptEnqueueHooksAsDependency('scripts', $handle)) {
       foreach ($enqueue_hooks_as_dep as $hook) {
         $config['enqueue'][] = $hook;
       }

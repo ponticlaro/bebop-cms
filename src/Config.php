@@ -524,7 +524,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
               $config['register']['src'], 
               isset($config['register']['deps']) ? $config['register']['deps']: [], 
               isset($config['register']['version']) ? $config['register']['version']: null, 
-              isset($config['register']['in_footer']) ? $config['register']['in_footer']: null
+              isset($config['register']['in_footer']) ? $config['register']['in_footer']: true
            )
            ->enqueue($handle);
       }

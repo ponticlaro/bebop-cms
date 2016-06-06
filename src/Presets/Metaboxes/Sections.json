@@ -3,10 +3,10 @@
     "all": {
       "metaboxes": [
         {
-          "title" : "Page Sections",
+          "title" : "Sections",
           "sections": [
             {
-              "ui": "pagesections",
+              "ui": "sections",
               "name": "sections"
             } 
           ]

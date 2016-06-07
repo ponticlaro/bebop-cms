@@ -224,7 +224,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     $this->runHooks();
 
-    if ($this->config->count()) {
+    if ($this->config->get('build.all')) {
       foreach ($this->config->get('build.all') as $section => $configs) {
         foreach ($configs as $id => $config) {
 

@@ -224,6 +224,9 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     $this->runHooks();
 
+    var_dump($this->config->get('build.all'));
+    die;
+
     if ($this->config->get('build.all')) {
       foreach ($this->config->get('build.all') as $section => $configs) {
         foreach ($configs as $id => $config) {
@@ -305,6 +308,8 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   protected function processImageSize($index, array $config, $hook = 'build', $env = 'all')
   {
+    var_dump($config);
+
     // Get preset, if we're dealing with one
     if (isset($config['preset']) && $config['preset'])
       $config = $this->getPreset('image_sizes', $config['preset'], $config, $env);
@@ -320,6 +325,9 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     // Get id & path
     $id   = static::getConfigId('image_sizes', $config);
     $path = "$hook.$env.image_sizes.$id";
+
+    var_dump($path);
+    var_dump($config);
 
     // Upsert item
     $this->upsertConfigItem($path, $config);
@@ -1016,13 +1024,10 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
         $valid = true;
 
-        if (!isset($config['name']) && $config['name'])
+        if (!isset($config['name']) || !$config['name'])
           $valid = false;
 
-        if (!isset($config['width']))
-          $valid = false;
-
-        if (!isset($config['height']))
+        if (!isset($config['width']) && !isset($config['height']))
           $valid = false;
 
         if (!is_bool($config['crop']) && !is_array($config['crop']))

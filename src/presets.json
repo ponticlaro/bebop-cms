@@ -338,11 +338,11 @@
           ]
         },
         {
-          "title": "Page Sections",
+          "title": "Navigation",
           "sections": [
             {
-              "ui": "pagesections",
-              "name": "sections"
+              "ui": "navigation",
+              "name": "navigation"
             }
           ]
         },
@@ -352,6 +352,15 @@
             {
               "ui": "pdf",
               "name": "pdf"
+            }
+          ]
+        },
+        {
+          "title": "Sections",
+          "sections": [
+            {
+              "ui": "sections",
+              "name": "sections"
             }
           ]
         },
@@ -477,6 +486,10 @@
         },
         {
           "name": "Event",
+          "requires": {}
+        },
+        {
+          "name": "FAQ",
           "requires": {}
         },
         {

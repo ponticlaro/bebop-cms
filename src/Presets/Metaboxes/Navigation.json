@@ -1,0 +1,17 @@
+{
+  "environments" : {
+    "all": {
+      "metaboxes": [
+        {
+          "title" : "Navigation",
+          "sections": [
+            {
+              "ui": "navigation",
+              "name": "navigation"
+            } 
+          ]
+        }
+      ]
+    }
+  }
+}

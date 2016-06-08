@@ -577,10 +577,17 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     if ($current_env_config = $this->config->get("build.$this->current_env.shortcodes.$id"))
       $config = array_replace_recursive($config, $current_env_config);
     
+    // Replace default class
+    if (isset($config['class']) && $config['class'] && class_exists($config['class']))
+      ShortcodeFactory::set($id, $config['class']);
+
+    // Check if shortcode is available
     if (ShortcodeFactory::canManufacture($id)) {
-      
+        
+      // Get shortcode
       $shortcode = ShortcodeFactory::create($id);
 
+      // Register shortcode
       if ($shortcode)
         $shortcode->register();
     }

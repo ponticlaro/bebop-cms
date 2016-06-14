@@ -994,6 +994,13 @@ class PostType extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
             unset($args['taxonomies']);
         }
 
+        // Intercept rewrite
+        if (isset($args['rewrite']) && is_array($args['rewrite'])) {
+
+            $this->setRewrite($args['rewrite']);
+            unset($args['rewrite']);
+        }
+
         $this->config->set($args);
     }
 

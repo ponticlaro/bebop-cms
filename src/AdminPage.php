@@ -274,8 +274,14 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
    */
   public function setId($id)
   {
-    if (is_string($id))
+    if (is_string($id)) {
+
+      // Remove quotes, as these break data saving
+      $id = str_replace(['"', "'"], "", $id);
+
+      // Slugify $id
       $this->__trackable_id = Utils::slugify($id);
+    }
 
     return $this;
   }
@@ -361,8 +367,8 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
 
     $slug = Utils::slugify($slug, array('separator' => '-'));
 
-    $this->config->set('menu_slug', $slug);
-    $this->config->set('url', admin_url() .'admin.php?page='. $slug);
+    $this->config->set('menu_slug', str_replace(['"', "'"], "", $slug));
+    $this->config->set('url', admin_url() .'admin.php?page='. $this->config->get('menu_slug'));
 
     return $this;
   }

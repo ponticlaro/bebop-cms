@@ -284,6 +284,53 @@
           ]
         },
         {
+          "title": "Audio Source",
+          "sections": [
+            {
+              "ui": "rawHtml",
+              "html": "<div bebop-metabox='media-source'>"
+            },
+            {
+              "ui": "select",
+              "label": "Source",
+              "name": "audio_source",
+              "default_option": "upload",
+              "options": [
+                "Upload",
+                "Soundcloud"
+              ],
+              "attrs": {
+                "style": "width:100%",
+                "bebop-metabox--media-source": "selector"
+              }
+            },
+            {
+              "ui": "rawHtml",
+              "html": "<div bebop-metabox--media-source='sources-container' style='display:none'>"
+            },
+            {
+              "ui": "audio",
+              "label": "Upload",
+              "name": "audio_upload",
+              "attrs": {
+                "bebop-metabox--media-source": "upload"
+              }
+            },
+            {
+              "ui": "input",
+              "label": "Soundcloud",
+              "name": "audio_soundcloud_url",
+              "attrs": {
+                "bebop-metabox--media-source": "soundcloud"
+              }
+            },
+            {
+              "ui": "rawHtml",
+              "html": "</div></div>"
+            }
+          ]
+        },
+        {
           "title": "Documents",
           "sections": [
             {
@@ -383,6 +430,62 @@
             {
               "ui": "videogallery",
               "name": "video_gallery"
+            }
+          ]
+        },
+        {
+          "title": "Video Source",
+          "sections": [
+            {
+              "ui": "rawHtml",
+              "html": "<div bebop-metabox='media-source'>"
+            },
+            {
+              "ui": "select",
+              "label": "Source",
+              "name": "video_source",
+              "default_option": "upload",
+              "options": [
+                "Upload",
+                "Vimeo",
+                "Youtube"
+              ],
+              "attrs": {
+                "style": "width:100%",
+                "bebop-metabox--media-source": "selector"
+              }
+            },
+            {
+              "ui": "rawHtml",
+              "html": "<div bebop-metabox--media-source='sources-container' style='display:none'>"
+            },
+            {
+              "ui": "audio",
+              "label": "Upload",
+              "name": "video_upload",
+              "attrs": {
+                "bebop-metabox--media-source": "upload"
+              }
+            },
+            {
+              "ui": "input",
+              "label": "Vimeo ID",
+              "name": "video_vimeo_id",
+              "attrs": {
+                "bebop-metabox--media-source": "vimeo"
+              }
+            },
+            {
+              "ui": "input",
+              "label": "Youtube ID",
+              "name": "video_youtube_id",
+              "attrs": {
+                "bebop-metabox--media-source": "youtube"
+              }
+            },
+            {
+              "ui": "rawHtml",
+              "html": "</div></div>"
             }
           ]
         }

@@ -389,42 +389,40 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Processes a single path configuration
    *
-   * @param  array  $id   Path ID
-   * @param  array  $path Path
-   * @param  string $hook Hook ID
-   * @param  string $env  Environment ID
+   * @param  array  $id     Configuration array index
+   * @param  array  $config Configuration array
+   * @param  string $hook   Hook ID
+   * @param  string $env    Environment ID
    * @return void
    */
-  protected function processPath($id, $path, $hook = 'build', $env = 'all')
+  protected function processPath($id, array $config, $hook = 'build', $env = 'all')
   {
     // Check if item is valid
-    if (!$this->isConfigItemValid($hook, 'paths', $index, $path))
+    if (!$this->isConfigItemValid($hook, 'paths', $index, $config))
       return $this;
 
     // Get id
-    $id = static::getConfigId('paths', [
-      'id' => $id
-    ]);
+    $id = static::getConfigId('paths', $config);
 
     // Upsert item
-    $this->upsertConfigItem("$hook.$env.paths.$id", $path);
+    $this->upsertConfigItem("$hook.$env.paths.$id", $config);
   }
 
   /**
    * Builds a single path
    * 
    * @param  string $id   Path ID
-   * @param  array  $path Path
+   * @param  array  $path Configuration array
    * @return void
    */
-  protected function buildPath($id, $path)
+  protected function buildPath($id, array $config)
   {
     // Merge current environment config with main config
-    if ($current_env_path = $this->config->get("build.$this->current_env.paths.$id"))
-      $path = $current_env_path;
+    if ($current_env_config = $this->config->get("build.$this->current_env.paths.$id"))
+      $config = $current_env_config;
 
     // Register path
-    PathManager::getInstance()->set($id, $path);
+    PathManager::getInstance()->set($config['id'], $config['path']);
   }
 
   /**
@@ -798,42 +796,40 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Processes a single url configuration
    *
-   * @param  array  $id     URL ID
-   * @param  array  $url    URL
+   * @param  array  $id     Configuration array index
+   * @param  array  $config Configuration array
    * @param  string $hook   Hook ID
    * @param  string $env    Environment ID
    * @return void
    */
-  protected function processUrl($id, $url, $hook = 'build', $env = 'all')
+  protected function processUrl($id, $config, $hook = 'build', $env = 'all')
   {
     // Check if item is valid
-    if (!$this->isConfigItemValid($hook, 'urls', $index, $url))
+    if (!$this->isConfigItemValid($hook, 'urls', $index, $config))
       return $this;
 
     // Get id
-    $id = static::getConfigId('urls', [
-      'id' => $id
-    ]);
+    $id = static::getConfigId('urls', $config);
 
     // Upsert item
-    $this->upsertConfigItem("$hook.$env.urls.$id", $url);
+    $this->upsertConfigItem("$hook.$env.urls.$id", $config);
   }
 
   /**
    * Builds a single url
    * 
    * @param  string $id     URL ID
-   * @param  array  $config URL
+   * @param  array  $config Configuration array
    * @return void
    */
-  protected function buildUrl($id, $url)
+  protected function buildUrl($id, array $config)
   {
     // Merge current environment config with main config
-    if ($current_env_url = $this->config->get("build.$this->current_env.urls.$id"))
-      $url = $current_env_url;
+    if ($current_env_config = $this->config->get("build.$this->current_env.urls.$id"))
+      $config = $current_env_config;
 
     // Register url
-    UrlManager::getInstance()->set($id, $url);
+    UrlManager::getInstance()->set($config['id'], $config['url']);
   }
 
   /**
@@ -1070,8 +1066,11 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         break;
 
       case 'paths':
+        return isset($config['id']) && $config['id'] && isset($config['path']) && $config['path'] ? true : false;
+        break;
+
       case 'urls':
-        return true;
+        return isset($config['id']) && $config['id'] && isset($config['url']) && $config['url'] ? true : false;
         break;
     }
   }

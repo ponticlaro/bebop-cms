@@ -92,6 +92,10 @@ class PostType extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract
      */
     public function __construct($name)
     {
+        // Throw exception if we're trying to modify built-in post-types
+        if (in_array(Utils::slugify(is_array($name) ? reset($name) : $name), ['attachment', 'post', 'page', 'revision', 'nav_menu_item']))
+            throw new \Exception("You should not use this class to modify built-in post types");
+
         // Instantiate configuration object with defaults
         $this->config = new Collection(array(
             'public'              => true,

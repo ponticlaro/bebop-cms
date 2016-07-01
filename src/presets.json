@@ -460,7 +460,7 @@
               "html": "<div bebop-metabox--media-source='sources-container' style='display:none'>"
             },
             {
-              "ui": "audio",
+              "ui": "video",
               "label": "Upload",
               "name": "video_upload",
               "attrs": {
@@ -549,7 +549,15 @@
         },
         {
           "name": "Audio",
-          "requires": {}
+          "requires": {
+            "metaboxes": [
+              {
+                "preset": "Audio Source",
+                "types": "Audio",
+                "context": "side"
+              }
+            ]
+          }
         },
         {
           "name": "Before and After",
@@ -783,7 +791,15 @@
         },
         {
           "name": "Video",
-          "requires": {}
+          "requires": {
+            "metaboxes": [
+              {
+                "preset": "Video Source",
+                "types": "Video",
+                "context": "side"
+              }
+            ]
+          }
         }
       ]
     }

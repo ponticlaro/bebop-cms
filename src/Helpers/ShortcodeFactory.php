@@ -27,6 +27,7 @@ class ShortcodeFactory {
     'quote'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Quote',
     'soundcloud'      => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Soundcloud',
     'tweet'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Tweet',
+    'video'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Video',
     'vimeo'           => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Vimeo',
     'youtube'         => 'Ponticlaro\Bebop\Cms\Presets\Shortcodes\Youtube',
   );

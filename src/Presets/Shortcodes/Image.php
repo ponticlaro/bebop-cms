@@ -2,6 +2,8 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
+use Ponticlaro\Bebop\Mvc\View;
+
 class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
@@ -16,7 +18,13 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
    * 
    * @var string
    */
-  protected $default_attrs = [];
+  protected $default_attrs = [
+    'id'      => null,
+    'size'    => 'large',
+    'url'     => null,
+    'caption' => null,
+    'alt'     => null
+  ];
 
   /**
    * Renders shortcode 
@@ -28,6 +36,20 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
    */
 	public function render($attrs, $content = null, $tag)
 	{
+    if ($attrs->get('id') && $attrs->get('size')) {
+      
+      $attrs->set('url', null);
+      $image_data = wp_get_attachment_image_src($attrs->get('id'), $attrs->get('size'));
 
+      if ($image_data)
+        $attrs->set('url', reset($image_data));
+    }
+
+    if ($attrs->get('url')) {
+
+      View::overrideViewsDir(dirname(__FILE__) .'/templates');
+      (new View())->render('image', $attrs->getAll());
+      View::restoreViewsDir();
+    }
 	}
 }

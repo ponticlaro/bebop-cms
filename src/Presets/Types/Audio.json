@@ -7,6 +7,7 @@
           "requires": {
             "metaboxes": [
               {
+                "_id": "audio_type__audio_source",
                 "preset": "Audio Source",
                 "types": "Audio",
                 "context": "side"

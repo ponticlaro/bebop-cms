@@ -4,9 +4,14 @@
       "types": [
         {
           "name" : "Video",
+          "supports": [
+            "title",
+            "revisions"
+          ],
           "requires": {
             "metaboxes": [
               {
+                "_id": "video_type__video_source",
                 "preset": "Video Source",
                 "types": "Video",
                 "context": "side"

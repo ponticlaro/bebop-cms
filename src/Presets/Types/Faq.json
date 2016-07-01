@@ -1,0 +1,40 @@
+{
+  "environments" : {
+    "all": {
+      "types": [
+        {
+          "name" : "FAQ",
+          "supports": [
+            "title",
+            "revisions"
+          ],
+          "requires": {
+            "types": [
+              {
+                "preset": "Question"
+              }
+            ],
+            "metaboxes": [
+              {
+                "_id": "faq_type__questions",
+                "title": "Questions",
+                "types": [
+                  "FAQ"
+                ],
+                "sections": [
+                  {
+                    "ui": "associatedtypes",
+                    "name": "questions",
+                    "query": {
+                      "type": "question"
+                    }
+                  }
+                ]
+              }
+            ]
+          } 
+        }
+      ]
+    }
+  }
+}

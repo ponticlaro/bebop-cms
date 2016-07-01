@@ -552,6 +552,7 @@
           "requires": {
             "metaboxes": [
               {
+                "_id": "audio_type__audio_source",
                 "preset": "Audio Source",
                 "types": "Audio",
                 "context": "side"
@@ -601,7 +602,35 @@
         },
         {
           "name": "FAQ",
-          "requires": {}
+          "supports": [
+            "title",
+            "revisions"
+          ],
+          "requires": {
+            "types": [
+              {
+                "preset": "Question"
+              }
+            ],
+            "metaboxes": [
+              {
+                "_id": "faq_type__questions",
+                "title": "Questions",
+                "types": [
+                  "FAQ"
+                ],
+                "sections": [
+                  {
+                    "ui": "associatedtypes",
+                    "name": "questions",
+                    "query": {
+                      "type": "question"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "Form",
@@ -770,6 +799,15 @@
           "requires": {}
         },
         {
+          "name": "Question",
+          "supports": [
+            "title",
+            "editor",
+            "revisions"
+          ],
+          "requires": {}
+        },
+        {
           "name": "Quote",
           "requires": {}
         },
@@ -791,9 +829,14 @@
         },
         {
           "name": "Video",
+          "supports": [
+            "title",
+            "revisions"
+          ],
           "requires": {
             "metaboxes": [
               {
+                "_id": "video_type__video_source",
                 "preset": "Video Source",
                 "types": "Video",
                 "context": "side"

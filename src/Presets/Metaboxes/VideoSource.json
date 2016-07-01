@@ -29,7 +29,7 @@
               "html": "<div bebop-metabox--media-source='sources-container' style='display:none'>"
             },
             {
-              "ui": "audio",
+              "ui": "video",
               "label": "Upload",
               "name": "video_upload",
               "attrs": {

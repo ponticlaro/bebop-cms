@@ -5,7 +5,13 @@
         {
           "name" : "Video",
           "requires": {
-            
+            "metaboxes": [
+              {
+                "preset": "Video Source",
+                "types": "Video",
+                "context": "side"
+              }
+            ]
           } 
         }
       ]

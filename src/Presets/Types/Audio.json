@@ -5,7 +5,13 @@
         {
           "name" : "Audio",
           "requires": {
-            
+            "metaboxes": [
+              {
+                "preset": "Audio Source",
+                "types": "Audio",
+                "context": "side"
+              }
+            ]
           } 
         }
       ]

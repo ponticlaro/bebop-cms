@@ -8,7 +8,64 @@
             "People"
           ],
           "requires": {
-            
+            "metaboxes": [
+              {
+                "_id": "person_type__name_metabox",
+                "title": "Name",
+                "types": [
+                  "Person"
+                ], 
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "First Name"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Last Name"
+                  }
+                ]
+              },
+              {
+                "_id": "person_type__contacts_metabox",
+                "title": "Contacts",
+                "types": [
+                  "Person"
+                ], 
+                "sections": [
+                  {
+                    "ui": "input",
+                    "label": "Email"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Mobile Phone"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Phone"
+                  },
+                  {
+                    "ui": "input",
+                    "label": "Fax"
+                  }
+                ]
+              },
+              {
+                "_id": "person_type__photo_metabox",
+                "title": "Photo",
+                "context": "side",
+                "types": [
+                  "Person"
+                ], 
+                "sections": [
+                  {
+                    "ui": "image",
+                    "name": "photo"
+                  }
+                ]
+              }
+            ]
           } 
         }
       ]

@@ -44,8 +44,8 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
    * @param  string $tag     Shortcode tag
    * @return void
    */
-	public function render($attrs, $content = null, $tag)
-	{
+  public function render($attrs, $content = null, $tag)
+  {
     if ($attrs->get('id') && $attrs->get('size')) {
       
       $attrs->set('url', null);
@@ -57,5 +57,5 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
     if ($attrs->get('url'))
       (new View())->render($this->getTemplatePath(), $attrs->getAll());
-	}
+  }
 }

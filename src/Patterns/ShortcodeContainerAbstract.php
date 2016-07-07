@@ -14,6 +14,13 @@ abstract class ShortcodeContainerAbstract {
   protected $id;
 
   /**
+   * Absolute path to shortcode template
+   * 
+   * @var string
+   */
+  protected $template_path;
+
+  /**
    * Shortcode default attributes
    * 
    * @var string
@@ -27,6 +34,29 @@ abstract class ShortcodeContainerAbstract {
   public function __construct()
   {
     // Nothing to be done for now
+  }
+
+  /**
+   * Sets the absolute path to template
+   *
+   * @return object This class instance
+   */
+  final public function setTemplatePath($path)
+  {
+    if (is_string($path) && is_readable($path))
+      $this->template_path = $path;
+
+    return $this;
+  }
+
+  /**
+   * Returns absolute path to template
+   * 
+   * @return string Path to template
+   */
+  final public function getTemplatePath()
+  {
+    return $this->template_path;
   }
 
   /**

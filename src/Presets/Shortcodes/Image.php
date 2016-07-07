@@ -27,6 +27,16 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
   ];
 
   /**
+   * Instantiates this class
+   * 
+   */
+  public function __construct()
+  {
+    // Set template path
+    $this->setTemplatePath(dirname(__FILE__) .'/templates/image.php');
+  }
+
+  /**
    * Renders shortcode 
    * 
    * @param  object $attrs   Attributes collection  
@@ -45,11 +55,7 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
         $attrs->set('url', reset($image_data));
     }
 
-    if ($attrs->get('url')) {
-
-      View::overrideViewsDir(dirname(__FILE__) .'/templates');
-      (new View())->render('image', $attrs->getAll());
-      View::restoreViewsDir();
-    }
+    if ($attrs->get('url'))
+      (new View())->render($this->getTemplatePath(), $attrs->getAll());
 	}
 }

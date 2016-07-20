@@ -2,6 +2,8 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
+use Ponticlaro\Bebop\Mvc\View;
+
 class Youtube extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
@@ -16,7 +18,22 @@ class Youtube extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract 
    * 
    * @var string
    */
-  protected $default_attrs = [];
+  protected $default_attrs = [
+    'id'      => null,
+    'caption' => null,
+    'width'   => '960',
+    'height'  => '540'
+  ];
+
+  /**
+   * Instantiates this class
+   * 
+   */
+  public function __construct()
+  {
+    // Set template path
+    $this->setTemplatePath(dirname(__FILE__) .'/templates/video.php');
+  }
 
   /**
    * Renders shortcode 
@@ -28,6 +45,15 @@ class Youtube extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract 
    */
   public function render($attrs, $content = null, $tag)
   {
+    if ($attrs->get('id')) {
+      
+      // Set video 
+      $attrs->set('source', 'youtube');
 
+      // Making sure 'url' doesn't exist
+      $attrs->remove('url');
+
+      (new View())->render($this->getTemplatePath(), $attrs->getAll());
+    }
   }
 }

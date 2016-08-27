@@ -965,7 +965,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected function collectScriptDependencyHook($type, $handle, $hook)
   {
     if (is_string($type) && is_string($handle) && is_string($hook)) {
-      if (isset($this->resolve_deps[$type]) && $this->resolve_deps[$type]['main'][$handle]) {
+      if (isset($this->resolve_deps[$type]) && isset($this->resolve_deps[$type]['main'][$handle])) {
         foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
           
           if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
@@ -989,7 +989,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   protected function getScriptEnqueueHooksAsDependency($type, $handle)
   {
-    if (is_string($type) && is_string($handle) && $this->resolve_deps[$type]['deps'][$handle])
+    if (is_string($type) && is_string($handle) && isset($this->resolve_deps[$type]['deps'][$handle]))
         return $this->resolve_deps[$type]['deps'][$handle];
 
     return [];

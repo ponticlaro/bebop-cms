@@ -93,12 +93,12 @@ class Shortcode extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
             if (is_array($attrs)) {
 
                 foreach ($attrs as $key => $attr) {
-                    $attrs[$key] = str_replace(array('\'', '"', '&#8217;', '&#8221;'), '', $attr);
+                    $attrs[$key] = static::__cleanAttrValue($attr);
                 }
 
             } elseif(is_string($attrs)) {
 
-                $attrs = str_replace(array('\'', '"', '&#8217;', '&#8221;'), '', $attrs);
+                $attrs = static::__cleanAttrValue($attrs);
             }
 
             $this->attributes->setList($attrs);
@@ -145,5 +145,16 @@ class Shortcode extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
             $this->default_attributes->set($key, $value);
 
         return $this;
+    }
+
+    /**
+     * Cleans shortcode attribute value
+     * 
+     * @param  string $value Raw value
+     * @return string        Clean value
+     */
+    protected static function __cleanAttrValue($value)
+    {
+        return str_replace(array('\'', '"', '&#8217;', '&#8221;', '&quot;'), '', $value);
     }
 }

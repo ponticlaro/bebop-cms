@@ -1,31 +1,36 @@
 {
-    "name": "ponticlaro/bebop-cms",
-    "description": "Bebop library to easily use WordPress CMS capabilities",
-    "keywords": ["wordpress", "cms"],
-    "type": "library",
-    "license": [
-       "MIT",
-       "GPL-3.0+"
-    ],
-    "authors": [
-        {
-            "name": "Ponticlaro",
-            "email": "hello@ponticlaro.com",
-            "homepage": "http://www.ponticlaro.com",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "ponticlaro/bebop-common": "dev-master",
-        "ponticlaro/bebop-scripts-loader": "dev-master"
-    },
-    "autoload": {
-        "psr-4": {
-            "Ponticlaro\\Bebop\\Cms\\": "src/"
-        }
-    },
-    "support": {
-        "email": "hello@ponticlaro.com"
-    },
-    "minimum-stability": "dev"
+  "name": "ponticlaro/bebop-cms",
+  "description": "Bebop library to easily use WordPress CMS capabilities",
+  "keywords": ["wordpress", "cms"],
+  "type": "library",
+  "license": [
+   "MIT",
+   "GPL-3.0+"
+  ],
+  "authors": [
+    {
+      "name": "Ponticlaro",
+      "email": "hello@ponticlaro.com",
+      "homepage": "http://www.ponticlaro.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "ponticlaro/bebop-common": "^1",
+    "ponticlaro/bebop-scripts-loader": "^1"
+  },
+  "require-dev": {
+    "apigen/apigen": "^4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ponticlaro\\Bebop\\Cms\\": "src/"
+    }
+  },
+  "scripts": {
+    "generate-docs": "apigen generate --config ./apigen.yaml"
+  },
+  "support": {
+    "email": "hello@ponticlaro.com"
+  }
 }

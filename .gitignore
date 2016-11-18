@@ -25,6 +25,9 @@ nbproject
 # NPM
 /node_modules
 
+# ApiGen
+/docs
+
 # Composer
 /vendor
 composer.lock

@@ -178,17 +178,26 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       $config = json_decode(file_get_contents($config), true);  
 
     if (is_array($config)) {
-        if (isset($config['environments']) && $config['environments']) {
-          foreach ($config['environments'] as $environment => $environment_config) {
 
-            $this->processHookEnvConfig($hook, $environment, $environment_config);
-          }
+      // Backward compatibility
+      // https://github.com/ponticlaro/bebop-cms/issues/22
+      if (isset($config['environments']) && $config['environments'])
+        $config = $config['environments'];
+
+      // Handle configuration without environment specific sections
+      if (array_key_exists(key($config), static::$config_section_map)) {
+        
+        $this->processHookEnvConfig($hook, 'all', $config);
+      }
+
+      // Handle configuration with environment specific sections
+      else {
+
+        foreach ($config as $environment => $environment_config) {
+
+          $this->processHookEnvConfig($hook, $environment, $environment_config);
         }
-
-        else {
-
-            $this->processHookEnvConfig($hook, 'all', $config);
-        }
+      }
     }
 
     return $this;

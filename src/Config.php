@@ -274,30 +274,4 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     return $this;
   }
-
-  /**
-   * Returns preset configuration merged with custom config
-   * 
-   * @param  string $section Configuration section ID
-   * @param  string $id      Item ID
-   * @param  array  $config  Item configuration
-   * @param  string $env     Environment ID
-   * @return array           Preset config
-   */
-  protected function getPreset($section, $id, array $config, $env = 'all')
-  {
-    // Get preset config
-    $id = static::getConfigId($section, [
-      '_id' => $id
-    ]);
-    $preset_config = $this->config->get("presets.$env.$section.$id");
-    $config        = $preset_config ? array_replace_recursive($preset_config, $config) : $config;
-
-    // Check if preset have a requirements configuration
-    if (isset($config['requires']) && is_array($config['requires']) && $config['requires'])
-      $this->processHookEnvConfig('build', 'all', $config['requires']);
-
-    // Return merged preset config with custom config 
-    return $config;
-  }
 }

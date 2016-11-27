@@ -14,14 +14,9 @@ class UrlConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $id     = $this->config->get('id');
-    $url    = $this->config->get('url');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $id    = $this->config->get('id');
+    $url   = $this->config->get('url');
 
     // 'id' must be a string
     if (!$id || !is_string($id))

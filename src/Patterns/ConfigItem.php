@@ -37,22 +37,28 @@ abstract class ConfigItem implements ConfigItemInterface {
   abstract public function isValid();
 
   /**
-   * Returns configuration item ID
+   * Returns unique configuration item ID
    * 
    * @return string Configuration item ID
    */
-  public function getId()
+  public function getUniqueId()
   {
     // Check if config have an '_id' property
     $id = $this->config->get('_id');
 
-    // Check if config have a value on its identifier property
-    if (!$id)
-      $id = $this->config->get(self::IDENTIFIER);
+    // If we have no '_id', return preset ID
+    return $id ? Utils::slugify($id) : $this->getId();
+  }
 
-    // Set 'id' as 'preset', if we have one
-    if (!$id && $this->config->hasKey('preset'))
-      $id = $this->config->get('preset');
+  /**
+   * Returns configuration item ID
+   * 
+   * @return string Configuration item preset ID
+   */
+  public function getId()
+  {
+    // Check if config have a value on its identifier property
+    $id = $this->config->get(static::IDENTIFIER);
 
     // Return if there is no ID
     if (!$id)
@@ -62,10 +68,21 @@ abstract class ConfigItem implements ConfigItemInterface {
     if (is_array($id))
         $id = reset($id);
 
-    // Slugify ID
-    $id = Utils::slugify($id);
+    // Return ID
+    return $id ? Utils::slugify($id) : null;
+  }
 
-    return $id;
+  /**
+   * Returns configuration item preset ID, if any
+   * 
+   * @return string Configuration item preset ID
+   */
+  public function getPresetId()
+  {
+    $id = $this->config->get('preset');
+
+    // Return preset ID
+    return $id ? Utils::slugify($id) : null;
   }
 
   /**
@@ -103,6 +120,17 @@ abstract class ConfigItem implements ConfigItemInterface {
   }
 
   /**
+   * Removes the target configuration key
+   * 
+   * @param  string $key Configuration key
+   * @return object      Current class object
+   */
+  public function remove($key)
+  {
+    return $this->config->remove($key);
+  }
+
+  /**
    * Returns full configuration array
    * 
    * @return array Full configuration array
@@ -118,7 +146,7 @@ abstract class ConfigItem implements ConfigItemInterface {
    * @param  ConfigItemInterface $config_item Configuration object we're going to merge with
    * @return object                           Current class object
    */
-  final public function merge(ConfigItemInterface $config_item)
+  final public function merge(ConfigItem $config_item)
   {
     $current_config = $this->config->getAll();
     $merging_config = $config_item->getAll();

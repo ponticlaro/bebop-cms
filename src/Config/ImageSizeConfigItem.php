@@ -19,12 +19,7 @@ class ImageSizeConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid  = true;
-    $preset = $this->config->get('preset');
     $config = $this->config->getAll();
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
 
     if (!isset($config['name']) || !$config['name'])
       $valid = false;

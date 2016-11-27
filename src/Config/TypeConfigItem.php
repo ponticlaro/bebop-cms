@@ -5,7 +5,7 @@ namespace Ponticlaro\Bebop\Cms\Config;
 use \Ponticlaro\Bebop\Cms\PostType;
 use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
-class PostTypeConfigItem extends ConfigItem {
+class TypeConfigItem extends ConfigItem {
   
   /**
    * Configuration proprety of the ID
@@ -19,13 +19,8 @@ class PostTypeConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $name   = $this->config->get('name');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $name  = $this->config->get('name');
 
     // 'name' must be a string or an array
     if (!$name || (!is_string($name) && !is_array($name)))
@@ -41,8 +36,6 @@ class PostTypeConfigItem extends ConfigItem {
    */
   public function build()
   {
-    var_dump($this->config->getAll());
-
     $type = new PostType($this->config->get('name'));
     $type->applyRawArgs($this->config->getAll());
 

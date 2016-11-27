@@ -14,14 +14,9 @@ class PathConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $id     = $this->config->get('id');
-    $path   = $this->config->get('path');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $id    = $this->config->get('id');
+    $path  = $this->config->get('path');
 
     // 'id' must be a string
     if (!$id || !is_string($id))

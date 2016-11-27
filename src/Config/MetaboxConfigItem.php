@@ -19,17 +19,12 @@ class MetaboxConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $title  = $this->config->get('title');
-    $types  = $this->config->get('types');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $title = $this->config->get('title');
+    $types = $this->config->get('types');
 
     // 'title' must be a string or array
-    if (!$title || (!is_string($title) && !is_array($title)))
+    if (!$title || !is_string($title))
       $valid = false;
 
     // 'types' must be a string or array

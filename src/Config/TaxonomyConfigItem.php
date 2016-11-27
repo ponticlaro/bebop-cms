@@ -19,14 +19,9 @@ class TaxonomyConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $name   = $this->config->get('name');
-    $types  = $this->config->get('types');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $name  = $this->config->get('name');
+    $types = $this->config->get('types');
 
     // 'name' must be a string or an array
     if (!$name || (!is_string($name) && !is_array($name)))

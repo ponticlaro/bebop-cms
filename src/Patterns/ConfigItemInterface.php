@@ -8,9 +8,12 @@ interface ConfigItemInterface {
   public function isValid();
   public function set($key, $value);
   public function get($key);
+  public function remove($key);
+  public function getUniqueId();
   public function getId();
+  public function getPresetId();
   public function getRequirements();
   public function getAll();
-  public function merge(ConfigItemInterface $config_item);
+  public function merge(ConfigItem $config_item);
   public function build();
 } 

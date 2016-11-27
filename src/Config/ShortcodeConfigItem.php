@@ -14,13 +14,8 @@ class ShortcodeConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $id     = $this->config->get('id');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $id    = $this->config->get('id');
 
     // 'id' must be a string
     if (!$id || !is_string($id))

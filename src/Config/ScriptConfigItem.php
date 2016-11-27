@@ -7,31 +7,36 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
 class ScriptConfigItem extends ConfigItem {
 
+  /**
+   * Checks if configuration is valid
+   * 
+   * @return boolean True if valid, false otherwise
+   */
   public function isValid()
   {
-    switch ($index) {
-      
-      case 'register':
-        return true;
-        break;
-      
-      case 'deregister':
-      case 'dequeue':
-      case 'enqueue':
-        return true;
-        break;
-    }
-  }
+    $valid  = true;
+    $handle = $this->config->get('handle');
+    $path   = $this->config->get('path');
 
+    // 'handle' must be a string
+    if (!$handle || !is_string($handle))
+      $valid = false;
+
+    // 'path' must be a string
+    if (!$path || !is_string($path))
+      $valid = false;
+
+    return $valid;
+  }
+  
+  /**
+   * Builds configuration item
+   * 
+   * @return object Current object
+   */
   public function build()
   {
-    // Making sure 'register' actions are the first to be processed
-    $config = [
-      'register'   => isset($config['register']) ? $config['register'] : [],
-      'enqueue'    => isset($config['enqueue']) ? $config['enqueue'] : [],
-      'deregister' => isset($config['deregister']) ? $config['deregister'] : [],
-      'dequeue'    => isset($config['dequeue']) ? $config['dequeue'] : []
-    ];
+    
   }
 
   /**
@@ -45,55 +50,7 @@ class ScriptConfigItem extends ConfigItem {
    */
   protected function processScriptAction($action, array $config, $hook = 'build', $env = 'all')
   {
-    if ($action == 'register') {
-      foreach ($config as $script) {
 
-        // Get preset, if we're dealing with one
-        if (isset($config['preset']) && $config['preset'])
-          $config = $this->getPreset('scripts', $config['preset'], $config, $env);
-
-        // Check if item is valid
-        if (!$this->isConfigItemValid($hook, 'scripts', $action, $script))
-          return $this;
-
-        // Get script ID
-        $script_id = static::getConfigId('scripts', $script);
-
-        // Collect dependencies
-        if (isset($script['deps']) && is_array($script['deps']))
-          $this->collectScriptDependencies('scripts', $script['handle'], $script['deps']);
-
-        // Upsert item
-        $this->upsertConfigItem("$hook.$env.scripts.$script_id.$action", $script);
-      }
-    }
-
-    else {
-
-      foreach ($config as $script_hook_name => $script_hook_config) {
-        foreach ($script_hook_config as $script_handle) {
-
-          // Get script ID
-          $script_id = static::getConfigId('scripts', [
-            'handle' => $script_handle
-          ]);
-
-          // Collect dependencies enqueue hooks
-          $this->collectScriptDependencyHook('scripts', $script_handle, $script_hook_name);
-
-          // Set script config action path
-          $path = "$hook.$env.scripts.$script_id.$action";
-
-          // Create array if it doesn't exist
-          if (!$this->config->hasKey($path))
-            $this->config->set($path, []);
-
-          // Add new hook to list
-          if (!$this->config->hasValue($script_hook_name, $path))
-            $this->config->push($script_hook_name, $path);
-        }
-      }
-    }
   }
 
   /**

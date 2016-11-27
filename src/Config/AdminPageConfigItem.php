@@ -19,13 +19,8 @@ class AdminPageConfigItem extends ConfigItem {
    */
   public function isValid()
   {
-    $valid  = true;
-    $preset = $this->config->get('preset');
-    $title  = $this->config->get('title');
-
-    // Presets may have incomplete configurations
-    if ($preset)
-      return $valid;
+    $valid = true;
+    $title = $this->config->get('title');
 
     // 'title' must be a string
     if (!$title || !is_string($title))

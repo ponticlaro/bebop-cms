@@ -2,12 +2,12 @@
 
 namespace Ponticlaro\Bebop\Cms\Helpers;
 
-class ConfigFactory {
+class ConfigSectionFactory {
 
   /**
    * Holds the class that manufacturables must extend
    */
-  const CONFIG_CONTAINER_CLASS = 'Ponticlaro\Bebop\Cms\Patterns\ConfigItem';
+  const CONFIG_CONTAINER_CLASS = 'Ponticlaro\Bebop\Cms\Patterns\ConfigSection';
 
   /**
    * List of manufacturable classes
@@ -15,16 +15,8 @@ class ConfigFactory {
    * @var array
    */
   protected static $manufacturable = array(
-    'admin_pages' => 'Ponticlaro\Bebop\Cms\Config\AdminPageConfigItem',
-    'image_sizes' => 'Ponticlaro\Bebop\Cms\Config\ImageSizeConfigItem',
-    'metaboxes'   => 'Ponticlaro\Bebop\Cms\Config\MetaboxConfigItem',
-    'paths'       => 'Ponticlaro\Bebop\Cms\Config\PathConfigItem',
-    //'scripts'     => 'Ponticlaro\Bebop\Cms\Config\ScriptConfigItem',
-    'shortcodes'  => 'Ponticlaro\Bebop\Cms\Config\ShortcodeConfigItem',
-    //'styles'      => 'Ponticlaro\Bebop\Cms\Config\StyleConfigItem',
-    'taxonomies'  => 'Ponticlaro\Bebop\Cms\Config\TaxonomyConfigItem',
-    'types'       => 'Ponticlaro\Bebop\Cms\Config\PostTypeConfigItem',
-    'urls'        => 'Ponticlaro\Bebop\Cms\Config\UrlConfigItem',
+    'scripts' => 'Ponticlaro\Bebop\Cms\Config\ScriptConfigSection',
+    'styles'  => 'Ponticlaro\Bebop\Cms\Config\StyleConfigSection',
   );
 
   /**
@@ -45,7 +37,7 @@ class ConfigFactory {
    */
   public static function set($id, $class)
   {
-     self::$manufacturable[strtolower($id)] = $class;
+     static::$manufacturable[strtolower($id)] = $class;
   }
 
   /**
@@ -57,8 +49,8 @@ class ConfigFactory {
   {   
     $id = strtolower($id);
 
-    if (isset(self::$manufacturable[$id])) 
-        unset(self::$manufacturable[$id]);
+    if (isset(static::$manufacturable[$id])) 
+        unset(static::$manufacturable[$id]);
   }
 
   /**
@@ -71,7 +63,7 @@ class ConfigFactory {
   {
     $id = strtolower($id);
 
-    return is_string($id) && isset(self::$manufacturable[$id]) ? true : false;
+    return is_string($id) && isset(static::$manufacturable[$id]) ? true : false;
   }
 
   /**
@@ -82,10 +74,10 @@ class ConfigFactory {
    */
   public static function getInstanceId($instance)
   {
-    if (is_object($instance) && is_a($instance, self::CONFIG_CONTAINER_CLASS)) {
+    if (is_object($instance) && is_a($instance, static::CONFIG_CONTAINER_CLASS)) {
 
       $class = get_class($instance);
-      $id    = array_search($class, self::$manufacturable);
+      $id    = array_search($class, static::$manufacturable);
 
       return $id ?: null;
     }
@@ -105,9 +97,9 @@ class ConfigFactory {
     $id = strtolower($id);
 
     // Check if target is in the allowed list
-    if (array_key_exists($id, self::$manufacturable)) {
+    if (array_key_exists($id, static::$manufacturable)) {
 
-      $class_name = self::$manufacturable[$id];
+      $class_name = static::$manufacturable[$id];
 
       return call_user_func(array(__CLASS__, "__createInstance"), $class_name, $args);
     }
@@ -135,6 +127,6 @@ class ConfigFactory {
     );
         
     // Return object
-    return is_a($obj, self::CONFIG_CONTAINER_CLASS) ? $obj : null;
+    return is_a($obj, static::CONFIG_CONTAINER_CLASS) ? $obj : null;
   }
 }

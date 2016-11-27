@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms;
 
-use Ponticlaro\Bebop\Cms\Helpers\ConfigFactory;
+use Ponticlaro\Bebop\Cms\Helpers\ConfigItemFactory;
 use Ponticlaro\Bebop\Common\Collection;
 use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
@@ -38,13 +38,6 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @var boolean
    */
   protected $already_built = false;
-  
-  /**
-   * Array used to resolve enqueue hooks for script/style dependencies
-   * 
-   * @var array
-   */
-  protected $resolve_deps = [];
 
   /**
    * Instantiates this class
@@ -160,7 +153,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         $config = $config['environments'];
 
       // Handle configuration without environment specific sections
-      if (ConfigFactory::canManufacture(key($config))) {
+      if (ConfigItemFactory::canManufacture(key($config))) {
         
         $this->processHookEnvConfig($hook, 'all', $config);
       }
@@ -190,39 +183,59 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   {
     foreach ($env_config as $section => $configs) {
 
-      if (ConfigFactory::canManufacture($section)) {
+      // Handle configuration sections with specific implementations,
+      // not based on a list of configuration items
+      // if (ConfigSectionFactory::canManufacture($section)) {
+      //   $configs = ConfigSectionFactory::create($section, $configs);
+      // }
+
+      if (ConfigItemFactory::canManufacture($section)) {
         
         foreach ($configs as $index => $config) {
 
-          var_dump($config);
+          // Create configuration item
+          $config_obj = ConfigItemFactory::create($section, $config);
 
-          $config_obj = ConfigFactory::create($section, $config);
-        
-          // Merge with preset, if it exists
-          $preset = $this->config->get("presets.$env.$section.". $config_obj->getId());
+          // Only for other non-preset configuration items
+          if ($hook != 'presets') {
 
-          if ($preset)
-            $config_obj = $preset->merge($config_obj);
+            // Get preset path
+            $preset_path = "presets.$env.$section.". $config_obj->getPresetId();
 
-          if ($config_obj->isValid()) {
+            // Merge with preset, if it exists
+            if ($preset = $this->config->get($preset_path)) {
+
+              $config_obj = $preset->merge($config_obj);
+
+              // Making sure we do not process 'preset' a second time
+              $config_obj->remove('preset');
+            }
+          }
+
+          // Handle configuration object, if:
+          // - We're adding a preset; presets do not need to be valid
+          // - We're adding a valid item to the build
+          if ($hook == 'presets' || $config_obj->isValid()) {
+
+            // Getting the correct configuration id
+            $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
 
             // Define path for config item
-            $path = "$hook.$env.$section.". $config_obj->getId();
+            $path = "$hook.$env.$section.$id";
 
-            // // Check if we have a previous configuration
-            // $prev_config_obj = $this->config->get($path);
+            // Check if we have a previous configuration
+            $prev_config_obj = $this->config->get($path);
 
-            // // Merge previous configuration with new one
-            // if ($prev_config_obj)
-            //   $config_obj = $prev_config_obj->merge($config_obj);
-            
+            // Merge previous configuration with new one
+            if ($prev_config_obj)
+              $config_obj = $prev_config_obj->merge($config_obj);
+
             // Add config item
             $this->config->set($path, $config_obj);
 
-            /////////////////////////////////////////////
-            // TO DO: Collect config item requirements //
-            /////////////////////////////////////////////
-            $config_obj->getRequirements();
+            // Handle configuration item requirements
+            if ($hook != 'presets' && $requirements_config = $config_obj->getRequirements())
+              $this->processHookEnvConfig($hook, $env, $requirements_config);
           }
         }
       }
@@ -246,7 +259,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         foreach ($configs as $id => $config_obj) {
 
           // Merge with current environment configuration, if it exists
-          $env_config = $this->config->get("presets.{$this->current_env}.$section.". $config_obj->getId());
+          $env_config = $this->config->get("build.{$this->current_env}.$section.". $config_obj->getId());
 
           if ($env_config)
             $config_obj = $config_obj->merge($env_config);
@@ -286,78 +299,5 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Return merged preset config with custom config 
     return $config;
-  }
-
-  /**
-   * Collects script dependencies
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  array  $deps   Script dependencies
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencies($type, $handle, array $deps = [])
-  {
-    if (is_string($type) && is_string($handle) && $deps) {
-      if (!isset($this->resolve_deps[$type])) {
-
-        $this->resolve_deps[$type] = [
-          'main' => [],
-          'deps' => []
-        ];
-      }
-
-      if (!isset($this->resolve_deps[$type]['main'][$handle]))
-        $this->resolve_deps[$type]['main'][$handle] = [];
-
-      foreach ($deps as $dep_handle) {
-        $this->resolve_deps[$type]['main'][$handle][] = $this->getConfigId($type, [
-          'handle' => $dep_handle
-        ]);
-      }
-    }
-
-    return $this;
-  }
-
-  /**
-   * Collects a single enqueue hook for all depencencies of the target script
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  string $hook   Enqueue hook to be added
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencyHook($type, $handle, $hook)
-  {
-    if (is_string($type) && is_string($handle) && is_string($hook)) {
-      if (isset($this->resolve_deps[$type]) && isset($this->resolve_deps[$type]['main'][$handle])) {
-        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
-          
-          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
-            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
-
-          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
-            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
-          }
-        }
-      }
-    }
-
-    return $this;
-  }
-
-  /**
-   * Returns script enqueue hooks, when used as a script dependency
-   * 
-   * @param  string $handle Script handle
-   * @return array          Script enqueue hooks
-   */
-  protected function getScriptEnqueueHooksAsDependency($type, $handle)
-  {
-    if (is_string($type) && is_string($handle) && isset($this->resolve_deps[$type]['deps'][$handle]))
-        return $this->resolve_deps[$type]['deps'][$handle];
-
-    return [];
   }
 }

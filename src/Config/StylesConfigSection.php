@@ -8,7 +8,14 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
 class StylesConfigSection extends ConfigSection {
   
   /**
-   * Array used to resolve enqueue hooks for script/style dependencies
+   * List of styles
+   * 
+   * @var array
+   */
+  protected $styles = [];
+
+  /**
+   * Array used to resolve enqueue hooks dependencies
    * 
    * @var array
    */
@@ -21,72 +28,69 @@ class StylesConfigSection extends ConfigSection {
    */
   public function getItems()
   {
-    $config = $this->config->getAll();
-    $items  = [];
+    // Get full configuration
+    $actions = $this->config->getAll();
 
     // Making sure 'register' actions are the first to be processed
-    $config = [
-      'register'   => isset($config['register']) ? $config['register'] : [],
-      'enqueue'    => isset($config['enqueue']) ? $config['enqueue'] : [],
-      'deregister' => isset($config['deregister']) ? $config['deregister'] : [],
-      'dequeue'    => isset($config['dequeue']) ? $config['dequeue'] : []
+    $actions = [
+      'register'   => isset($actions['register']) ? $actions['register'] : [],
+      'enqueue'    => isset($actions['enqueue']) ? $actions['enqueue'] : [],
+      'deregister' => isset($actions['deregister']) ? $actions['deregister'] : [],
+      'dequeue'    => isset($actions['dequeue']) ? $actions['dequeue'] : []
     ];
 
-    return $items;
+    // Handle actions
+    foreach ($actions as $action => $config) {
+      $this->handleAction($action, $config);
+    }
+
+    // Return styles
+    return $this->styles;
   }
 
   /**
-   * Collects script dependencies
+   * Handle a single style action
    * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  array  $deps   Script dependencies
-   * @return object         This class instance
+   * @param  string $action Style action
+   * @param  array  $config Style configuration
+   * @return object         Current class object
    */
-  protected function collectScriptDependencies($type, $handle, array $deps = [])
+  protected function handleAction($action, array $config)
   {
-    if (is_string($type) && is_string($handle) && $deps) {
-      if (!isset($this->resolve_deps[$type])) {
+    if ($action == 'register') {
+      
+      foreach ($config as $style_config) {
+        
+        // Get style handle
+        $style_handle = isset($style_config['handle']) ? $style_config['handle'] : null;
 
-        $this->resolve_deps[$type] = [
-          'main' => [],
-          'deps' => []
-        ];
-      }
-
-      if (!isset($this->resolve_deps[$type]['main'][$handle]))
-        $this->resolve_deps[$type]['main'][$handle] = [];
-
-      foreach ($deps as $dep_handle) {
-        $this->resolve_deps[$type]['main'][$handle][] = $this->getConfigId($type, [
-          'handle' => $dep_handle
-        ]);
+        // Add style config to styles list
+        if ($style_handle)
+          $this->styles[$style_handle] = $style_config;
       }
     }
 
-    return $this;
-  }
+    else {
 
-  /**
-   * Collects a single enqueue hook for all depencencies of the target script
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  string $hook   Enqueue hook to be added
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencyHook($type, $handle, $hook)
-  {
-    if (is_string($type) && is_string($handle) && is_string($hook)) {
-      if (isset($this->resolve_deps[$type]) && isset($this->resolve_deps[$type]['main'][$handle])) {
-        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
-          
-          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
-            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
+      foreach ($config as $hook => $handles) {
+        foreach ($handles as $style_handle) {
 
-          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
-            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
+          // Get existing style config        
+          $style_config = isset($this->styles[$style_handle]) ? $this->styles[$style_handle] : null;
+
+          // Add fallback config
+          if (!$style_config) {
+
+            $style_config = [
+              'handle' => $style_handle
+            ];
           }
+
+          // Add action to style hook
+          $style_config = static::addActionToHook($style_config, $hook, $action);
+
+          // Add style config to styles list
+          $this->styles[$style_handle] = $style_config;
         }
       }
     }
@@ -95,16 +99,26 @@ class StylesConfigSection extends ConfigSection {
   }
 
   /**
-   * Returns script enqueue hooks, when used as a script dependency
+   * Adds a single action to the target style hook
    * 
-   * @param  string $handle Script handle
-   * @return array          Script enqueue hooks
+   * @param array  $config Style configuration array
+   * @param string $hook   Target hook name
+   * @param string $action Action to add
    */
-  protected function getScriptEnqueueHooksAsDependency($type, $handle)
+  protected static function addActionToHook(array $config, $hook, $action)
   {
-    if (is_string($type) && is_string($handle) && isset($this->resolve_deps[$type]['deps'][$handle]))
-        return $this->resolve_deps[$type]['deps'][$handle];
+    // Making sure 'hooks' array exist
+    if (!isset($config['hooks']))
+      $config['hooks'] = [];
 
-    return [];
+    // Making sure $hook exists as an array within 'hooks'
+    if (!isset($config['hooks'][$hook]))
+      $config['hooks'][$hook] = [];
+
+    // Add $action to $hook
+    if (!in_array($action, $config['hooks'][$hook]))
+      $config['hooks'][$hook][] = $action;
+
+    return $config;
   }
 } 

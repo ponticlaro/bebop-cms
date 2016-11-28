@@ -8,7 +8,14 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
 class ScriptsConfigSection extends ConfigSection {
   
   /**
-   * Array used to resolve enqueue hooks for script/style dependencies
+   * List of scripts
+   * 
+   * @var array
+   */
+  protected $scripts = [];
+
+  /**
+   * Array used to resolve enqueue hooks for dependencies
    * 
    * @var array
    */
@@ -21,126 +28,69 @@ class ScriptsConfigSection extends ConfigSection {
    */
   public function getItems()
   {
-    $config = $this->config->getAll();
-    $items  = [];
+    // Get full configuration
+    $actions = $this->config->getAll();
 
     // Making sure 'register' actions are the first to be processed
-    $config = [
-      'register'   => isset($config['register']) ? $config['register'] : [],
-      'enqueue'    => isset($config['enqueue']) ? $config['enqueue'] : [],
-      'deregister' => isset($config['deregister']) ? $config['deregister'] : [],
-      'dequeue'    => isset($config['dequeue']) ? $config['dequeue'] : []
+    $actions = [
+      'register'   => isset($actions['register']) ? $actions['register'] : [],
+      'enqueue'    => isset($actions['enqueue']) ? $actions['enqueue'] : [],
+      'deregister' => isset($actions['deregister']) ? $actions['deregister'] : [],
+      'dequeue'    => isset($actions['dequeue']) ? $actions['dequeue'] : []
     ];
 
+    // Handle actions
+    foreach ($actions as $action => $config) {
+      $this->handleAction($action, $config);
+    }
 
+    // Return scripts
+    return $this->scripts;
+  }
 
+  /**
+   * Handle a single script action
+   * 
+   * @param  string $action Script action
+   * @param  array  $config Script configuration
+   * @return object         Current class object
+   */
+  protected function handleAction($action, array $config)
+  {
     if ($action == 'register') {
-      foreach ($config as $script) {
+      
+      foreach ($config as $script_config) {
+        
+        // Get script handle
+        $script_handle = isset($script_config['handle']) ? $script_config['handle'] : null;
 
-        // Get preset, if we're dealing with one
-        if (isset($config['preset']) && $config['preset'])
-          $config = $this->getPreset('scripts', $config['preset'], $config, $env);
-
-        // Check if item is valid
-        if (!$this->isConfigItemValid($hook, 'scripts', $action, $script))
-          return $this;
-
-        // Get script ID
-        $script_id = static::getConfigId('scripts', $script);
-
-        // Collect dependencies
-        if (isset($script['deps']) && is_array($script['deps']))
-          $this->collectScriptDependencies('scripts', $script['handle'], $script['deps']);
-
-        // Upsert item
-        $this->upsertConfigItem("$hook.$env.scripts.$script_id.$action", $script);
+        // Add script config to scripts list
+        if ($script_handle)
+          $this->scripts[$script_handle] = $script_config;
       }
     }
 
     else {
 
-      foreach ($config as $script_hook_name => $script_hook_config) {
-        foreach ($script_hook_config as $script_handle) {
+      foreach ($config as $hook => $handles) {
+        foreach ($handles as $script_handle) {
+  
+          // Get existing script config        
+          $script_config = isset($this->scripts[$script_handle]) ? $this->scripts[$script_handle] : null;
 
-          // Get script ID
-          $script_id = static::getConfigId('scripts', [
-            'handle' => $script_handle
-          ]);
+          // Add fallback config
+          if (!$script_config) {
 
-          // Collect dependencies enqueue hooks
-          $this->collectScriptDependencyHook('scripts', $script_handle, $script_hook_name);
-
-          // Set script config action path
-          $path = "$hook.$env.scripts.$script_id.$action";
-
-          // Create array if it doesn't exist
-          if (!$this->config->hasKey($path))
-            $this->config->set($path, []);
-
-          // Add new hook to list
-          if (!$this->config->hasValue($script_hook_name, $path))
-            $this->config->push($script_hook_name, $path);
-        }
-      }
-    }
-
-
-
-    return $items;
-  }
-
-  /**
-   * Collects script dependencies
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  array  $deps   Script dependencies
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencies($type, $handle, array $deps = [])
-  {
-    if (is_string($type) && is_string($handle) && $deps) {
-      if (!isset($this->resolve_deps[$type])) {
-
-        $this->resolve_deps[$type] = [
-          'main' => [],
-          'deps' => []
-        ];
-      }
-
-      if (!isset($this->resolve_deps[$type]['main'][$handle]))
-        $this->resolve_deps[$type]['main'][$handle] = [];
-
-      foreach ($deps as $dep_handle) {
-        $this->resolve_deps[$type]['main'][$handle][] = $this->getConfigId($type, [
-          'handle' => $dep_handle
-        ]);
-      }
-    }
-
-    return $this;
-  }
-
-  /**
-   * Collects a single enqueue hook for all depencencies of the target script
-   * 
-   * @param  string $type   Script type: CSS or JS
-   * @param  string $handle Script handle
-   * @param  string $hook   Enqueue hook to be added
-   * @return object         This class instance
-   */
-  protected function collectScriptDependencyHook($type, $handle, $hook)
-  {
-    if (is_string($type) && is_string($handle) && is_string($hook)) {
-      if (isset($this->resolve_deps[$type]) && isset($this->resolve_deps[$type]['main'][$handle])) {
-        foreach ($this->resolve_deps[$type]['main'][$handle] as $dep_handle) {
-          
-          if (!isset($this->resolve_deps[$type]['deps'][$dep_handle]))
-            $this->resolve_deps[$type]['deps'][$dep_handle] = [];
-
-          if (!in_array($hook, $this->resolve_deps[$type]['deps'][$dep_handle])) {
-            $this->resolve_deps[$type]['deps'][$dep_handle][] = $hook;
+            $script_config = [
+              'handle' => $script_handle
+            ];
           }
+
+          // Add action to script hook
+          $script_config = static::addActionToHook($script_config, $hook, $action);
+
+          // Add script config to scripts list
+          $this->scripts[$script_handle] = $script_config;
         }
       }
     }
@@ -149,16 +99,26 @@ class ScriptsConfigSection extends ConfigSection {
   }
 
   /**
-   * Returns script enqueue hooks, when used as a script dependency
+   * Adds a single action to the target script hook
    * 
-   * @param  string $handle Script handle
-   * @return array          Script enqueue hooks
+   * @param array  $script_config Script configuration array
+   * @param string $hook          Target hook name
+   * @param string $action        Action to add
    */
-  protected function getScriptEnqueueHooksAsDependency($type, $handle)
+  protected static function addActionToHook(array $config, $hook, $action)
   {
-    if (is_string($type) && is_string($handle) && isset($this->resolve_deps[$type]['deps'][$handle]))
-        return $this->resolve_deps[$type]['deps'][$handle];
+    // Making sure 'hooks' array exist
+    if (!isset($config['hooks']))
+      $config['hooks'] = [];
 
-    return [];
+    // Making sure $hook exists as an array within 'hooks'
+    if (!isset($config['hooks'][$hook]))
+      $config['hooks'][$hook] = [];
+
+    // Add $action to $hook
+    if (!in_array($action, $config['hooks'][$hook]))
+      $config['hooks'][$hook][] = $action;
+
+    return $config;
   }
 } 

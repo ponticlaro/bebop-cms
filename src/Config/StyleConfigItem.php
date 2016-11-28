@@ -7,145 +7,94 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
 class StyleConfigItem extends ConfigItem {
 
+  /**
+   * Checks if configuration is valid
+   * 
+   * @return boolean True if valid, false otherwise
+   */
   public function isValid()
   {
-    switch ($index) {
-      
-      case 'register':
-        return true;
-        break;
-      
-      case 'deregister':
-      case 'dequeue':
-      case 'enqueue':
-        return true;
-        break;
-    }
+    $valid  = true;
+    $handle = $this->config->get('handle');
+    $src    = $this->config->get('src');
+    $hooks  = $this->config->get('hooks');
+
+    // 'handle' must be a string
+    if (!$handle || !is_string($handle))
+      $valid = false;
+
+    // 'src' must be a string
+    if (!$src || !is_string($src))
+      $valid = false;
+
+    // 'hooks' must be an array
+    if (!$hooks || !is_array($hooks))
+      $valid = false;
+
+    return $valid;
   }
   
+  /**
+   * Builds configuration item
+   * 
+   * @return object Current object
+   */
   public function build()
   {
-    // Making sure 'register' actions are the first to be processed
-    $config = [
-      'register'   => isset($config['register']) ? $config['register'] : [],
-      'enqueue'    => isset($config['enqueue']) ? $config['enqueue'] : [],
-      'deregister' => isset($config['deregister']) ? $config['deregister'] : [],
-      'dequeue'    => isset($config['dequeue']) ? $config['dequeue'] : []
-    ];
+    // Get CSS manager
+    $css = CSS::getInstance();
 
-  }
+    // Get script hooks
+    $hooks = $this->config->get('hooks') ?: [];
 
-  /**
-   * Processes a single style action
-   *
-   * @param  array  $action Style action
-   * @param  array  $config Configuration array
-   * @param  string $hook   Hook ID
-   * @param  string $env    Environment ID
-   * @return void
-   */
-  protected function processStyleAction($action, array $config, $hook = 'build', $env = 'all')
-  {
-    if ($action == 'register') {
-      foreach ($config as $script) {
+    // Handle each hook
+    foreach ($hooks as $hook_name => $actions) {
 
-        // Get preset, if we're dealing with one
-        if (isset($config['preset']) && $config['preset'])
-          $config = $this->getPreset('styles', $config['preset'], $config, $env);
+      // Handle actions for each hook
+      if ($hook = $css->getHook($hook_name)) {
 
-        // Check if item is valid
-        if (!$this->isConfigItemValid($hook, 'styles', $action, $script))
-          return $this;
+        // Get 'register' action key
+        $register_action_key = array_search('register', $actions);
 
-        // Get script ID
-        $script_id = static::getConfigId('styles', $script);
+        // We must handle the 'register' action in first place
+        if ($register_action_key !== false) {
 
-        // Collect dependencies
-        if (isset($script['deps']) && is_array($script['deps']))
-          $this->collectScriptDependencies('styles', $script['handle'], $script['deps']);
+          // Register script
+          $hook->$action(
+            $this->config->get('handle'),
+            $this->config->get('src'),
+            $this->config->get('deps') ?: [],
+            $this->config->get('version') ?: null,
+            $this->config->get('media') ?: null
+          );
 
-        // Upsert item
-        $this->upsertConfigItem("$hook.$env.styles.$script_id.$action", $script);
-      }
-    }
+          // Remove 'register' action
+          unset($actions[$register_action_key]);
+        }
 
-    else {
-
-      foreach ($config as $script_hook_name => $script_hook_config) {
-        foreach ($script_hook_config as $script_handle) {
-
-          // Get script ID
-          $script_id = static::getConfigId('styles', [
-            'handle' => $script_handle
-          ]);
-
-          // Collect dependencies enqueue hooks
-          $this->collectScriptDependencyHook('styles', $script_handle, $script_hook_name);
-
-          // Get script config action path
-          $path = "$hook.$env.styles.$script_id.$action";
-
-          // Create array if it doesn't exist
-          if (!$this->config->hasKey($path))
-            $this->config->set($path, []);
-
-          // Add new hook to list
-          $this->config->push($script_hook_name, $path);
+        // Handle remaining actions
+        foreach ($actions as $action) {
+          $hook->$action($this->config->get('handle'));
         }
       }
     }
   }
 
   /**
-   * Builds a single style
+   * Adds a single action to an hook
    * 
-   * @param  string $id     Style handle
-   * @param  array  $config Style configuration array
-   * @return void
+   * @param string $hook   Scripts hook name
+   * @param string $action Script action name
    */
-  protected function buildStyle($handle, array $config)
+  public function addActionToHook($hook, $action)
   {
-    // Get CSS manager
-    $css = CSS::getInstance();
+    if (is_string($hook) && is_string($action)) {
+      
+      if (!$this->config->hasKey('hooks'))
+        $this->config->set('hooks', []);
 
-    // Merge current environment config with main config
-    if ($current_env_config = $this->config->get("build.$this->current_env.styles.$handle"))
-      $config = array_replace_recursive($config, $current_env_config);
-
-    // Check if script have enqueue hooks as a dependency
-    if ($enqueue_hooks_as_dep = $this->getScriptEnqueueHooksAsDependency('css', $handle)) {
-      foreach ($enqueue_hooks_as_dep as $hook) {
-        $config['enqueue'][] = $hook;
-      }
-    }
-
-    // Handle register and enqueue
-    if (isset($config['enqueue']) && $config['enqueue'] && 
-        isset($config['register']) && $config['register']) {
-
-      foreach ($config['enqueue'] as $script_hook_name) {
-        
-        $css->getHook($script_hook_name)
-            ->register(
-              $config['register']['handle'],
-              $config['register']['src'], 
-              isset($config['register']['deps']) ? $config['register']['deps']: [], 
-              isset($config['register']['version']) ? $config['register']['version']: null, 
-              isset($config['register']['media']) ? $config['register']['media']: null
-            )
-            ->enqueue($handle);
-      }
-    }
-
-    unset($config['enqueue']);
-    unset($config['register']);
-
-    // Handle deregister and dequeue
-    foreach ($config as $action => $action_config) {
-      foreach ($action_config as $script_hook_name) {
-        
-        $css->getHook($script_hook_name)->$action($handle);
-      }
+      if (!$this->config->hasValue($action, "hooks.$hook"))
+        $this->config->push('hooks.$hook', []);
     }
   }
 } 

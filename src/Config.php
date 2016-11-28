@@ -3,6 +3,7 @@
 namespace Ponticlaro\Bebop\Cms;
 
 use Ponticlaro\Bebop\Cms\Helpers\ConfigItemFactory;
+use Ponticlaro\Bebop\Cms\Helpers\ConfigSectionFactory;
 use Ponticlaro\Bebop\Common\Collection;
 use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
@@ -181,26 +182,32 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   protected function processHookEnvConfig($hook, $env, array $env_config)
   {
-    foreach ($env_config as $section => $configs) {
+    foreach ($env_config as $section_name => $configs) {
 
       // Handle configuration sections with specific implementations,
-      // not based on a list of configuration items
-      // if (ConfigSectionFactory::canManufacture($section)) {
-      //   $configs = ConfigSectionFactory::create($section, $configs);
+      // which are not based on a list of configuration items
+      if (ConfigSectionFactory::canManufacture($section_name))
+        $configs = ConfigSectionFactory::create($section_name, $configs)->getItems();
+
+      // if ($env == 'all' && $section_name == 'styles') {
+      //   foreach ($configs as $config) {
+      //     var_dump($config);
+      //   }
       // }
 
-      if (ConfigItemFactory::canManufacture($section)) {
+      // Handle arrays of configuration items
+      if (ConfigItemFactory::canManufacture($section_name)) {
         
         foreach ($configs as $index => $config) {
 
           // Create configuration item
-          $config_obj = ConfigItemFactory::create($section, $config);
+          $config_obj = ConfigItemFactory::create($section_name, $config);
 
           // Only for other non-preset configuration items
           if ($hook != 'presets') {
 
             // Get preset path
-            $preset_path = "presets.$env.$section.". $config_obj->getPresetId();
+            $preset_path = "presets.$env.$section_name.". $config_obj->getPresetId();
 
             // Merge with preset, if it exists
             if ($preset = $this->config->get($preset_path)) {
@@ -221,7 +228,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
             $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
 
             // Define path for config item
-            $path = "$hook.$env.$section.$id";
+            $path = "$hook.$env.$section_name.$id";
 
             // Check if we have a previous configuration
             $prev_config_obj = $this->config->get($path);
@@ -249,13 +256,16 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   public function build()
   {
+    // Making sure we do not run this twice
     if ($this->already_built)
       return $this;
 
+    // Run configuration hooks
     $this->runHooks();
 
-    if ($this->config->get('build.all')) {
-      foreach ($this->config->get('build.all') as $section => $configs) {
+    // Build configuration items
+    if ($build_config = $this->config->get('build.all')) {
+      foreach ($build_config as $section => $configs) {
         foreach ($configs as $id => $config_obj) {
 
           // Merge with current environment configuration, if it exists
@@ -270,6 +280,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       }
     }
 
+    // Mark configuration as built
     $this->already_built = true;
 
     return $this;

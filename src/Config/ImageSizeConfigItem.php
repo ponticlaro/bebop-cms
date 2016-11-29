@@ -21,14 +21,20 @@ class ImageSizeConfigItem extends ConfigItem {
     $valid  = true;
     $config = $this->config->getAll();
 
+    // 'name' must be a string
     if (!isset($config['name']) || !$config['name'])
       $valid = false;
 
+    // Either 'width' or 'height' must exist
     if (!isset($config['width']) && !isset($config['height']))
       $valid = false;
 
-    if (!is_bool($config['crop']) && !is_array($config['crop']))
-      $valid = false;
+    // If 'crop' exists, it must be a boolean or an array
+    if (isset($config['crop'])) {
+
+      if (!is_bool($config['crop']) && !is_array($config['crop']))
+        $valid = false;
+    }
 
     return $valid;
   }

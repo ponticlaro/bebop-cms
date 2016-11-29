@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         ],
         dest: "src/presets.json",
         options: {
-          space: 2
+          space: 0
         } 
       }
     }

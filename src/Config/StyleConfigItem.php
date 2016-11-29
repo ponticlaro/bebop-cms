@@ -3,98 +3,75 @@
 namespace Ponticlaro\Bebop\Cms\Config;
 
 use \Ponticlaro\Bebop\ScriptsLoader\Css;
-use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
+use \Ponticlaro\Bebop\Common\EventEmitter;
 
-class StyleConfigItem extends ConfigItem {
+class StyleConfigItem extends ScriptConfigItem {
 
   /**
-   * Checks if configuration is valid
+   * Instantiates configuration item
    * 
-   * @return boolean True if valid, false otherwise
+   * @param array $config Configuration array
    */
-  public function isValid()
+  public function __construct(array $config = [])
   {
-    $valid  = true;
-    $handle = $this->config->get('handle');
-    $src    = $this->config->get('src');
-    $hooks  = $this->config->get('hooks');
+    parent::__construct($config);
 
-    // 'handle' must be a string
-    if (!$handle || !is_string($handle))
-      $valid = false;
+    // Define events channel
+    $channel = 'cms.config.styles.'. $this->config->get('handle');
 
-    // 'src' must be a string
-    if (!$src || !is_string($src))
-      $valid = false;
+    // Subscribe for events targeting this script
+    $event_emitter = EventEmitter::getInstance()
+                                 ->subscribe($channel, [$this, 'consumeEvent']);
 
-    // 'hooks' must be an array
-    if (!$hooks || !is_array($hooks))
-      $valid = false;
-
-    return $valid;
+    // Set event emitter
+    $this->setEventEmitter($event_emitter);
   }
-  
+
   /**
-   * Builds configuration item
+   * Registers script
    * 
-   * @return object Current object
+   * @param  object $hook_name JS Hook instance
+   * @return object            Current object
    */
-  public function build()
+  protected function handleAction($hook_name, $action)
   {
-    // Get CSS manager
-    $css = CSS::getInstance();
+    if($hook = CSS::getInstance()->getHook($hook_name)) {
 
-    // Get script hooks
-    $hooks = $this->config->get('hooks') ?: [];
+      if ($action == 'register') {
+        
+        // Get dependencies
+        $deps = $this->config->get('deps') ?: [];
 
-    // Handle each hook
-    foreach ($hooks as $hook_name => $actions) {
+        // Enqueue dependencies
+        if ($deps) {
+          foreach ($deps as $dep_handle) {
 
-      // Handle actions for each hook
-      if ($hook = $css->getHook($hook_name)) {
-
-        // Get 'register' action key
-        $register_action_key = array_search('register', $actions);
-
-        // We must handle the 'register' action in first place
-        if ($register_action_key !== false) {
-
-          // Register script
-          $hook->$action(
-            $this->config->get('handle'),
-            $this->config->get('src'),
-            $this->config->get('deps') ?: [],
-            $this->config->get('version') ?: null,
-            $this->config->get('media') ?: null
-          );
-
-          // Remove 'register' action
-          unset($actions[$register_action_key]);
+            // Publish event
+            $this->getEventEmitter()->publish("cms.config.styles.$dep_handle", [
+              'action' => 'enqueue_as_dependency',
+              'hooks'  => [
+                $hook_name
+              ]
+            ]);
+          }
         }
 
-        // Handle remaining actions
-        foreach ($actions as $action) {
-          $hook->$action($this->config->get('handle'));
-        }
+        // Register script
+        $hook->register(
+          $this->config->get('handle'),
+          $this->config->get('src'),
+          $deps,
+          $this->config->get('version') ?: null,
+          $this->config->get('in_footer') ?: null
+        );
+      }
+
+      else {
+
+        $hook->$action($this->config->get('handle'));
       }
     }
-  }
 
-  /**
-   * Adds a single action to an hook
-   * 
-   * @param string $hook   Scripts hook name
-   * @param string $action Script action name
-   */
-  public function addActionToHook($hook, $action)
-  {
-    if (is_string($hook) && is_string($action)) {
-      
-      if (!$this->config->hasKey('hooks'))
-        $this->config->set('hooks', []);
-
-      if (!$this->config->hasValue($action, "hooks.$hook"))
-        $this->config->push('hooks.$hook', []);
-    }
+    return $this;
   }
 } 

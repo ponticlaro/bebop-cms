@@ -16,7 +16,7 @@ class ConfigSectionFactory {
    */
   protected static $manufacturable = array(
     'scripts' => 'Ponticlaro\Bebop\Cms\Config\ScriptsConfigSection',
-    'styles'  => 'Ponticlaro\Bebop\Cms\Config\StylesConfigSection',
+    'styles'  => 'Ponticlaro\Bebop\Cms\Config\ScriptsConfigSection',
   );
 
   /**

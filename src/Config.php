@@ -4,6 +4,7 @@ namespace Ponticlaro\Bebop\Cms;
 
 use Ponticlaro\Bebop\Cms\Helpers\ConfigItemFactory;
 use Ponticlaro\Bebop\Cms\Helpers\ConfigSectionFactory;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 use Ponticlaro\Bebop\Common\Collection;
 use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
@@ -76,7 +77,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @param string $hook   Hook ID
    * @param mixed  $config Configuration JSON file or array
    */
-  protected function addToHook($hook, $config)
+  public function addToHook($hook, $config)
   {
     $this->hooks->push($config, $hook);
 
@@ -89,7 +90,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @param string $hook   Hook ID
    * @param mixed  $config Path to configuration JSON file or array
    */
-  protected function setHook($hook, $config)
+  public function setHook($hook, $config)
   {
     $this->hooks->set($hook, $config);
 
@@ -102,7 +103,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @param  string $hook Hook ID
    * @return array        Path to configuration JSON file or array
    */
-  protected function getHook($hook)
+  public function getHook($hook)
   {
     return $this->hooks->get($hook);
   }
@@ -112,7 +113,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * 
    * @param string $hook Hook ID
    */
-  protected function clearHook($hook)
+  public function clearHook($hook)
   {
     $this->hooks->set($hook, []);
 
@@ -163,7 +164,6 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
       else {
 
         foreach ($config as $environment => $environment_config) {
-
           $this->processHookEnvConfig($hook, $environment, $environment_config);
         }
       }
@@ -184,69 +184,100 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   {
     foreach ($env_config as $section_name => $configs) {
 
-      // Handle configuration sections with specific implementations,
+      // Handle configuration sections with specific implementations
       // which are not based on a list of configuration items
       if (ConfigSectionFactory::canManufacture($section_name))
         $configs = ConfigSectionFactory::create($section_name, $configs)->getItems();
 
-      // if ($env == 'all' && $section_name == 'styles') {
-      //   foreach ($configs as $config) {
-      //     var_dump($config);
-      //   }
-      // }
-
       // Handle arrays of configuration items
       if (ConfigItemFactory::canManufacture($section_name)) {
-        
-        foreach ($configs as $index => $config) {
-
-          // Create configuration item
-          $config_obj = ConfigItemFactory::create($section_name, $config);
-
-          // Only for other non-preset configuration items
-          if ($hook != 'presets') {
-
-            // Get preset path
-            $preset_path = "presets.$env.$section_name.". $config_obj->getPresetId();
-
-            // Merge with preset, if it exists
-            if ($preset = $this->config->get($preset_path)) {
-
-              $config_obj = $preset->merge($config_obj);
-
-              // Making sure we do not process 'preset' a second time
-              $config_obj->remove('preset');
-            }
-          }
-
-          // Handle configuration object, if:
-          // - We're adding a preset; presets do not need to be valid
-          // - We're adding a valid item to the build
-          if ($hook == 'presets' || $config_obj->isValid()) {
-
-            // Getting the correct configuration id
-            $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
-
-            // Define path for config item
-            $path = "$hook.$env.$section_name.$id";
-
-            // Check if we have a previous configuration
-            $prev_config_obj = $this->config->get($path);
-
-            // Merge previous configuration with new one
-            if ($prev_config_obj)
-              $config_obj = $prev_config_obj->merge($config_obj);
-
-            // Add config item
-            $this->config->set($path, $config_obj);
-
-            // Handle configuration item requirements
-            if ($hook != 'presets' && $requirements_config = $config_obj->getRequirements())
-              $this->processHookEnvConfig($hook, $env, $requirements_config);
-          }
+        foreach ($configs as $config) {
+          $this->processRawConfigItem($hook, $env, $section_name, $config);
         }
       }
-    }   
+    }
+  }
+
+  /**
+   * Processes a single configuration item
+   * 
+   * @param  string $hook         Hook ID
+   * @param  string $env          Environment ID
+   * @param  string $section_name Configuraton section
+   * @param  array  $config       Configuraton item array
+   * @return void
+   */
+  protected function processRawConfigItem($hook, $env, $section_name, array $config)
+  {
+    // Create configuration item
+    $config_obj = ConfigItemFactory::create($section_name, $config);
+
+    // Merge configuration item with preset, if it exists
+    if ($hook != 'presets')
+      $config_obj = $this->mergeConfigItemWithPreset($env, $section_name, $config_obj);
+
+    // Collect configuration object, if:
+    // - We're adding a preset; presets do not need to be valid
+    // - We're adding a valid item to the build
+    if ($hook == 'presets' || $config_obj->isValid())
+      $this->addConfigItem($hook, $env, $section_name, $config_obj);
+  }
+
+  /**
+   * Merges configuration item object with its preset, it it exists
+   * 
+   * @param  string     $env          Environment ID
+   * @param  string     $section_name Configuraton section
+   * @param  ConfigItem $config_obj   Configuraton item object
+   * @return ConfigItem               Merged configuraton item object
+   */
+  protected function mergeConfigItemWithPreset($env, $section_name, ConfigItem $config_obj)
+  {
+    // Get preset path
+    $preset_path = "presets.$env.$section_name.". $config_obj->getPresetId();
+
+    // Merge with preset, if it exists
+    if ($preset = $this->config->get($preset_path)) {
+
+      $config_obj = $preset->merge($config_obj);
+
+      // Making sure we do not process 'preset' a second time
+      $config_obj->remove('preset');
+    }
+
+    return $config_obj;
+  }
+
+  /**
+   * Adds single configuration item object to build config
+   * 
+   * @param  string     $hook         Hook ID
+   * @param  string     $env          Environment ID
+   * @param  string     $section_name Configuraton section
+   * @param  ConfigItem $config_obj   Configuraton item object
+   * @return void
+   */
+  protected function addConfigItem($hook, $env, $section_name, ConfigItem $config_obj)
+  {
+    // Getting the correct configuration id
+    $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
+
+    // Define path for config item
+    $path = "$hook.$env.$section_name.$id";
+
+    // Check if we have a previous configuration
+    $prev_config_obj = $this->config->get($path);
+
+    // Merge new configuration with existing one
+    if ($prev_config_obj)
+      $config_obj = $prev_config_obj->merge($config_obj);
+
+    // Add config item to its correct path
+    $this->config->set($path, $config_obj);
+
+    // Handle configuration item requirements
+    if ($hook != 'presets' && $requirements_config = $config_obj->getRequirements())
+      $this->processHookEnvConfig($hook, $env, $requirements_config);   
   }
 
   /**
@@ -265,16 +296,16 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Build configuration items
     if ($build_config = $this->config->get('build.all')) {
-      foreach ($build_config as $section => $configs) {
-        foreach ($configs as $id => $config_obj) {
+      foreach ($build_config as $section_name => $configs) {        
+        foreach ($configs as $config_obj) {
 
           // Merge with current environment configuration, if it exists
-          $env_config = $this->config->get("build.{$this->current_env}.$section.". $config_obj->getId());
+          $env_config_path = "build.{$this->current_env}.$section_name.". $config_obj->getId();
 
-          if ($env_config)
+          if ($env_config = $this->config->get($env_config_path))
             $config_obj = $config_obj->merge($env_config);
 
-          // Build config object
+          // Build configuration item
           $config_obj->build();
         }
       }

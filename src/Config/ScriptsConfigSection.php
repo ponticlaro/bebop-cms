@@ -2,24 +2,17 @@
 
 namespace Ponticlaro\Bebop\Cms\Config;
 
-use \Ponticlaro\Bebop\Cms\Config\ScriptConfigitem;
+use \Ponticlaro\Bebop\Cms\Config\ScriptConfigItem;
 use \Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
 
 class ScriptsConfigSection extends ConfigSection {
   
   /**
-   * List of scripts
+   * List of items
    * 
    * @var array
    */
-  protected $scripts = [];
-
-  /**
-   * Array used to resolve enqueue hooks for dependencies
-   * 
-   * @var array
-   */
-  protected $resolve_deps = [];
+  protected $items = [];
   
   /**
    * Returns created configuration items
@@ -29,15 +22,22 @@ class ScriptsConfigSection extends ConfigSection {
   public function getItems()
   {
     // Get full configuration
-    $actions = $this->config->getAll();
+    $raw_actions = $this->config->getAll();
 
     // Making sure 'register' actions are the first to be processed
-    $actions = [
-      'register'   => isset($actions['register']) ? $actions['register'] : [],
-      'enqueue'    => isset($actions['enqueue']) ? $actions['enqueue'] : [],
-      'deregister' => isset($actions['deregister']) ? $actions['deregister'] : [],
-      'dequeue'    => isset($actions['dequeue']) ? $actions['dequeue'] : []
-    ];
+    $actions = [];
+
+    if (isset($raw_actions['register']))
+      $actions['register'] = $raw_actions['register'];
+
+    if (isset($raw_actions['enqueue']))
+      $actions['enqueue'] = $raw_actions['enqueue'];
+
+    if (isset($raw_actions['deregister']))
+      $actions['deregister'] = $raw_actions['deregister'];
+
+    if (isset($raw_actions['dequeue']))
+      $actions['dequeue'] = $raw_actions['dequeue'];
 
     // Handle actions
     foreach ($actions as $action => $config) {
@@ -45,52 +45,65 @@ class ScriptsConfigSection extends ConfigSection {
     }
 
     // Return scripts
-    return $this->scripts;
+    return $this->items;
   }
 
   /**
-   * Handle a single script action
+   * Handle a single configuration action
    * 
-   * @param  string $action Script action
-   * @param  array  $config Script configuration
-   * @return object         Current class object
+   * @param  string $action      Action name
+   * @param  array  $config_data Action configuration data
+   * @return object              Current class object
    */
-  protected function handleAction($action, array $config)
+  protected function handleAction($action, array $config_data)
   {
     if ($action == 'register') {
       
-      foreach ($config as $script_config) {
+      foreach ($config_data as $config) {
         
-        // Get script handle
-        $script_handle = isset($script_config['handle']) ? $script_config['handle'] : null;
+        // Get handle
+        $handle = isset($config['handle']) ? $config['handle'] : null;
 
-        // Add script config to scripts list
-        if ($script_handle)
-          $this->scripts[$script_handle] = $script_config;
+        if ($handle) {
+
+          // Get existing config        
+          $prev_config = isset($this->items[$handle]) ? $this->items[$handle] : null;
+
+          // Merge with previous config
+          if ($prev_config)
+            $config = array_replace_recursive($prev_config, $config);
+
+          // Add config to items list
+          $this->items[$handle] = $config;
+        }
       }
     }
 
     else {
 
-      foreach ($config as $hook => $handles) {
-        foreach ($handles as $script_handle) {
+      foreach ($config_data as $hook => $handles) {
+        foreach ($handles as $handle) {
   
-          // Get existing script config        
-          $script_config = isset($this->scripts[$script_handle]) ? $this->scripts[$script_handle] : null;
+          // Get existing config        
+          $config = isset($this->items[$handle]) ? $this->items[$handle] : null;
 
           // Add fallback config
-          if (!$script_config) {
+          if (!$config) {
 
-            $script_config = [
-              'handle' => $script_handle
+            $config = [
+              'handle' => $handle
             ];
           }
 
-          // Add action to script hook
-          $script_config = static::addActionToHook($script_config, $hook, $action);
+          // Add 'register' action to hook
+          if ($action == 'enqueue')
+            $config = static::addActionToHook($config, $hook, 'register');
 
-          // Add script config to scripts list
-          $this->scripts[$script_handle] = $script_config;
+          // Add action to hook
+          $config = static::addActionToHook($config, $hook, $action);
+
+          // Add config to items list
+          $this->items[$handle] = $config;
         }
       }
     }

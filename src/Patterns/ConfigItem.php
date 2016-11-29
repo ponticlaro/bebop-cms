@@ -47,7 +47,7 @@ abstract class ConfigItem implements ConfigItemInterface {
     $id = $this->config->get('_id');
 
     // If we have no '_id', return preset ID
-    return $id ? Utils::slugify($id) : $this->getId();
+    return $id ? static::__getNormalizedId($id) : $this->getId();
   }
 
   /**
@@ -69,7 +69,7 @@ abstract class ConfigItem implements ConfigItemInterface {
         $id = reset($id);
 
     // Return ID
-    return $id ? Utils::slugify($id) : null;
+    return $id ? static::__getNormalizedId($id) : null;
   }
 
   /**
@@ -82,7 +82,7 @@ abstract class ConfigItem implements ConfigItemInterface {
     $id = $this->config->get('preset');
 
     // Return preset ID
-    return $id ? Utils::slugify($id) : null;
+    return $id ? static::__getNormalizedId($id) : null;
   }
 
   /**
@@ -90,7 +90,7 @@ abstract class ConfigItem implements ConfigItemInterface {
    * 
    * @return array Configuration item requirements array
    */
-  final public function getRequirements()
+  public function getRequirements()
   {
     return $this->config->get('requires') ?: [];
   }
@@ -135,7 +135,7 @@ abstract class ConfigItem implements ConfigItemInterface {
    * 
    * @return array Full configuration array
    */
-  final public function getAll()
+  public function getAll()
   {
     return $this->config->getAll();
   }
@@ -146,7 +146,7 @@ abstract class ConfigItem implements ConfigItemInterface {
    * @param  ConfigItemInterface $config_item Configuration object we're going to merge with
    * @return object                           Current class object
    */
-  final public function merge(ConfigItem $config_item)
+  public function merge(ConfigItem $config_item)
   {
     $current_config = $this->config->getAll();
     $merging_config = $config_item->getAll();
@@ -155,6 +155,24 @@ abstract class ConfigItem implements ConfigItemInterface {
     $this->config->clear()->set($new_config);
 
     return $this;
+  }
+
+  /**
+   * Normalizes ID string
+   * 
+   * @param  string $source_string ID string to clean
+   * @return string                Clean string
+   */
+  private static function __getNormalizedId($raw_id)
+  {
+    // Slugify
+    $id = Utils::slugify($raw_id);
+
+    // Replace dots with underscores
+    $id = str_replace('.', '_', $id);
+
+    // Return ID
+    return $id;
   }
 
   /**

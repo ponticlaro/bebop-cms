@@ -15,8 +15,14 @@
               "name": "audio_source",
               "default_option": "upload",
               "options": [
-                "Upload",
-                "Soundcloud"
+                {
+                  "label": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "label": "Soundcloud",
+                  "value": "soundcloud"
+                }
               ],
               "attrs": {
                 "style": "width:100%",

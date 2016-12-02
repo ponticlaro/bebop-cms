@@ -15,9 +15,18 @@
               "name": "video_source",
               "default_option": "upload",
               "options": [
-                "Upload",
-                "Vimeo",
-                "Youtube"
+                {
+                  "label": "Upload",
+                  "value": "upload"
+                },
+                {
+                  "label": "Vimeo",
+                  "value": "vimeo"
+                },
+                {
+                  "label": "Youtube",
+                  "value": "youtube"
+                }
               ],
               "attrs": {
                 "style": "width:100%",

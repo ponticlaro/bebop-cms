@@ -28,13 +28,6 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected $config;
 
   /**
-   * Holds the current environment key
-   * 
-   * @var
-   */
-  protected $current_env;
-
-  /**
    * Flags if the configuration was already built or not
    * 
    * @var boolean
@@ -47,9 +40,6 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   public function __construct()
   {
-    // Set current environment key
-    $this->current_env = EnvManager::getInstance()->getCurrentKey();
-
     // Get paths manager
     $paths = PathManager::getInstance();
 
@@ -143,29 +133,29 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    */
   protected function processConfig($hook, $config)
   {
-    // Get $config contents and decode JSON if it is a path to afile
-    if (is_string($config) && file_exists($config) && is_readable($config))
-      $config = json_decode(file_get_contents($config), true);  
+    // Get configuration from file
+    if (is_string($config))
+      $config = static::getConfigFromFile($config); 
 
     if (is_array($config)) {
 
-      // Backward compatibility
+      // Backward compatibility with 'environments' key
       // https://github.com/ponticlaro/bebop-cms/issues/22
       if (isset($config['environments']) && $config['environments'])
         $config = $config['environments'];
 
       // Handle configuration without environment specific sections
-      if (ConfigItemFactory::canManufacture(key($config))) {
-        
-        $this->processHookEnvConfig($hook, 'all', $config);
-      }
+      if (ConfigItemFactory::canManufacture(key($config)))
+        $config = ['all' => $config];
 
-      // Handle configuration with environment specific sections
-      else {
+      // Handle configuration for each environment
+      foreach ($config as $environment => $environment_config) {
 
-        foreach ($config as $environment => $environment_config) {
-          $this->processHookEnvConfig($hook, $environment, $environment_config);
-        }
+        // Get configuration from file
+        if (is_string($environment_config))
+          $environment_config = static::getConfigFromFile($environment_config); 
+
+        $this->processHookEnvConfig($hook, $environment, $environment_config);
       }
     }
 
@@ -177,24 +167,54 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    *  
    * @param  string $hook       Hook ID
    * @param  string $env        Environment ID
-   * @param  mixed  $env_config Configuraton array
+   * @param  array  $env_config Configuraton array or path to configuration file
    * @return void
    */
   protected function processHookEnvConfig($hook, $env, array $env_config)
   {
     foreach ($env_config as $section_name => $configs) {
 
-      // Handle configuration sections with specific implementations
-      // which are not based on a list of configuration items
-      if (ConfigSectionFactory::canManufacture($section_name))
-        $configs = ConfigSectionFactory::create($section_name, $configs)->getItems();
+      // Get $configs contents and decode JSON if it is a path to a file
+      if (is_string($configs))
+        $configs = static::getConfigFromFile($configs);
 
-      // Handle arrays of configuration items
-      if (ConfigItemFactory::canManufacture($section_name)) {
-        foreach ($configs as $config) {
-          $this->processRawConfigItem($hook, $env, $section_name, $config);
-        }
+      // Only move forward if:
+      // - we have an array to handle
+      // - we can handle $section_name items 
+      if (is_array($configs) && ConfigItemFactory::canManufacture($section_name)) {
+
+        // Handle configuration sections with specific implementations
+        // which are not based on a plain list of configuration items
+        if (ConfigSectionFactory::canManufacture($section_name))
+          $configs = ConfigSectionFactory::create($section_name, $configs)->getItems();
+
+        // Handle array of configuration items
+        if (is_array($configs))
+          $this->processSectionConfigItemsList($hook, $env, $section_name, $configs);
       }
+    }
+  }
+
+  /**
+   * Processes a list of configuration items
+   * 
+   * @param  string $hook         Hook ID
+   * @param  string $env          Environment ID
+   * @param  string $section_name Configuraton section
+   * @param  array  $items        Configuraton item array
+   * @return void
+   */
+  protected function processSectionConfigItemsList($hook, $env, $section_name, array $items)
+  {
+    foreach ($items as $item) {
+
+      if (is_string($item) && $item = static::getConfigFromFile($item)) {
+
+        $this->processSectionConfigItemsList($hook, $env, $section_name, $item);
+        continue;
+      }
+
+      $this->processSectionConfigItem($hook, $env, $section_name, $item);     
     }
   }
 
@@ -207,7 +227,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
    * @param  array  $config       Configuraton item array
    * @return void
    */
-  protected function processRawConfigItem($hook, $env, $section_name, array $config)
+  protected function processSectionConfigItem($hook, $env, $section_name, array $config)
   {
     // Create configuration item
     $config_obj = ConfigItemFactory::create($section_name, $config);
@@ -296,17 +316,9 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Build configuration items
     if ($build_config = $this->config->get('build.all')) {
-      foreach ($build_config as $section_name => $configs) {        
+      foreach ($build_config as $section_name => $configs) { 
         foreach ($configs as $config_obj) {
-
-          // Merge with current environment configuration, if it exists
-          $env_config_path = "build.{$this->current_env}.$section_name.". $config_obj->getId();
-
-          if ($env_config = $this->config->get($env_config_path))
-            $config_obj = $config_obj->merge($env_config);
-
-          // Build configuration item
-          $config_obj->build();
+          $this->buildConfigItem($section_name, $config_obj);
         }
       }
     }
@@ -315,5 +327,57 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
     $this->already_built = true;
 
     return $this;
+  }
+
+  /**
+   * Builds single config item
+   * 
+   * @param  string                                    $section_name Configuraton section
+   * @param  \Ponticlaro\Bebop\Cms\Patterns\ConfigItem $config_obj   Configuraton item object
+   * @return void                                                 
+   */
+  protected function buildConfigItem($section_name, ConfigItem $config_obj)
+  {
+    // Get configuration object id
+    $object_id = $config_obj->getId();
+
+    // Get current environment name
+    $current_env = EnvManager::getInstance()->getCurrentKey();
+
+    // Define path for current environment path for this object
+    $env_config_path = "build.$current_env.$section_name.$object_id";
+
+    // Merge with current environment configuration, if it exists
+    if ($env_config = $this->config->get($env_config_path))
+      $config_obj = $config_obj->merge($env_config);
+
+    // Build configuration item
+    $config_obj->build();
+  }
+
+  /**
+   * Returns JSON configuration from target file
+   * 
+   * @param  string     $path Absolute or theme relative path to file
+   * @return array|null       Configuration array if file exists and contains JSON, null otherwise
+   */
+  protected static function getConfigFromFile($path)
+  {
+    // Try absolute path
+    if (file_exists($path))
+      return json_decode(file_get_contents($path), true);  
+
+    // Try path relative to theme
+    $path = PathManager::getInstance()->get('theme', $path);
+
+    if (file_exists($path))
+      return json_decode(file_get_contents($path), true); 
+
+    return [];
+  }
+
+  protected static function arrayIsAssociative(array $array) 
+  {
+    return count(array_filter(array_keys($array), 'is_string')) > 0;
   }
 }

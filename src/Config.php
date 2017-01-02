@@ -375,9 +375,4 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     return [];
   }
-
-  protected static function arrayIsAssociative(array $array) 
-  {
-    return count(array_filter(array_keys($array), 'is_string')) > 0;
-  }
 }

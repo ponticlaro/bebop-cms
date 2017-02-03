@@ -98,6 +98,9 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
 
       if ($action == 'register') {
         
+        // Get handle
+        $handle = $this->config->get('handle');
+
         // Get dependencies
         $deps = $this->config->get('deps') ?: [];
 
@@ -114,15 +117,23 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
             ]);
           }
         }
-
+        
         // Register script
         $hook->register(
-          $this->config->get('handle'),
+          $handle,
           $this->config->get('src'),
           $deps,
           $this->config->get('version') ?: null,
           $this->config->get('in_footer') ?: null
         );
+
+        // Handle asynchronous loading
+        if ($this->config->get('async'))
+          $hook->getFile($handle)->setAsync(true);
+
+        // Handle defered loading
+        if ($this->config->get('defer'))
+          $hook->getFile($handle)->setDefer(true);
       }
 
       else {

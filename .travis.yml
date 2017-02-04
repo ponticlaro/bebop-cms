@@ -1,0 +1,37 @@
+language: php
+
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+  - nightly
+  - hhvm
+
+before_install:
+  - composer selfupdate
+
+install:
+  - COMPOSER_ROOT_VERSION=dev-master composer install
+
+script: vendor/bin/codecept run unit --coverage-xml
+
+after_success:
+  - vendor/bin/test-reporter --coverage-report tests/_output/coverage.xml
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
+    - php: hhvm
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/8fe2295fcf8a06a56dc8
+    on_success: change
+    on_failure: always
+    on_start: never
+
+addons:
+  code_climate:
+    repo_token: 9257045a3d2c1ca68c14ed8352b093b91c1b61f6fee57e37a56541f0c238240f

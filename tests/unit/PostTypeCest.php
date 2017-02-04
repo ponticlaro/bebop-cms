@@ -139,7 +139,7 @@ class PostTypeCest
       null,
       0,
       1,
-      [],
+      [null, null],
       new \stdClass,
       ['Product', 0],
       ['Product', 1],

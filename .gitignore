@@ -31,3 +31,5 @@ nbproject
 # Composer
 /vendor
 composer.lock
+tests/_output/*
+tests/_output/*

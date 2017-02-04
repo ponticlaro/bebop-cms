@@ -20,6 +20,11 @@
     "ponticlaro/bebop-scripts-loader": "^1.1"
   },
   "require-dev": {
+    "codeception/codeception": "^2",
+    "codeception/aspect-mock": "^2",
+    "mockery/mockery": "^0",
+    "10up/wp_mock": "^0",
+    "codeclimate/php-test-reporter": "^0",
     "apigen/apigen": "^4"
   },
   "autoload": {

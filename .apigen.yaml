@@ -1,6 +1,6 @@
 source:
-    - ./src
+  - ./src
 destination: ./docs
 templateTheme: bootstrap
 accessLevels: 
-    - public
+  - public

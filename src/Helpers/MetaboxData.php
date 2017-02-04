@@ -26,9 +26,9 @@ class MetaboxData {
     /**
      * Replace data container
      * 
-     * @param Ponticlaro\Bebop\Common\Patterns\Collection $container Data container
+     * @param Ponticlaro\Bebop\Common\Patterns\CollectionInterface $container Data container
      */
-    public function setDataContainer(\Ponticlaro\Bebop\Common\Patterns\Collection $container)
+    public function setDataContainer(\Ponticlaro\Bebop\Common\Patterns\CollectionInterface $container)
     {
         // Get currently stored data
         $current_data = $this->__data->getAll();

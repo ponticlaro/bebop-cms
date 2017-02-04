@@ -59,8 +59,7 @@ class PostTypeCest
   public function _before(UnitTester $I)
   {
     // Mock Utils
-    // - ::slugify
-    $this->mocks['Collection'] = Test::double('Ponticlaro\Bebop\Common\Utils', [
+    $this->mocks['Utils'] = Test::double('Ponticlaro\Bebop\Common\Utils', [
       'slugify' => function() {
         return strtolower(func_get_arg(0));
       }
@@ -68,14 +67,11 @@ class PostTypeCest
 
     // Mock add_action function
     $this->mocks['add_action'] = Test::func('Ponticlaro\Bebop\Cms', 'add_action', true);
-
-    //\WP_Mock::setUp();
   }
 
   public function _after(UnitTester $I)
   {
     Test::clean();
-    //\WP_Mock::tearDown();
   }
 
   /**
@@ -751,6 +747,108 @@ class PostTypeCest
 
     // Verify values match
     $I->assertEquals($config, $type->getFullConfig());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::applyRawArgs
+   * @depends create
+   * @depends getFullConfig
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function applyRawArgs(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Build base test config array
+    $config                 = $this->prod_cfg['config'];
+    $config['labels']       = $this->prod_cfg['labels'];
+    $config['supports']     = $this->prod_cfg['features'];
+    $config['capabilities'] = $this->prod_cfg['capabilities'];
+    $config['taxonomies']   = $this->prod_cfg['taxonomies'];
+    $config['rewrite']      = $this->prod_cfg['rewrite_config'];
+
+    // Build raw args number 1 to modify config
+    $mod_config_1 = [
+      'labels' => [
+        'menu_name' => 'Products Mod1',
+        'all_items' => 'Products Mod1',
+      ],
+      'supports' => [
+        'title_mod1',
+        'excerpt_mod1'
+      ],
+      'capabilities' => [
+        'edit_post'   => 'edit_product_mod1',
+        'read_post'   => 'read_product_mod1',
+        'delete_post' => 'delete_product_mod1',
+      ],
+      'taxonomies' => [
+        'dummy_taxonomy_1_mod1',
+        'dummy_taxonomy_2_mod1',
+        'dummy_taxonomy_3_mod1',
+      ],
+      'rewrite' => [
+        'with_front' => true,
+        'slug'       => 'products_mod1'
+      ],
+    ];
+
+    // Build expected config for modification 1
+    $expected_config                 = $config;
+    $expected_config['labels']       = array_merge($config['labels'], $mod_config_1['labels']);
+    $expected_config['supports']     = $mod_config_1['supports'];
+    $expected_config['capabilities'] = $mod_config_1['capabilities'];
+    $expected_config['taxonomies']   = $mod_config_1['taxonomies'];
+    $expected_config['rewrite']      = $mod_config_1['rewrite'];
+
+    // Apply first raw args modification
+    $type->applyRawArgs($mod_config_1);
+
+    // Verify configs match
+    $I->assertEquals($expected_config, $type->getFullConfig());
+
+    // Build raw args number 2 to modify config
+    $mod_config_2 = [
+      'labels' => [
+        'menu_name' => 'Products Mod2',
+        'all_items' => 'Products Mod2',
+      ],
+      'supports' => [
+        'title_mod2',
+        'excerpt_mod2'
+      ],
+      'capabilities' => [
+        'edit_post'   => 'edit_product_mod2',
+        'read_post'   => 'read_product_mod2',
+        'delete_post' => 'delete_product_mod2',
+      ],
+      'taxonomies' => [
+        'dummy_taxonomy_1_mod2',
+        'dummy_taxonomy_2_mod2',
+        'dummy_taxonomy_3_mod2',
+      ],
+      'rewrite' => [
+        'with_front' => false,
+        'slug'       => 'products-mod2'
+      ],
+    ];
+
+    // Build expected config for modification 2
+    $expected_config                 = $config;
+    $expected_config['labels']       = array_merge($config['labels'], $mod_config_2['labels']);
+    $expected_config['supports']     = $mod_config_2['supports'];
+    $expected_config['capabilities'] = $mod_config_2['capabilities'];
+    $expected_config['taxonomies']   = $mod_config_2['taxonomies'];
+    $expected_config['rewrite']      = $mod_config_2['rewrite'];
+
+    // Apply second raw args modification
+    $type->applyRawArgs($mod_config_2);
+     
+    // Verify configs match
+    $I->assertEquals($expected_config, $type->getFullConfig());
   }
 
   /**

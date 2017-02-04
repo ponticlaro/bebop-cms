@@ -527,7 +527,7 @@ class PostType implements TrackableObjectInterface {
   /**
    * Replaces capabilities
    * 
-   * @param  array                          $capabilities Indexed array with capabilities
+   * @param  array                          $capabilities Associative array with capabilities
    * @return \Ponticlaro\Bebop\Cms\PostType               PostType instance
    */
   public function replaceCapabilities(array $capabilities = array())
@@ -541,13 +541,13 @@ class PostType implements TrackableObjectInterface {
   /**
    * Sets capabilities
    * 
-   * @param  array                          $capabilities Indexed array with capabilities
+   * @param  array                          $capabilities Associated array with capabilities
    * @return \Ponticlaro\Bebop\Cms\PostType               PostType instance
    */
   public function setCapabilities(array $capabilities = array())
   {
-    foreach ($capabilities as $capability) {  
-      $this->addCapability($capability);
+    foreach ($capabilities as $key => $name) {  
+      $this->addCapability($key, $name);
     }
 
     return $this;
@@ -559,13 +559,15 @@ class PostType implements TrackableObjectInterface {
    * @param  string                         $capability
    * @return \Ponticlaro\Bebop\Cms\PostType             PostType instance
    */
-  public function addCapability($capability)
+  public function addCapability($key, $name)
   {
-    if (!is_string($capability))
-      throw new \Exception('PostType capability must be a string.');
+    if (!is_string($key))
+      throw new \Exception('PostType capability key must be a string.');
 
-    if (!$this->capabilities->hasValue($capability))
-      $this->capabilities->push($capability);
+    if (!is_string($name))
+      throw new \Exception('PostType capability name must be a string.');
+
+    $this->capabilities->set($key, $name);
 
     return $this;
   }
@@ -578,8 +580,8 @@ class PostType implements TrackableObjectInterface {
    */
   public function removeCapabilities(array $capabilities = array())
   {
-    foreach ($capabilities as $capability) {
-      $this->removeCapability($capability);
+    foreach ($capabilities as $key) {
+      $this->removeCapability($key);
     }
 
     return $this;
@@ -588,16 +590,15 @@ class PostType implements TrackableObjectInterface {
   /**
    * Removes a single capability
    * 
-   * @param  string                         $capability
-   * @return \Ponticlaro\Bebop\Cms\PostType             PostType instance
+   * @param  string                         $key
+   * @return \Ponticlaro\Bebop\Cms\PostType      PostType instance
    */
-  public function removeCapability($capability)
+  public function removeCapability($key)
   {
-    if (!is_string($capability))
-      throw new \Exception('PostType capability must be a string.');
+    if (!is_string($key))
+      throw new \Exception('PostType capability key must be a string.');
 
-    if ($this->capabilities->hasValue($capability))
-      $this->capabilities->pop($capability);
+    $this->capabilities->remove($key);
 
     return $this;
   }

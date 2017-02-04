@@ -289,7 +289,7 @@ class PostType implements TrackableObjectInterface {
    */
   public function hasArchive()
   {
-    return $this->config->set('has_archive');
+    return $this->config->get('has_archive') ? true : false;
   }
 
  /**
@@ -312,7 +312,15 @@ class PostType implements TrackableObjectInterface {
    */
   public function isExcludedFromSearch()
   {
-    return $this->config->get('exclude_from_search') ?: !$this->config->get('public');
+    $value = $this->config->get('exclude_from_search');
+
+    if ($value)
+      return true;
+
+    if ($value === false)
+      return false;
+
+    return !$this->isPublic();
   }
 
  /**
@@ -335,7 +343,7 @@ class PostType implements TrackableObjectInterface {
    */
   public function isHierarchical()
   {
-    return $this->config->get('hierarchical');
+    return $this->config->get('hierarchical') ? true : false;
   }
 
  /**
@@ -358,7 +366,7 @@ class PostType implements TrackableObjectInterface {
    */
   public function isExportable()
   {
-    return $this->config->get('can_export');
+    return $this->config->get('can_export') ? true : false;
   }
 
  /**
@@ -381,7 +389,9 @@ class PostType implements TrackableObjectInterface {
    */
   public function isPubliclyQueryable()
   {
-    return $this->config->get('publicly_queryable') ?: $this->config->get('public');
+    $value = $this->config->get('publicly_queryable');
+
+    return $value === false ? false : true;
   }
 
   /**

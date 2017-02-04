@@ -49,23 +49,33 @@ class PostTypeCest
     ]
   ];
 
+  /**
+   * List of mock instances
+   * 
+   * @var array
+   */
+  private $mocks = [];
+
   public function _before(UnitTester $I)
   {
     // Mock Utils
     // - ::slugify
-    Test::double('Ponticlaro\Bebop\Common\Utils', [
+    $this->mocks['Collection'] = Test::double('Ponticlaro\Bebop\Common\Utils', [
       'slugify' => function() {
         return strtolower(func_get_arg(0));
       }
     ]);
 
-    \WP_Mock::setUp();
+    // Mock add_action function
+    $this->mocks['add_action'] = Test::func('Ponticlaro\Bebop\Cms', 'add_action', true);
+
+    //\WP_Mock::setUp();
   }
 
   public function _after(UnitTester $I)
   {
     Test::clean();
-    \WP_Mock::tearDown();
+    //\WP_Mock::tearDown();
   }
 
   /**
@@ -80,11 +90,11 @@ class PostTypeCest
    */
   public function create(UnitTester $I)
   {  
-    // Making sure PostType will be registered on the WordPress 'init' hook
-    //\WP_Mock::expectActionAdded('init', []);
-
     // Create test instance
     $type = new PostType('Product');
+
+    // Verify add_action was called once
+    $this->mocks['add_action']->verifyInvokedOnce(['init', [$type, '__register'], 1]);
 
     // Check $type->config
     $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
@@ -159,16 +169,20 @@ class PostTypeCest
   /**
    * @author cristianobaptista
    * @covers Ponticlaro\Bebop\Cms\PostType::__construct
+   * @covers Ponticlaro\Bebop\Cms\PostType::__setName
+   * @covers Ponticlaro\Bebop\Cms\PostType::__setSingularName
+   * @covers Ponticlaro\Bebop\Cms\PostType::__setPluralName
+   * @covers Ponticlaro\Bebop\Cms\PostType::__setDefaultLabels
    * 
    * @param UnitTester $I Tester Module
    */
   public function createWithIrregularPluralForm(UnitTester $I)
   {
-    // Making sure PostType will be registered on the WordPress 'init' hook
-    //\WP_Mock::expectActionAdded('init', []);
-
     // Create test instance
     $type = new PostType(['Gallery', 'Galleries']);
+
+    // Verify add_action was called once
+    $this->mocks['add_action']->verifyInvokedOnce(['init', [$type, '__register'], 1]);
 
     // Check $type->config
     $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
@@ -434,12 +448,11 @@ class PostTypeCest
    * @covers  Ponticlaro\Bebop\Cms\PostType::makePublic
    * @covers  Ponticlaro\Bebop\Cms\PostType::isPublic
    * @covers  Ponticlaro\Bebop\Cms\PostType::__call
-   * 
    * @depends create
    * 
    * @param UnitTester $I Tester Module
    */
-  public function makePublic(UnitTester $I)
+  public function setAndGetPublic(UnitTester $I)
   {
     // Create test instance
     $type = new PostType('Product');
@@ -458,6 +471,312 @@ class PostTypeCest
 
    // Test ::isPublic updated value
     $I->assertTrue($type->isPublic());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::archiveEnabled
+   * @covers  Ponticlaro\Bebop\Cms\PostType::hasArchive
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetArchive(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::hasArchive default value
+    $I->assertTrue($type->hasArchive());
+
+    // Test ::archiveEnabled
+    $type->archiveEnabled(false);
+
+    // Test ::hasArchive updated value
+    $I->assertFalse($type->hasArchive());
+
+    // Test ::setHasArchive alias method
+    $type->setHasArchive(true);
+
+    // Test ::hasArchive updated value
+    $I->assertTrue($type->hasArchive());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setExcludeFromSearch
+   * @covers  Ponticlaro\Bebop\Cms\PostType::isExcludedFromSearch
+   * @depends create
+   * @depends setAndGetPublic
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetExcludeFromSearch(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::isExcludedFromSearch default value
+    $I->assertFalse($type->isExcludedFromSearch());
+
+    // Test ::setExcludeFromSearch
+    $type->setExcludeFromSearch(true);
+
+    // Test ::isExcludedFromSearch updated value
+    $I->assertTrue($type->isExcludedFromSearch());
+
+    // Test ::setExcludeFromSearch
+    $type->setExcludeFromSearch(false);
+
+    // Test ::isExcludedFromSearch updated value
+    $I->assertFalse($type->isExcludedFromSearch());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setHierarchical
+   * @covers  Ponticlaro\Bebop\Cms\PostType::isHierarchical
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetHierarchical(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::isHierarchical default value
+    $I->assertFalse($type->isHierarchical());
+
+    // Test ::setHierarchical
+    $type->setHierarchical(true);
+
+    // Test ::isHierarchical updated value
+    $I->assertTrue($type->isHierarchical());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setExportable
+   * @covers  Ponticlaro\Bebop\Cms\PostType::isExportable
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetExportable(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::isExportable default value
+    $I->assertTrue($type->isExportable());
+
+    // Test ::setExportable
+    $type->setExportable(false);
+
+    // Test ::isExportable updated value
+    $I->assertFalse($type->isExportable());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setPubliclyQueryable
+   * @covers  Ponticlaro\Bebop\Cms\PostType::isPubliclyQueryable
+   * @depends create
+   * @depends setAndGetPublic
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetPubliclyQueryable(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::isPubliclyQueryable default value
+    $I->assertTrue($type->isPubliclyQueryable());
+
+    // Test ::setPubliclyQueryable
+    $type->setPubliclyQueryable(false);
+
+    // Test ::isPubliclyQueryable updated value
+    $I->assertFalse($type->isPubliclyQueryable());
+
+    // Test ::setPubliclyQueryable
+    $type->setPubliclyQueryable(true);
+
+    // Test ::isPubliclyQueryable updated value
+    $I->assertTrue($type->isPubliclyQueryable());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setMenuPosition
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getMenuPosition
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetMenuPosition(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getMenuPosition default value
+    $I->assertNull($type->getMenuPosition());
+
+    // Test ::setMenuPosition
+    $type->setMenuPosition(1);
+
+    // Test ::getMenuPosition updated value
+    $I->assertEquals($type->getMenuPosition(), 1);
+
+    // Test ::setMenuPosition with bad arguments
+    $bad_args = [
+      null,
+      'string',
+      [null, 'string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setMenuPosition($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setMenuIcon
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getMenuIcon
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetMenuIcon(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getMenuIcon default value
+    $I->assertNull($type->getMenuIcon());
+
+    // Test ::setMenuIcon
+    $type->setMenuIcon('path/to/menu/icon.jpg');
+
+    // Test ::getMenuIcon updated value
+    $I->assertEquals($type->getMenuIcon(), 'path/to/menu/icon.jpg');
+
+    // Test ::setMenuIcon with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setMenuIcon($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setCapabilityType
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getCapabilityType
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetCapabilityType(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getCapabilityType default value
+    $I->assertNull($type->getCapabilityType());
+
+    // Test ::setCapabilityType
+    $type->setCapabilityType('page');
+
+    // Test ::getCapabilityType updated value
+    $I->assertEquals($type->getCapabilityType(), 'page');
+
+    // Test ::setCapabilityType with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setCapabilityType($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getFullConfig
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function getFullConfig(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Build expected config array
+    $config                 = $this->prod_cfg['config'];
+    $config['labels']       = $this->prod_cfg['labels'];
+    $config['supports']     = $this->prod_cfg['features'];
+    $config['capabilities'] = $this->prod_cfg['capabilities'];
+    $config['taxonomies']   = $this->prod_cfg['taxonomies'];
+    $config['rewrite']      = $this->prod_cfg['rewrite_config'];
+
+    // Verify values match
+    $I->assertEquals($config, $type->getFullConfig());
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__register
+   * @depends create
+   * @depends getFullConfig
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function register(UnitTester $I)
+  {
+    // Mock register_post_type
+    $mock = Test::func('Ponticlaro\Bebop\Cms', 'register_post_type', true);
+
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Call __register
+    $type->__register();
+
+    // Verify that register_post_type is called once with the correct args
+    $mock->verifyInvokedOnce([
+      $type->getId(),
+      $type->getFullConfig()
+    ]);
   }
 
   /**

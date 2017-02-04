@@ -252,7 +252,7 @@ class PostType implements TrackableObjectInterface {
    * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
-  public function makePublic(bool $enabled = true)
+  public function makePublic(bool $enabled)
   {
     $this->config->set('public', $enabled);
 
@@ -298,7 +298,7 @@ class PostType implements TrackableObjectInterface {
    * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
-  public function setExcludeFromSearch(bool $enabled = true)
+  public function setExcludeFromSearch(bool $enabled)
   {
     $this->config->set('exclude_from_search', $enabled);
 
@@ -321,7 +321,7 @@ class PostType implements TrackableObjectInterface {
    * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
-  public function setHierarchical(bool $enabled = true)
+  public function setHierarchical(bool $enabled)
   {
     $this->config->set('hierarchical', $enabled);
 
@@ -344,7 +344,7 @@ class PostType implements TrackableObjectInterface {
    * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
-  public function setExportable(bool $enabled = true)
+  public function setExportable(bool $enabled)
   {
     $this->config->set('can_export', $enabled);
 
@@ -367,7 +367,7 @@ class PostType implements TrackableObjectInterface {
    * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
-  public function setPubliclyQueryable(bool $enabled = true)
+  public function setPubliclyQueryable(bool $enabled)
   {
     $this->config->set('publicly_queryable', $enabled);
 

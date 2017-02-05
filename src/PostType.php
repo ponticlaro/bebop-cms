@@ -402,6 +402,9 @@ class PostType implements TrackableObjectInterface {
    */
   public function showUi($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType show_ui must be a boolean.');
+
     $this->config->set('show_ui', $enabled);
 
     return $this;
@@ -415,6 +418,9 @@ class PostType implements TrackableObjectInterface {
    */
   public function showInNavMenus($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType show_in_nav_menus must be a boolean.');
+
     $this->config->set('show_in_nav_menus', $enabled);
 
     return $this;
@@ -428,6 +434,9 @@ class PostType implements TrackableObjectInterface {
    */
   public function showInMenu($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType show_in_menu must be a boolean.');
+
     $this->config->set('show_in_menu', $enabled);
 
     return $this;
@@ -441,6 +450,9 @@ class PostType implements TrackableObjectInterface {
    */
   public function showInAdminBar($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType show_in_admin_bar must be a boolean.');
+
     $this->config->set('show_in_admin_bar', $enabled);
 
     return $this;
@@ -616,11 +628,14 @@ class PostType implements TrackableObjectInterface {
   /**
    * Sets the value for 'map_meta_cap'
    * 
-   * @param  string                         $enabled True to enable, false otherwise
+   * @param  boolean                        $enabled True to enable, false otherwise
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
   public function setMapMetaCapabilities($enabled = true)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType map_meta_cap must be a boolean.');
+
     $this->config->set('map_meta_cap', $enabled);
 
     return $this;
@@ -858,7 +873,30 @@ class PostType implements TrackableObjectInterface {
    */
   public function setRewrite(array $args = array())
   {
-    $this->rewrite_config->set($args);
+    foreach ($args as $key => $value) {
+      switch ($key) {
+
+        case 'slug':
+          $this->setRewriteSlug($value);
+          break;
+
+        case 'with_front':
+          $this->setRewriteWithFront($value);
+          break;
+
+        case 'feeds':
+          $this->setRewriteFeeds($value);
+          break;
+
+        case 'pages':
+          $this->setRewritePages($value);
+          break;
+
+        case 'ep_mask':
+          $this->setRewriteEpmask($value);
+          break;
+      }
+    }
 
     return $this;
   }
@@ -882,11 +920,14 @@ class PostType implements TrackableObjectInterface {
   /**
    * Sets the value for 'rewrite[with_front]'
    * 
-   * @param  string                         $enabled
+   * @param  boolean                        $enabled
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
   public function setRewriteWithFront($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType rewrite with_front must be a boolean.');
+
     $this->rewrite_config->set('with_front', $enabled);
 
     return $this;
@@ -895,11 +936,14 @@ class PostType implements TrackableObjectInterface {
   /**
    * Sets the value for 'rewrite[feeds]'
    * 
-   * @param  string                         $enabled
+   * @param  boolean                        $enabled
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
   public function setRewriteFeeds($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType rewrite feeds must be a boolean.');
+
     $this->rewrite_config->set('feeds', $enabled);
 
     return $this;
@@ -908,11 +952,14 @@ class PostType implements TrackableObjectInterface {
   /**
    * Sets the value for 'rewrite[pages]'
    * 
-   * @param  string                         $enabled
+   * @param  boolean                        $enabled
    * @return \Ponticlaro\Bebop\Cms\PostType          PostType instance
    */
   public function setRewritePages($enabled)
   {
+    if (!is_bool($enabled))
+      throw new \Exception('PostType rewrite pages must be a boolean.');
+
     $this->rewrite_config->set('pages', $enabled);
 
     return $this;

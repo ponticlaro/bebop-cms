@@ -608,6 +608,214 @@ class PostTypeCest
 
   /**
    * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::showUi
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setShowUI(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get $type->config
+    $config_prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
+    $config_prop->setAccessible(true);
+    $config = $config_prop->getValue($type);
+
+    // Test show_ui default value
+    $I->assertTrue($config->get('show_ui'));
+
+    // Test ::setShowUI
+    $type->showUi(false);
+
+    // Test show_ui updated value
+    $I->assertFalse($config->get('show_ui'));
+
+    // Test ::setShowUI alias method
+    $type->setShowUi(true);
+
+    // Test show_ui updated value
+    $I->assertTrue($config->get('show_ui'));
+
+    // Test ::setShowUI with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->showUi($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::showInNavMenus
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setShowInNavMenus(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get $type->config
+    $config_prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
+    $config_prop->setAccessible(true);
+    $config = $config_prop->getValue($type);
+
+    // Test show_in_nav_menus default value
+    $I->assertNull($config->get('show_in_nav_menus'));
+
+    // Test ::showInNavMenus
+    $type->showInNavMenus(true);
+
+    // Test show_in_nav_menus updated value
+    $I->assertTrue($config->get('show_in_nav_menus'));
+
+    // Test ::setShowInNavMenus alias method
+    $type->setShowInNavMenus(false);
+
+    // Test show_in_nav_menus updated value
+    $I->assertFalse($config->get('show_in_nav_menus'));
+
+    // Test ::showInNavMenus with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->showInNavMenus($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::showInMenu
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setShowInMenu(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get $type->config
+    $config_prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
+    $config_prop->setAccessible(true);
+    $config = $config_prop->getValue($type);
+
+    // Test show_in_menu default value
+    $I->assertNull($config->get('show_in_menu'));
+
+    // Test ::showInMenu
+    $type->showInMenu(true);
+
+    // Test show_in_menu updated value
+    $I->assertTrue($config->get('show_in_menu'));
+
+    // Test ::setShowInMenu alias method
+    $type->setShowInMenu(false);
+
+    // Test show_in_menu updated value
+    $I->assertFalse($config->get('show_in_menu'));
+
+    // Test ::showInMenu with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->showInMenu($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::showInAdminBar
+   * @covers  Ponticlaro\Bebop\Cms\PostType::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setShowInAdminBar(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get $type->config
+    $config_prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
+    $config_prop->setAccessible(true);
+    $config = $config_prop->getValue($type);
+
+    // Test show_in_admin_bar default value
+    $I->assertNull($config->get('show_in_admin_bar'));
+
+    // Test ::showInAdminBar
+    $type->showInAdminBar(true);
+
+    // Test show_in_admin_bar updated value
+    $I->assertTrue($config->get('show_in_admin_bar'));
+
+    // Test ::setShowInAdminBar alias method
+    $type->setShowInAdminBar(false);
+
+    // Test show_in_admin_bar updated value
+    $I->assertFalse($config->get('show_in_admin_bar'));
+
+    // Test ::showInAdminBar with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->showInAdminBar($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
    * @covers  Ponticlaro\Bebop\Cms\PostType::setMenuPosition
    * @covers  Ponticlaro\Bebop\Cms\PostType::getMenuPosition
    * @depends create
@@ -721,6 +929,726 @@ class PostTypeCest
       // Check if exception is thrown with bad arguments
       $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
         $type->setCapabilityType($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getCapabilities
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setCapabilities
+   * @covers  Ponticlaro\Bebop\Cms\PostType::addCapability
+   * @covers  Ponticlaro\Bebop\Cms\PostType::replaceCapabilities
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeCapabilities
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeCapability
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function manageCapabilities(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getCapabilities default value
+    $I->assertEmpty($type->getCapabilities());
+
+    // Test ::addCapability
+    $type->addCapability('edit_post', 'edit_product_init');
+
+     // Test ::getCapabilities updated value
+    $I->assertEquals($type->getCapabilities(), [
+      'edit_post' => 'edit_product_init'
+    ]);
+
+    // Capabilities to set
+    $caps = [
+      'edit_post'          => 'edit_product', 
+      'read_post'          => 'read_product', 
+      'delete_post'        => 'delete_product', 
+      'edit_posts'         => 'edit_product', 
+      'edit_others_posts'  => 'edit_others_products', 
+      'publish_posts'      => 'publish_products',       
+      'read_private_posts' => 'read_private_products', 
+      'create_posts'       => 'edit_products', 
+    ];
+
+    // Test ::setCapabilities
+    $type->setCapabilities($caps);
+
+    // Test ::getCapabilities updated value
+    $I->assertEquals($type->getCapabilities(), $caps);
+
+    // Capabilities to replace with
+    $replace_caps = [
+      'edit_post'          => 'edit_product_mod1', 
+      'read_post'          => 'read_product_mod1', 
+      'delete_post'        => 'delete_product_mod1', 
+      'edit_posts'         => 'edit_product_mod1', 
+      'edit_others_posts'  => 'edit_others_products_mod1', 
+      'publish_posts'      => 'publish_products_mod1',       
+      'read_private_posts' => 'read_private_products_mod1', 
+      'create_posts'       => 'edit_products_mod1', 
+    ];
+
+    // Test ::replaceCapabilities
+    $type->replaceCapabilities($replace_caps);
+
+    // Test ::getCapabilities updated value
+    $I->assertEquals($type->getCapabilities(), $replace_caps);
+
+    // Test ::removeCapability
+    $type->removeCapability('edit_post');
+
+    // Update $replace_caps to match expected value
+    unset($replace_caps['edit_post']);
+
+    // Test ::getCapabilities updated value
+    $I->assertEquals($type->getCapabilities(), $replace_caps);
+
+    // Test ::removeCapabilities
+    $type->removeCapabilities([
+      'read_post',
+      'delete_post'
+    ]);
+
+    // Update $replace_caps to match expected value
+    unset($replace_caps['read_post']);
+    unset($replace_caps['delete_post']);
+
+    // Test ::getCapabilities updated value
+    $I->assertEquals($type->getCapabilities(), $replace_caps);
+
+    // Test ::addCapability with bad arguments
+    $bad_args = [
+      [null, 'value'],
+      [0, 'value'],
+      [1, 'value'],
+      [[0, 1], 'value'],
+      [new \stdClass, 'value'],
+      ['value', null],
+      ['value', 0],
+      ['value', 1],
+      ['value', [0, 1]],
+      ['value', new \stdClass],
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->addCapability($bad_arg_val[0], $bad_arg_val[1]);
+      });
+    }  
+
+    // Test ::removeCapability with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->removeCapability($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setMapMetaCapabilities
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setMapMetaCapabilities(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get $type->config
+    $config_prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
+    $config_prop->setAccessible(true);
+    $config = $config_prop->getValue($type);
+
+    // Test map_meta_cap default value
+    $I->assertNull($config->get('map_meta_cap'));
+
+    // Test ::setMapMetaCapabilities
+    $type->setMapMetaCapabilities(true);
+
+    // Test map_meta_cap updated value
+    $I->assertTrue($config->get('map_meta_cap'));
+
+    // Test ::setMapMetaCap alias method
+    $type->setMapMetaCap(false);
+
+    // Test map_meta_cap updated value
+    $I->assertFalse($config->get('map_meta_cap'));
+
+    // Test ::setMapMetaCapabilities with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setMapMetaCapabilities($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getFeatures
+   * @covers  Ponticlaro\Bebop\Cms\PostType::addFeatures
+   * @covers  Ponticlaro\Bebop\Cms\PostType::addFeature
+   * @covers  Ponticlaro\Bebop\Cms\PostType::replaceFeatures
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeFeatures
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeFeature
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function manageFeatures(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get default features
+    $def_feats = $this->prod_cfg['features'];
+
+    // Test ::getFeatures default value
+    $I->assertEquals($type->getFeatures(), $def_feats);
+
+    // Test ::addFeature
+    $type->addFeature('excerpt');
+
+    // Update $def_feats to match expected value
+    $def_feats[] = 'excerpt';
+
+     // Test ::getFeatures updated value
+    $I->assertEquals($type->getFeatures(), $def_feats);
+
+    // Features to set
+    $add_feats = [
+      'feat_1',
+      'feat_2'
+    ];
+
+    // Update $def_feats to match expected value
+    $def_feats[] = 'feat_1';
+    $def_feats[] = 'feat_2';
+
+    // Test ::addFeatures
+    $type->addFeatures($add_feats);
+
+    // Test ::getFeatures updated value
+    $I->assertSame($type->getFeatures(), $def_feats);
+
+    // Features to replace with
+    $replace_feats = [
+      'feat_1_replaced',
+      'feat_2_replaced',
+      'feat_3_replaced',
+      'feat_4_replaced',
+      'feat_5_replaced',
+    ];
+
+    // Test ::replaceFeatures
+    $type->replaceFeatures($replace_feats);
+
+    // Test ::getFeatures updated value
+    $I->assertSame($type->getFeatures(), $replace_feats);
+
+    // Test ::removeFeature
+    $type->removeFeature('feat_1_replaced');
+
+    // Update $replace_feats to match expected value
+    unset($replace_feats[0]);
+
+    // Test ::getFeatures updated value
+    $I->assertSame($type->getFeatures(), $replace_feats);
+
+    // Test ::removeFeatures
+    $type->removeFeatures([
+      'feat_2_replaced',
+      'feat_3_replaced'
+    ]);
+
+    // Update $replace_feats to match expected value
+    unset($replace_feats[1]);
+    unset($replace_feats[2]);
+
+    // Test ::getFeatures updated value
+    $I->assertSame($type->getFeatures(), $replace_feats);
+
+    // Test ::addFeature with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->addFeature($bad_arg_val);
+      });
+    }  
+
+    // Test ::removeFeature with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->removeFeature($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setMetaboxesCallback
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getMetaboxesCallback
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetMetaboxesCallback(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getMetaboxesCallback default value
+    $I->assertNull($type->getMetaboxesCallback());
+
+    // Test ::setMetaboxesCallback
+    $type->setMetaboxesCallback('is_string');
+
+    // Test ::getMetaboxesCallback updated value
+    $I->assertEquals($type->getMetaboxesCallback(), 'is_string');
+
+    // Test ::setRegisterMetaBoxCb alias method
+    $type->setRegisterMetaBoxCb('is_bool');
+
+    // Test ::getMetaboxesCallback updated value
+    $I->assertEquals($type->getMetaboxesCallback(), 'is_bool');
+
+    // Test ::setMetaboxesCallback with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      'string',
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setMetaboxesCallback($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getTaxonomies
+   * @covers  Ponticlaro\Bebop\Cms\PostType::addTaxonomies
+   * @covers  Ponticlaro\Bebop\Cms\PostType::addTaxonomy
+   * @covers  Ponticlaro\Bebop\Cms\PostType::replaceTaxonomies
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeTaxonomies
+   * @covers  Ponticlaro\Bebop\Cms\PostType::removeTaxonomy
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function manageTaxonomies(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Get default taxonomies
+    $def_taxs = $this->prod_cfg['taxonomies'];
+
+    // Test ::getTaxonomies default value
+    $I->assertEquals($type->getTaxonomies(), $def_taxs);
+
+    // Test ::addTaxonomy
+    $type->addTaxonomy('tax_1');
+
+    // Update $add_taxs to match expected value
+    $def_taxs[] = 'tax_1';
+
+     // Test ::getTaxonomies updated value
+    $I->assertEquals($type->getTaxonomies(), $def_taxs);
+
+    // Features to set
+    $add_taxs = [
+      'tax_2',
+      'tax_3'
+    ];
+
+    // Update $add_taxs to match expected value
+    $def_taxs[] = 'tax_2';
+    $def_taxs[] = 'tax_3';
+
+    // Test ::addTaxonomies
+    $type->addTaxonomies($add_taxs);
+
+    // Test ::getTaxonomies updated value
+    $I->assertSame($type->getTaxonomies(), $def_taxs);
+
+    // Features to replace with
+    $replace_taxs = [
+      'tax_1_replaced',
+      'tax_2_replaced',
+      'tax_3_replaced',
+      'tax_4_replaced',
+      'tax_5_replaced',
+    ];
+
+    // Test ::replaceTaxonomies
+    $type->replaceTaxonomies($replace_taxs);
+
+    // Test ::getTaxonomies updated value
+    $I->assertSame($type->getTaxonomies(), $replace_taxs);
+
+    // Test ::removeTaxonomy
+    $type->removeTaxonomy('tax_1_replaced');
+
+    // Update $replace_taxs to match expected value
+    unset($replace_taxs[0]);
+
+    // Test ::getTaxonomies updated value
+    $I->assertSame($type->getTaxonomies(), $replace_taxs);
+
+    // Test ::removeFeatures
+    $type->removeTaxonomies([
+      'tax_2_replaced',
+      'tax_3_replaced'
+    ]);
+
+    // Update $replace_taxs to match expected value
+    unset($replace_taxs[1]);
+    unset($replace_taxs[2]);
+
+    // Test ::getTaxonomies updated value
+    $I->assertSame($type->getTaxonomies(), $replace_taxs);
+
+    // Test ::addTaxonomy with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->addTaxonomy($bad_arg_val);
+      });
+    }  
+
+    // Test ::removeTaxonomy with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      ['string'],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->removeTaxonomy($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setPermalinkEpmask
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getPermalinkEpmask
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetPermalinkEpmask(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getPermalinkEpmask default value
+    $I->assertNull($type->getPermalinkEpmask());
+
+    // Test ::setPermalinkEpmask
+    $type->setPermalinkEpmask('test_ep_mask');
+
+    // Test ::getPermalinkEpmask updated value
+    $I->assertEquals($type->getPermalinkEpmask(), 'test_ep_mask');
+
+    // Test ::setPermalinkEpmask with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setPermalinkEpmask($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewrite
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewriteSlug
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewriteWithFront
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewriteFeeds
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewritePages
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setRewriteEpmask
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getRewrite
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function manageRewrite(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+ 
+    // Get default taxonomies
+    $def_rewrite = $this->prod_cfg['rewrite_config'];
+
+    // Test ::getRewrite default value
+    $I->assertEquals($type->getRewrite(), $def_rewrite);
+
+    // Test ::setRewriteSlug
+    $type->setRewriteSlug('product-slug1');
+
+    // Change $def_rewrite to match expected value
+    $def_rewrite['slug'] = 'product-slug1';
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $def_rewrite); 
+
+    // Test ::setRewriteWithFront
+    $type->setRewriteWithFront(true);
+
+    // Change $def_rewrite to match expected value
+    $def_rewrite['with_front'] = true;
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $def_rewrite); 
+
+    // Test ::setRewriteFeeds
+    $type->setRewriteFeeds(false);
+
+    // Change $def_rewrite to match expected value
+    $def_rewrite['feeds'] = false;
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $def_rewrite); 
+
+    // Test ::setRewritePages
+    $type->setRewritePages(false);
+
+    // Change $def_rewrite to match expected value
+    $def_rewrite['pages'] = false;
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $def_rewrite); 
+
+    // Test ::setRewriteEpmask
+    $type->setRewriteEpmask('test_ep_mask');
+
+    // Change $def_rewrite to match expected value
+    $def_rewrite['ep_mask'] = 'test_ep_mask';
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $def_rewrite); 
+
+    // Build modification array
+    $rewrite_mods = [
+      'slug'       => 'product-slug1-mod',
+      'with_front' => false,
+      'feeds'      => true,
+      'pages'      => true,
+      'ep_mask'    => 'test_ep_mask_mod'
+    ];
+
+    // Test ::setRewrite
+    $type->setRewrite($rewrite_mods);
+
+    // Test ::getRewrite updated value
+    $I->assertEquals($type->getRewrite(), $rewrite_mods); 
+
+    // Test ::setRewriteSlug with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setRewriteSlug($bad_arg_val);
+      });
+    }    
+
+    // Test ::setRewriteWithFront with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setRewriteWithFront($bad_arg_val);
+      });
+    }   
+
+    // Test ::setRewriteFeeds with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setRewriteFeeds($bad_arg_val);
+      });
+    }   
+
+    // Test ::setRewritePages with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setRewritePages($bad_arg_val);
+      });
+    }   
+
+    // Test ::setRewriteEpmask with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setRewriteEpmask($bad_arg_val);
+      });
+    }  
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\PostType::setQueryVar
+   * @covers  Ponticlaro\Bebop\Cms\PostType::getQueryVar
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function setAndGetQueryVar(UnitTester $I)
+  {
+    // Create test instance
+    $type = new PostType('Product');
+
+    // Test ::getQueryVar default value
+    $I->assertTrue($type->getQueryVar());
+
+    // Test ::setQueryVar
+    $type->setQueryVar('product_test');
+
+    // Test ::getQueryVar updated value
+    $I->assertEquals($type->getQueryVar(), 'product_test');
+
+    // Test ::setQueryVar
+    $type->setQueryVar(false);
+
+    // Test ::getQueryVar updated value
+    $I->assertFalse($type->getQueryVar());
+
+    // Test ::setQueryVar with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($type, $bad_arg_val) {
+        $type->setQueryVar($bad_arg_val);
       });
     }    
   }

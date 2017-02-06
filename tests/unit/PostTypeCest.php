@@ -177,15 +177,11 @@ class PostTypeCest
     // Create test instance
     $type = new PostType(['Gallery', 'Galleries']);
 
-    // Verify add_action was called once
-    $this->mocks['add_action']->verifyInvokedOnce(['init', [$type, '__register'], 1]);
-
     // Check $type->config
     $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'config');
     $prop->setAccessible(true);
     $prop_val = $prop->getValue($type);
 
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
     $I->assertEquals($prop_val->getAll(), [
       'id'                 => 'gallery',
       'public'             => true,
@@ -198,24 +194,11 @@ class PostTypeCest
       'plural_name'        => 'Galleries', // Added dynamically
     ]);
 
-    // Check $type->features
-    $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'features');
-    $prop->setAccessible(true);
-    $prop_val = $prop->getValue($type);
-
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
-    $I->assertEquals($prop_val->getAll(), [
-      'title',
-      'editor',
-      'revisions'
-    ]);
-
     // Check $type->labels
     $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'labels');
     $prop->setAccessible(true);
     $prop_val = $prop->getValue($type);
 
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
     $I->assertEquals($prop_val->getAll(), [
       'name'               => 'Galleries',
       'singular_name'      => 'Gallery',
@@ -230,32 +213,6 @@ class PostTypeCest
       'not_found'          => 'There are no Galleries',
       'not_found_in_trash' => 'There are no Galleries in trash', 
       'parent_item_colon'  => 'Parent Gallery:'
-    ]);
-
-    // Check $type->capabilities
-    $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'capabilities');
-    $prop->setAccessible(true);
-    $prop_val = $prop->getValue($type);
-
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
-    $I->assertEmpty($prop_val->getAll());
-
-    // Check $type->taxonomies
-    $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'taxonomies');
-    $prop->setAccessible(true);
-    $prop_val = $prop->getValue($type);
-
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
-    $I->assertEmpty($prop_val->getAll());
-
-    // Check $type->rewrite_config
-    $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\PostType', 'rewrite_config');
-    $prop->setAccessible(true);
-    $prop_val = $prop->getValue($type);
-
-    $I->assertTrue($prop_val instanceof \Ponticlaro\Bebop\Common\Collection);
-    $I->assertEquals($prop_val->getAll(), [
-      'with_front' => false
     ]);
   }
 

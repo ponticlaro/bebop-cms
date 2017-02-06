@@ -568,8 +568,8 @@ class PostType implements TrackableObjectInterface {
   /**
    * Adds a single capability
    * 
-   * @param  string                         $capability
-   * @return \Ponticlaro\Bebop\Cms\PostType             PostType instance
+   * @param string $key  Capability key
+   * @param string $name Capability name
    */
   public function addCapability($key, $name)
   {

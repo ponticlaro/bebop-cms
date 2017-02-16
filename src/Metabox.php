@@ -3,27 +3,14 @@
 namespace Ponticlaro\Bebop\Cms;
 
 use Ponticlaro\Bebop\Common\Collection;
+use Ponticlaro\Bebop\Common\Patterns\TrackableObjectInterface;
 use Ponticlaro\Bebop\Common\Utils;
 use Ponticlaro\Bebop\Cms\Helpers\ComponentFactory;
 use Ponticlaro\Bebop\Cms\Helpers\MetaboxData;
 use Ponticlaro\Bebop\UI\Helpers\ModuleFactory;
 
-class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract {
+class Metabox implements TrackableObjectInterface {
     
-  /**
-   * Required trackable object type
-   * 
-   * @var string
-   */
-  protected $__trackable_type = 'metabox';
-
-  /**
-   * Required trackable object ID
-   * 
-   * @var string
-   */
-  protected $__trackable_id;
-
   /**
    * Configuration for this metabox 
    * 
@@ -58,6 +45,22 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    * @var Ponticlaro\Bebop\Common\Collection
    */
   protected $data;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectID()
+  {
+    return $this->getId();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectType()
+  {
+    return 'metabox';
+  }
 
   /**
    * Instantiates new metabox
@@ -118,11 +121,6 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
       elseif (is_array($post_types)) {
           
         $this->setPostTypes($post_types);
-      }
-
-      else {
-
-        throw new \Exception('Metabox $post_types argument must be either a string, array or a \Ponticlaro\Bebop\PostType instance.');
       }
     }
 
@@ -214,26 +212,29 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
   }
 
   /**
-   * Sets metabox ID
+   * Sets post type ID
    * 
-   * @param string $id
+   * @param  string                         $id
+   * @return \Ponticlaro\Bebop\Cms\PostType     PostType instance
    */
   public function setId($id)
   {
-    if (is_string($id))
-      $this->__trackable_id = $id;
+    if (!is_string($id))
+      throw new \Exception('Metabox $id argument must be a string.');
+
+    $this->config->set('id', $id);
 
     return $this;
   }
 
   /**
-   * Returns metabox ID
+   * Returns post type ID
    * 
    * @return string $id
    */
   public function getId()
   {
-    return $this->__trackable_id;
+    return $this->config->get('id');
   }
 
   /**
@@ -308,15 +309,16 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    */
   public function addPostType($post_type)
   {
-    if (is_string($post_type)) {
+    if (is_a($post_type, 'Ponticlaro\Bebop\Cms\PostType'))
+      $post_type = $post_type->getId();
 
-      $this->post_types->push(Utils::slugify($post_type));
-    } 
+    if (!is_string($post_type))
+      throw new \Exception('Metabox post type must be either a string or a \Ponticlaro\Bebop\Cms\PostType instance.');          
 
-    elseif(is_object($post_type) && is_a($post_type, 'Ponticlaro\Bebop\PostType')) {
+    $post_type = Utils::slugify($post_type);
 
-      $this->post_types->push($post_type->getId());
-    }
+    if (!$this->post_types->hasValue($post_type))
+      $this->post_types->push($post_type);
 
     return $this;
   }
@@ -328,6 +330,12 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    */
   public function removePostType($post_type)
   {
+    if (is_a($post_type, 'Ponticlaro\Bebop\Cms\PostType'))
+      $post_type = $post_type->getId();
+
+    if (!is_string($post_type))
+      throw new \Exception('Metabox post type must be either a string or a \Ponticlaro\Bebop\Cms\PostType instance.');          
+
     $this->post_types->pop($post_type);
 
     return $this;
@@ -411,8 +419,7 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    */
   public function setCallbackArgs(array $args = array())
   {
-    if ($args)
-        $this->config->set('callback_args', $args);
+    $this->config->set('callback_args', $args);
 
     return $this;
   }
@@ -470,6 +477,16 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
   }
 
   /**
+   * Returns all meta fields
+   * 
+   * @return array 
+   */
+  public function getMetaFields()
+  {
+    return $this->meta_fields->getAll();
+  }
+
+  /**
    * Adds a single content section
    * 
    * @param string $id   ID of a module in the UI ModuleFactory class
@@ -477,11 +494,14 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    */
   public function addSection($id, array $args)
   {
-    if (ModuleFactory::canManufacture($id)) {
+    if (!is_string($id))
+      throw new \Exception('Metabox section $id must be a string.');
+
+    if (!ModuleFactory::canManufacture($id))
+      throw new \Exception("Metabox don't know how to handle a '$id' UI section.");
         
-      $section = ModuleFactory::create($id, $args);
-      $this->sections->push($section);
-    }
+    $section = ModuleFactory::create($id, $args);
+    $this->sections->push($section);
 
     return $this;
   }
@@ -506,13 +526,13 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
   public function __call($name, array $args = [])
   {   
     // Quick method to add sections
-    if (ModuleFactory::canManufacture($name)) {
-        
-      $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
-      $section = ModuleFactory::create($name, $args);
+    if (!ModuleFactory::canManufacture($name))
+      throw new \Exception("Metabox don't know how to create undefined '$name' UI section.");
 
-      $this->sections->push($section);
-    }
+    $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
+    $section = ModuleFactory::create($name, $args);
+
+    $this->sections->push($section);
 
     return $this;
   }
@@ -525,7 +545,7 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
    * @param  object $metabox This metabox instance
    * @return void    
    */
-  public function __collectSectionsFieldNames($data, $post, $metabox)
+  private function __collectSectionsFieldNames($data, $post, $metabox)
   {
     foreach($this->sections->getAll() as $section) {
       $section->renderMainTemplate();
@@ -539,30 +559,30 @@ class Metabox extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract 
   private function __setMetaFields()
   {   
     // Only execute if there are no manually defined meta fields
-    if (!$this->meta_fields->getAll()) {
+    if ($this->meta_fields->getAll())
+      return;
 
-      // Set callable arguments
-      $args = array($this->data, new \WP_Post(new \stdClass), $this);
+    // Set callable arguments
+    $args = array($this->data, new \WP_Post(new \stdClass), $this);
 
-      // Collect current sections
-      $sections = $this->sections->getAll();
+    // Collect current sections
+    $sections = $this->sections->getAll();
 
-      if ($callback = $this->getCallback()) {
+    if ($callback = $this->getCallback()) {
 
-        // Collect field names from callable
-        $names = Utils::getControlNamesFromCallable($callback, $args);
-        $this->meta_fields->pushList($names);
-      }
-
-      if ($this->getAllSections()) {
-
-        $names = Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], $args);
-        $this->meta_fields->pushList($names);
-      }
-
-      // Reset sections so that we do not have duplicates
-      $this->sections->clear()->pushList($sections);
+      // Collect field names from callable
+      $names = Utils::getControlNamesFromCallable($callback, $args);
+      $this->meta_fields->pushList($names);
     }
+
+    if ($this->getAllSections()) {
+
+      $names = Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], $args);
+      $this->meta_fields->pushList($names);
+    }
+
+    // Reset sections so that we do not have duplicates
+    $this->sections->clear()->pushList($sections);
   }
 
   /**

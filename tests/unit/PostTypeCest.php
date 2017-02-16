@@ -12,7 +12,7 @@ class PostTypeCest
    */
   private $prod_cfg = [
     'config' => [
-      'id'                 => 'product',
+      'id'                 => 'product', // Added dynamically
       'public'             => true,
       'has_archive'        => true,
       'publicly_queryable' => true,

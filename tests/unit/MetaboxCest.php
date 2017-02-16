@@ -728,18 +728,6 @@ class MetaboxCest
     // Create test instance
     $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
 
-    // Add section
-    $metabox->addMetaField('test_meta_field_1');
-
-    // Get reflection of ::__setMetaFields and make it accessible
-    $method = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Metabox', '__callbackWrapper');
-    $method->setAccessible(true);
-    $method->invoke($metabox);
-
-    // Test ::getMetaFields updated value
-    $I->assertEquals($metabox->getMetaFields(), [
-      'test_meta_field_1'
-    ]);
   }
 
   /**

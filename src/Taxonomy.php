@@ -333,7 +333,7 @@ class Taxonomy implements TrackableObjectInterface {
       $post_type = $post_type->getId();
 
     if (!is_string($post_type))
-      throw new \Exception('Taxonomy post type must be either a string or a \Ponticlaro\Bebop\PostType instance.');          
+      throw new \Exception('Taxonomy post type must be either a string or a \Ponticlaro\Bebop\Cms\PostType instance.');          
 
     $post_type = Utils::slugify($post_type);
 

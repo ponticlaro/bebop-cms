@@ -1020,7 +1020,7 @@ class PostType implements TrackableObjectInterface {
   /**
    * Applies a register_post_type $args configuration array to this PostType
    * 
-   * @param  array $args Same argumeents used to 
+   * @param  array $args Same parameters used with register_post_type + some extras
    * @return void
    */
   public function applyRawArgs(array $args = array())

@@ -142,75 +142,6 @@ class Metabox implements TrackableObjectInterface {
     add_action("add_meta_boxes", array($this, '__register'));
   }
 
-  public function applyArgs(array $args = [])
-  {
-    // Handle 'title'
-    if (isset($args['title']) && is_string($args['title'])) {
-      $this->setTitle($args['title']);
-      unset($args['title']);
-    }
-
-    // Handle 'id'
-    if (isset($args['id']) && is_string($args['id'])) {
-      $this->setId($args['id']);
-      unset($args['id']);
-    }
-
-    // Handle 'fn'
-    if (isset($args['fn']) && is_callable($args['fn'])) {
-      $this->setCallback($args['fn']);
-      unset($args['fn']);
-    }
-
-    // Handle 'fn_args'
-    if (isset($args['fn_args']) && is_array($args['fn_args'])) {
-      $this->setCallbackArgs($args['fn_args']);
-      unset($args['fn_args']);
-    }
-
-    // Handle 'types'
-    if (isset($args['types']) && $args['types']) {
-
-      if (is_array($args['types'])) {
-        $this->setPostTypes($args['types']);
-      }
-
-      elseif(is_string($args['types'])) {
-        $this->addPostType($args['types']);
-      }
-      
-      unset($args['types']);
-    }
-
-    // Handle 'context'
-    if (isset($args['context']) && is_string($args['context'])) {
-      $this->setContext($args['context']);
-      unset($args['context']);
-    }
-
-    // Handle 'priority'
-    if (isset($args['priority']) && is_string($args['priority'])) {
-      $this->setPriority($args['priority']);
-      unset($args['priority']);
-    }
-
-    // Handle 'sections'
-    if (isset($args['sections']) && is_array($args['sections'])) {
-      foreach ($args['sections'] as $section) {
-        
-        if (isset($section['ui']) && is_string($section['ui']) && $section['ui']) {
-          
-          $ui_id = $section['ui'];
-          unset($section['ui']);
-
-          $this->addSection($ui_id, $section);
-        }
-      }
-      
-      unset($args['sections']);
-    }
-  }
-
   /**
    * Sets post type ID
    * 
@@ -517,6 +448,81 @@ class Metabox implements TrackableObjectInterface {
   }
 
   /**
+   * Applies a add_meta_box $args configuration array to this Metabox
+   * 
+   * @param  array $args Same arguments used with add_meta_box + some extras
+   * @return void
+   */
+  public function applyArgs(array $args = [])
+  {
+    // Handle 'title'
+    if (isset($args['title']) && is_string($args['title'])) {
+      $this->setTitle($args['title']);
+      unset($args['title']);
+    }
+
+    // Handle 'id'
+    if (isset($args['id']) && is_string($args['id'])) {
+      $this->setId($args['id']);
+      unset($args['id']);
+    }
+
+    // Handle 'fn'
+    if (isset($args['fn']) && is_callable($args['fn'])) {
+      $this->setCallback($args['fn']);
+      unset($args['fn']);
+    }
+
+    // Handle 'fn_args'
+    if (isset($args['fn_args']) && is_array($args['fn_args'])) {
+      $this->setCallbackArgs($args['fn_args']);
+      unset($args['fn_args']);
+    }
+
+    // Handle 'types'
+    if (isset($args['types']) && $args['types']) {
+
+      if (is_array($args['types'])) {
+        $this->setPostTypes($args['types']);
+      }
+
+      elseif(is_string($args['types'])) {
+        $this->addPostType($args['types']);
+      }
+      
+      unset($args['types']);
+    }
+
+    // Handle 'context'
+    if (isset($args['context']) && is_string($args['context'])) {
+      $this->setContext($args['context']);
+      unset($args['context']);
+    }
+
+    // Handle 'priority'
+    if (isset($args['priority']) && is_string($args['priority'])) {
+      $this->setPriority($args['priority']);
+      unset($args['priority']);
+    }
+
+    // Handle 'sections'
+    if (isset($args['sections']) && is_array($args['sections'])) {
+      foreach ($args['sections'] as $section) {
+        
+        if (isset($section['ui']) && is_string($section['ui']) && $section['ui']) {
+          
+          $ui_id = $section['ui'];
+          unset($section['ui']);
+
+          $this->addSection($ui_id, $section);
+        }
+      }
+      
+      unset($args['sections']);
+    }
+  }
+
+  /**
    * Calls to undefined functions
    * 
    * @param  string $name Function name
@@ -627,26 +633,6 @@ class Metabox implements TrackableObjectInterface {
   }
 
   /**
-   * Registers this metabox for each post types it was assigned to
-   * 
-   * @return void
-   */
-  public function __register()
-  {
-    foreach ($this->getPostTypes() as $post_type) {
-      add_meta_box( 
-        $this->getId(),
-        $this->getTitle(),
-        array($this, '__callbackWrapper'),
-        $post_type, 
-        $this->getContext(),
-        $this->getPriority(), 
-        $this->getCallbackArgs()
-      );
-    }
-  }
-
-  /**
    * Saves meta data
    * 
    * @param  int  $post_id ID of the post currently being edited
@@ -655,7 +641,8 @@ class Metabox implements TrackableObjectInterface {
   public function __saveMeta($post_id) 
   {
     // Return if this is a quick edition
-    if (isset($_POST['_inline_edit']) && wp_verify_nonce($_POST['_inline_edit'], 'inlineeditnonce')) return;
+    if (isset($_POST['_inline_edit']) && wp_verify_nonce($_POST['_inline_edit'], 'inlineeditnonce')) 
+      return;
 
     $id         = $this->getId();
     $nonce_name = 'metabox_'. $id .'_nonce';
@@ -669,7 +656,7 @@ class Metabox implements TrackableObjectInterface {
       if (isset($_POST['post_type']) && $_POST['post_type'] == $post->post_type ) {
 
         // Get out if current post is in the middle of an auto-save
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) 
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) 
           return $post_id;
 
         // Get out if current user cannot edit this post
@@ -709,6 +696,26 @@ class Metabox implements TrackableObjectInterface {
           }
         }
       }
+    }
+  }
+
+  /**
+   * Registers this metabox for each post types it was assigned to
+   * 
+   * @return void
+   */
+  public function __register()
+  {
+    foreach ($this->getPostTypes() as $post_type) {
+      add_meta_box( 
+        $this->getId(),
+        $this->getTitle(),
+        array($this, '__callbackWrapper'),
+        $post_type, 
+        $this->getContext(),
+        $this->getPriority(), 
+        $this->getCallbackArgs()
+      );
     }
   }
 }

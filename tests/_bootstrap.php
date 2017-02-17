@@ -9,7 +9,7 @@ $kernel->init([
   'debug'        => true,
   'includePaths' => [
 
-    // Modules source code
+    // Module source code
     __DIR__.'/../src',
 
     // Source code of other Bebop modules

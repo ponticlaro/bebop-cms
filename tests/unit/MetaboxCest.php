@@ -1,6 +1,7 @@
 <?php
 
 use AspectMock\Test;
+use phpmock\mockery\PHPMockery;
 use Ponticlaro\Bebop\Cms\Metabox;
 use Ponticlaro\Bebop\Cms\Helpers\MetaboxData;
 
@@ -46,11 +47,20 @@ class MetaboxCest
 
     // Mock add_action function
     $this->mocks['add_action'] = Test::func('Ponticlaro\Bebop\Cms', 'add_action', true);
+
+    // Mock get_post_meta function
+    $this->mocks['get_post_meta'] = Test::func('Ponticlaro\Bebop\Cms', 'get_post_meta', function() {
+      return func_get_arg(1) .'_value';
+    });
+
+    // Mock wp_nonce_field function
+    $this->mocks['wp_nonce_field'] = Test::func('Ponticlaro\Bebop\Cms', 'wp_nonce_field', true);
   }
 
   public function _after(UnitTester $I)
   {
     Test::clean();
+    Mockery::close();
   }
 
   /**
@@ -559,6 +569,156 @@ class MetaboxCest
     }  
   }
 
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::getPostTypes
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::addPostType
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::setPostTypes
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::removePostType
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::clearPostTypes
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function managePostTypes(UnitTester $I)
+  {
+    // Create reflection of PostType class
+    $refl_type = new \ReflectionClass('Ponticlaro\Bebop\Cms\PostType');
+
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Test ::getPostTypes default value
+    $I->assertEquals($this->expected_cfg['post_types'], $metabox->getPostTypes());
+
+    // Test ::addPostType
+    $metabox->addPostType('Type2');
+    $metabox->addPostType($refl_type->newInstance('Type3'));
+
+     // Test ::getPostTypes updated value
+    $I->assertEquals($metabox->getPostTypes(), [
+      'type1',
+      'type2',
+      'type3',
+    ]);
+
+    // PostTypes to replace with
+    $replace_types = [
+      'type4',
+      $refl_type->newInstance('Type5'),
+    ];
+
+    // Test ::setPostTypes
+    $metabox->setPostTypes($replace_types);
+
+    // Test ::getPostTypes updated value
+    $I->assertEquals($metabox->getPostTypes(), [
+      'type1',
+      'type2',
+      'type3',
+      'type4',
+      'type5',
+    ]);
+
+    // Test ::removePostType
+    $metabox->removePostType('type4');
+    $metabox->removePostType($refl_type->newInstance('Type5'));
+
+    // Test ::getPostTypes updated value
+    $types = $metabox->getPostTypes();
+    sort($types);
+
+    $I->assertEquals($types, [
+      'type1',
+      'type2',
+      'type3',
+    ]);
+
+    // Test ::clearPostTypes
+    $metabox->clearPostTypes();
+
+    // Test ::getPostTypes updated value
+    $I->assertEmpty($metabox->getPostTypes());
+
+    // Test ::addPostType with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($metabox, $bad_arg_val) {
+        $metabox->addPostType($bad_arg_val);
+      });
+    }  
+
+    // Test ::removePostType with bad arguments
+    $bad_args = [
+      null,
+      0,
+      1,
+      [0, 1],
+      new \stdClass
+    ];
+
+    foreach ($bad_args as $bad_arg_val) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(Exception::class, function() use($metabox, $bad_arg_val) {
+        $metabox->removePostType($bad_arg_val);
+      });
+    }    
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::__call
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function callMagicMethod(UnitTester $I)
+  {
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Mock bebop-ui ModuleFactory
+    $mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
+      'canManufacture' => true,
+      'create'         => function() {
+        return func_get_arg(0);
+      }
+    ]);
+
+    // Test ::__call
+    $metabox->input([]);
+
+    // Verify bebop-ui ModuleFactory methods were called
+    $mock->verifyInvokedOnce('canManufacture', ['input']);
+    $mock->verifyInvokedOnce('create', ['input', []]);
+
+    // Clean test for more mocks
+    Test::clean();
+
+    // Mock bebop-ui ModuleFactory
+    $mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
+      'canManufacture' => false
+    ]);
+
+    // Check if exception is thrown with bad arguments
+    $I->expectException(Exception::class, function() use($metabox) {
+      $metabox->______testUndefinedUISection();
+    });
+
+    $mock->verifyInvokedOnce('canManufacture', ['______testUndefinedUISection']);
+  }
+
   /**
    * @author  cristianobaptista
    * @covers  Ponticlaro\Bebop\Cms\Metabox::__collectSectionsFieldNames
@@ -719,121 +879,82 @@ class MetaboxCest
    * @author  cristianobaptista
    * @covers  Ponticlaro\Bebop\Cms\Metabox::__callbackWrapper
    * @depends create
+   * @depends setAndGetId
    * @depends manageMetaFields 
    * 
    * @param UnitTester $I Tester Module
    */
-  public function callbackWrapper(UnitTester $I)
+  public function callbackWrapper(UnitTester $I, $scenario)
   {
+    $scenario->skip('Incomplete');
+
+    // Mock WP_Post
+    $wp_post_mock     = \Mockery::mock('alias:WP_Post');
+    $wp_post_mock->ID = 1;
+
+    // Mock bebop-ui ModuleAbstract
+    $ui_module_mock = Test::double('Ponticlaro\Bebop\UI\Modules\Input', [
+      '__construct' => null,
+      'render'      => true
+    ]);
+    
+    // Mock bebop-ui ModuleFactory
+    $ui_factory_mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
+      'canManufacture' => true,
+      'create'         => function() use($ui_module_mock) {
+        return $ui_module_mock->make();
+      }
+    ]);
+
+    // Mock sample_control_elements
+    PHPMockery::define('Ponticlaro\Bebop\Cms', 'sample_control_elements');            
+
+    // Mock Metabox
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
+      '__setMetaFields' => null
+    ]);
+
     // Create test instance
     $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
 
-  }
+    // Set metabox->meta_fields
+    $meta_fields_prop = new ReflectionProperty('Ponticlaro\Bebop\Cms\Metabox', 'meta_fields');
+    $meta_fields_prop->setAccessible(true);
+    $meta_fields_prop->getValue($metabox)->push('meta_field_1');
 
-  /**
-   * @author  cristianobaptista
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::getPostTypes
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::addPostType
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::setPostTypes
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::removePostType
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::clearPostTypes
-   * @depends create
-   * 
-   * @param UnitTester $I Tester Module
-   */
-  public function managePostTypes(UnitTester $I)
-  {
-    // Create reflection of PostType class
-    $refl_type = new \ReflectionClass('Ponticlaro\Bebop\Cms\PostType');
+    // Add section
+    $metabox->addSection('section_1', []);
 
-    // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    // Test ::__callbackWrapper
+    ob_start();
+    $metabox->__callbackWrapper($wp_post_mock, $metabox);
+    ob_get_clean();
 
-    // Test ::getPostTypes default value
-    $I->assertEquals($this->expected_cfg['post_types'], $metabox->getPostTypes());
+    // Verify get_post_meta was invoked correctly
+    $this->mocks['get_post_meta']->verifyInvokedOnce([$wp_post_mock->ID, 'meta_field_1']);
 
-    // Test ::addPostType
-    $metabox->addPostType('Type2');
-    $metabox->addPostType($refl_type->newInstance('Type3'));
+    // Verify metabox->data is correct
+    $data_prop = new ReflectionProperty('Ponticlaro\Bebop\Cms\Metabox', 'data');
+    $data_prop->setAccessible(true);
+    $data = $data_prop->getValue($metabox);
 
-     // Test ::getPostTypes updated value
-    $I->assertEquals($metabox->getPostTypes(), [
-      'type1',
-      'type2',
-      'type3',
+    $I->assertEquals($data->getAll(), [
+      'meta_field_1' => 'meta_field_1_value'
     ]);
 
-    // PostTypes to replace with
-    $replace_types = [
-      'type4',
-      $refl_type->newInstance('Type5'),
-    ];
+    // Verify sample_control_elements was invoked correctly
+    PHPMockery::mock('Ponticlaro\Bebop\Cms', 'sample_control_elements')->withAnyArgs([
+      $data,
+      $wp_post_mock,
+      $metabox,
+    ])->once();
 
-    // Test ::setPostTypes
-    $metabox->setPostTypes($replace_types);
+    // Check if $ui_module_mock got called correctly
+    $ui_module_mock->verifyInvoked('render', [$data->getAll()]);
 
-    // Test ::getPostTypes updated value
-    $I->assertEquals($metabox->getPostTypes(), [
-      'type1',
-      'type2',
-      'type3',
-      'type4',
-      'type5',
-    ]);
-
-    // Test ::removePostType
-    $metabox->removePostType('type4');
-    $metabox->removePostType($refl_type->newInstance('Type5'));
-
-    // Test ::getPostTypes updated value
-    $types = $metabox->getPostTypes();
-    sort($types);
-
-    $I->assertEquals($types, [
-      'type1',
-      'type2',
-      'type3',
-    ]);
-
-    // Test ::clearPostTypes
-    $metabox->clearPostTypes();
-
-    // Test ::getPostTypes updated value
-    $I->assertEmpty($metabox->getPostTypes());
-
-    // Test ::addPostType with bad arguments
-    $bad_args = [
-      null,
-      0,
-      1,
-      [0, 1],
-      new \stdClass
-    ];
-
-    foreach ($bad_args as $bad_arg_val) {
-
-      // Check if exception is thrown with bad arguments
-      $I->expectException(Exception::class, function() use($metabox, $bad_arg_val) {
-        $metabox->addPostType($bad_arg_val);
-      });
-    }  
-
-    // Test ::removePostType with bad arguments
-    $bad_args = [
-      null,
-      0,
-      1,
-      [0, 1],
-      new \stdClass
-    ];
-
-    foreach ($bad_args as $bad_arg_val) {
-
-      // Check if exception is thrown with bad arguments
-      $I->expectException(Exception::class, function() use($metabox, $bad_arg_val) {
-        $metabox->removePostType($bad_arg_val);
-      });
-    }    
+    // Verify wp_nonce_field was invoked correctly
+    $id = $metabox->getid();
+    $this->mocks['wp_nonce_field']->verifyInvokedOnce(['metabox_'. $id .'_saving_meta', 'metabox_'. $id .'_nonce']);
   }
 
   /**
@@ -849,24 +970,257 @@ class MetaboxCest
     // Create reflection of PostType class
     $refl_type = new \ReflectionClass('Ponticlaro\Bebop\Cms\PostType');
 
+    // Mock Metabox
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
+      'addSection' => true
+    ]);
+
     // Create test instance
     $metabox = new Metabox([
-      'id'    => 'metabox1',
+      'id'    => 'metabox_id',
       'title' => 'Title',
       'types' => [
           'type1',
           $refl_type->newInstance('Type2')
       ],
-      'fn'    => 'sample_control_elements',
+      'fn'      => 'sample_control_elements',
       'fn_args' => [
-        
+        'arg1',
+        'arg2',
       ],
-      'context'  => '',
-      'priority' => '',
+      'context'  => 'context',
+      'priority' => 'priority',
       'sections' => [
-
+        [
+          'ui' => 'input'
+        ],
+        [
+          'ui' => 'textarea'
+        ]
       ]
     ]);
+
+    // Verify Updated values
+    $I->assertEquals($metabox->getId(), 'metabox_id');
+    $I->assertEquals($metabox->getTitle(), 'Title');
+    $I->assertEquals($metabox->getPostTypes(), ['type1', 'type2']);
+    $I->assertEquals($metabox->getCallback(), 'sample_control_elements');
+    $I->assertEquals($metabox->getCallbackArgs(), ['arg1', 'arg2']);
+    $I->assertEquals($metabox->getContext(), 'context');
+    $I->assertEquals($metabox->getPriority(), 'priority');
+
+    // Verify $metabox::addSection was called correctly
+    $metabox_mock->verifyInvokedOnce('addSection', ['input', []]);
+    $metabox_mock->verifyInvokedOnce('addSection', ['textarea', []]);
+
+    // Test ::applyArgs variations
+    $metabox->applyArgs([
+      'types' => 'type3' // This adds a post-type instead of replacing existing ones
+    ]);
+
+    // Verify Updated values
+    $I->assertEquals($metabox->getPostTypes(), ['type1', 'type2', 'type3']);
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::__saveMeta
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function saveMeta(UnitTester $I)
+  {
+    // Setup $_POST data
+    $_POST = [
+      '_inline_edit'               => 'somerandomhash',
+      'metabox_title_nonce'        => 'anotherrandomhash',
+      'post_type'                  => 'unit_test_type',
+      'meta_field_with_string_val' => 'string',
+      'meta_field_with_array_val'  => ['string_1', 'string_2'],
+    ];
+
+    // Mock wp_verify_nonce
+    $wp_verify_nonce_mock = Test::func('Ponticlaro\Bebop\Cms', 'wp_verify_nonce', function() {
+      return func_get_arg(1) == 'inlineeditnonce' ? false : true;
+    });
+
+    // Mock WP_Post
+    $wp_post_mock = \Mockery::mock('alias:WP_Post');
+    $wp_post_mock->post_type = 'unit_test_type';
+
+    // Mock get_post
+    $get_post_mock = Test::func('Ponticlaro\Bebop\Cms', 'get_post', function() use($wp_post_mock) {
+      
+      $wp_post_mock->ID = func_get_arg(0);
+
+      return $wp_post_mock;
+    });
+
+    // Mock wp_verify_nonce
+    $current_user_can_mock = Test::func('Ponticlaro\Bebop\Cms', 'current_user_can', true);
+
+    // Mock delete_post_meta
+    $delete_post_meta_mock = Test::func('Ponticlaro\Bebop\Cms', 'delete_post_meta', true);
+
+    // Mock add_post_meta
+    $add_post_meta_mock = Test::func('Ponticlaro\Bebop\Cms', 'add_post_meta', true);
+
+    // Mock update_post_meta
+    $update_post_meta_mock = Test::func('Ponticlaro\Bebop\Cms', 'update_post_meta', true);
+
+    // Mock Collection to return desired $metabox->meta_fields
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Common\Collection', [
+      'getAll' => [
+        'meta_field_to_delete',
+        'meta_field_with_array_val',
+        'meta_field_with_string_val',
+      ]
+    ]);
+
+    // Mock Metabox
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
+      '__setMetaFields' => null
+    ]);
+
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Test ::__saveMeta
+    $metabox->__saveMeta(1);
+
+    // Verify wp_verify_nonce was only called twice
+    $wp_verify_nonce_mock->verifyInvokedOnce([$_POST['_inline_edit'], 'inlineeditnonce']);
+    $wp_verify_nonce_mock->verifyInvokedOnce([$_POST['metabox_title_nonce'], 'metabox_title_saving_meta']);
+
+    // Verify that 'meta_field_to_delete' is deleted
+    $delete_post_meta_mock->verifyInvokedOnce([1, 'meta_field_to_delete']);
+
+    // Verify that 'meta_field_with_array_val' is deleted and added, value by value
+    $delete_post_meta_mock->verifyInvokedOnce([1, 'meta_field_with_array_val']);
+    $add_post_meta_mock->verifyInvokedOnce([1, 'meta_field_with_array_val', 'string_1']);
+    $add_post_meta_mock->verifyInvokedOnce([1, 'meta_field_with_array_val', 'string_2']);
+
+    // Verify that 'meta_field_with_string_val' is updated
+    $update_post_meta_mock->verifyInvokedOnce([1, 'meta_field_with_string_val'], 'string');
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::__saveMeta
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function doNotSaveMetaIfUserCannotEditPost(UnitTester $I)
+  {
+    // Mock wp_verify_nonce
+    $wp_verify_nonce_mock = Test::func('Ponticlaro\Bebop\Cms', 'wp_verify_nonce', function() {
+      return func_get_arg(1) == 'inlineeditnonce' ? false : true;
+    });
+
+    // Mock WP_Post
+    $wp_post_mock = \Mockery::mock('alias:WP_Post');
+    $wp_post_mock->post_type = 'unit_test_type';
+
+    // Mock get_post
+    $get_post_mock = Test::func('Ponticlaro\Bebop\Cms', 'get_post', function() use($wp_post_mock) {
+      
+      $wp_post_mock->ID = func_get_arg(0);
+
+      return $wp_post_mock;
+    });
+
+    // Mock wp_verify_nonce
+    $current_user_can_mock = Test::func('Ponticlaro\Bebop\Cms', 'current_user_can', false);
+
+    // Mock Metabox
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
+      '__setMetaFields' => null
+    ]);
+
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Test ::__saveMeta
+    $metabox->__saveMeta(1);
+
+    // Verify ::__setMetaFields is never called
+    $metabox_mock->verifyNeverInvoked('__setMetaFields');
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::__saveMeta
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function doNotSaveMetaIfDoingAutosave(UnitTester $I)
+  {
+    // Mock wp_verify_nonce
+    $wp_verify_nonce_mock = Test::func('Ponticlaro\Bebop\Cms', 'wp_verify_nonce', function() {
+      return func_get_arg(1) == 'inlineeditnonce' ? false : true;
+    });
+
+    // Mock WP_Post
+    $wp_post_mock = \Mockery::mock('alias:WP_Post');
+    $wp_post_mock->post_type = 'unit_test_type';
+
+    // Mock get_post
+    $get_post_mock = Test::func('Ponticlaro\Bebop\Cms', 'get_post', function() use($wp_post_mock) {
+      
+      $wp_post_mock->ID = func_get_arg(0);
+
+      return $wp_post_mock;
+    });
+
+    // Mock wp_verify_nonce
+    $current_user_can_mock = Test::func('Ponticlaro\Bebop\Cms', 'current_user_can', true);
+
+    // Mock Metabox
+    $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
+      '__setMetaFields' => null
+    ]);
+
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Flag that we're doing an autosave
+    define('DOING_AUTOSAVE', true);
+
+    // Test ::__saveMeta
+    $metabox->__saveMeta(1);
+
+    // Verify that current_user_can is never invoked
+    $current_user_can_mock->verifyNeverInvoked();
+  }
+
+  /**
+   * @author  cristianobaptista
+   * @covers  Ponticlaro\Bebop\Cms\Metabox::__saveMeta
+   * @depends create
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function doNotSaveMetaWhileInlineEditingViaAJAX(UnitTester $I)
+  {
+    // Setup $_POST data
+    $_POST['_inline_edit']        = 'somerandomhash_2';
+    $_POST['metabox_title_nonce'] = 'anotherrandomhash_2';
+
+    // Mock wp_verify_nonce
+    $wp_verify_nonce_mock = Test::func('Ponticlaro\Bebop\Cms', 'wp_verify_nonce', true);
+
+    // Create test instance
+    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+
+    // Test ::__saveMeta
+    $metabox->__saveMeta(1);
+
+    // Verify wp_verify_nonce was only called once
+    $wp_verify_nonce_mock->verifyInvokedOnce([$_POST['_inline_edit'], 'inlineeditnonce']);
+    $wp_verify_nonce_mock->verifyNeverInvoked([$_POST['metabox_title_nonce'], 'metabox_title_saving_meta']);
   }
 
   /**
@@ -901,48 +1255,5 @@ class MetaboxCest
         $metabox->getCallbackArgs()
       ]);
     }
-  }
-
-  /**
-   * @author  cristianobaptista
-   * @covers  Ponticlaro\Bebop\Cms\Metabox::__call
-   * @depends create
-   * 
-   * @param UnitTester $I Tester Module
-   */
-  public function callMagicMethod(UnitTester $I)
-  {
-    // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
-
-    // Mock bebop-ui ModuleFactory
-    $mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
-      'canManufacture' => true,
-      'create'         => function() {
-        return func_get_arg(0);
-      }
-    ]);
-
-    // Test ::__call
-    $metabox->input([]);
-
-    // Verify bebop-ui ModuleFactory methods were called
-    $mock->verifyInvokedOnce('canManufacture', ['input']);
-    $mock->verifyInvokedOnce('create', ['input', []]);
-
-    // Clean test for more mocks
-    Test::clean();
-
-    // Mock bebop-ui ModuleFactory
-    $mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
-      'canManufacture' => false
-    ]);
-
-    // Check if exception is thrown with bad arguments
-    $I->expectException(Exception::class, function() use($metabox) {
-      $metabox->______testUndefinedUISection();
-    });
-
-    $mock->verifyInvokedOnce('canManufacture', ['______testUndefinedUISection']);
   }
 }

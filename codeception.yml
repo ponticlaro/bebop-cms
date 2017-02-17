@@ -12,3 +12,8 @@ coverage:
   enabled: true
   include:
     - src/*
+  exclude:
+    - src/presets.json
+    - src/Presets/AdminPages/*
+    - src/Presets/Metaboxes/*
+    - src/Presets/Types/*

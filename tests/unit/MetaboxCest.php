@@ -1,7 +1,6 @@
 <?php
 
 use AspectMock\Test;
-use phpmock\mockery\PHPMockery;
 use Ponticlaro\Bebop\Cms\Metabox;
 use Ponticlaro\Bebop\Cms\Helpers\MetaboxData;
 

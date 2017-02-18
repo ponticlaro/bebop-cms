@@ -884,9 +884,10 @@ class MetaboxCest
    * 
    * @param UnitTester $I Tester Module
    */
-  public function callbackWrapper(UnitTester $I, $scenario)
+  public function callbackWrapper(UnitTester $I)
   {
-    $scenario->skip('Incomplete');
+    // Mock bebop-ui ModuleAbstract
+    $callback_mock = Test::func('Ponticlaro\Bebop\Cms', 'callback_mock', true);
 
     // Mock WP_Post
     $wp_post_mock     = \Mockery::mock('alias:WP_Post');
@@ -906,16 +907,13 @@ class MetaboxCest
       }
     ]);
 
-    // Mock sample_control_elements
-    PHPMockery::define('Ponticlaro\Bebop\Cms', 'sample_control_elements');            
-
     // Mock Metabox
     $metabox_mock = Test::double('Ponticlaro\Bebop\Cms\Metabox', [
       '__setMetaFields' => null
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'Ponticlaro\Bebop\Cms\callback_mock');
 
     // Set metabox->meta_fields
     $meta_fields_prop = new ReflectionProperty('Ponticlaro\Bebop\Cms\Metabox', 'meta_fields');
@@ -926,9 +924,7 @@ class MetaboxCest
     $metabox->addSection('section_1', []);
 
     // Test ::__callbackWrapper
-    ob_start();
     $metabox->__callbackWrapper($wp_post_mock, $metabox);
-    ob_get_clean();
 
     // Verify get_post_meta was invoked correctly
     $this->mocks['get_post_meta']->verifyInvokedOnce([$wp_post_mock->ID, 'meta_field_1']);
@@ -943,11 +939,11 @@ class MetaboxCest
     ]);
 
     // Verify sample_control_elements was invoked correctly
-    PHPMockery::mock('Ponticlaro\Bebop\Cms', 'sample_control_elements')->withAnyArgs([
+    $callback_mock->verifyInvoked([
       $data,
       $wp_post_mock,
       $metabox,
-    ])->once();
+    ]);
 
     // Check if $ui_module_mock got called correctly
     $ui_module_mock->verifyInvoked('render', [$data->getAll()]);

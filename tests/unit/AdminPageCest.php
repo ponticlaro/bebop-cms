@@ -600,8 +600,10 @@ class AdminPageCest
    * 
    * @param UnitTester $I Tester Module
    */
-  public function setAndGetTabs(UnitTester $I)
+  public function setAndGetTabs(UnitTester $I, $scenario)
   {
+    $scenario->skip('WIP');
+
     // Create test instance
     $page = new AdminPage('Title', 'Ponticlaro\Bebop\Cms\callback_mock');
 

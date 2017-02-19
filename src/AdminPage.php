@@ -4,25 +4,12 @@ namespace Ponticlaro\Bebop\Cms;
 
 use Ponticlaro\Bebop\Cms\AdminPage\Tab;
 use Ponticlaro\Bebop\Common\Collection;
+use Ponticlaro\Bebop\Common\Patterns\TrackableObjectInterface;
 use Ponticlaro\Bebop\Common\Utils;
 use Ponticlaro\Bebop\UI\Helpers\ModuleFactory;
 
-class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstract  {
+class AdminPage implements TrackableObjectInterface  {
     
-  /**
-   * Required trackable object type
-   * 
-   * @var string
-   */
-  protected $__trackable_type = 'admin_page';
-
-  /**
-   * Required trackable object ID
-   * 
-   * @var string
-   */
-  protected $__trackable_id;
-
   /**
    * Configuration parameters
    * 
@@ -59,6 +46,22 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   protected $data;
 
   /**
+   * {@inheritdoc}
+   */
+  public function getObjectID()
+  {
+    return $this->getId();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getObjectType()
+  {
+    return 'admin_page';
+  }
+
+  /**
    * Instantiates a new Admin page
    * 
    * @param string   $title Admin page tile. Used to create its access slug
@@ -68,6 +71,7 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   {
     // Set config object with default configuration
     $this->config = new Collection(array(
+      'id'         => null,
       'page_title' => '',
       'menu_title' => '',
       'capability' => 'manage_options',
@@ -233,55 +237,20 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   }
 
   /**
-   * Sets data
-   * 
-   * @param array $data
-   */
-  public function setData(array $data)
-  {
-    $this->data->set($data);
-
-    return $this;
-  }
-
-  /**
-   * Adds a single key/value data item
-   * 
-   * @param string $key   Data key
-   * @param string $value Data value
-   */
-  public function addDataItem($key, $value)
-  {
-    $this->data->set($key, $value);
-
-    return $this;
-  }
-
-  /**
-   * Returns all data
-   * 
-   * @return array
-   */
-  public function getData()
-  {
-    return $this->data->getAll();
-  }
-
-  /**
    * Sets admin page ID
    * 
    * @param string $id
    */
   public function setId($id)
   {
-    if (is_string($id)) {
+    if (!is_string($id))
+      throw new \Exception('AdminPage id must be a string');
 
-      // Remove quotes, as these break data saving
-      $id = str_replace(['"', "'"], "", $id);
+    // Remove quotes, as these break data saving
+    $id = str_replace(['"', "'"], "", $id);
 
-      // Slugify $id
-      $this->__trackable_id = Utils::slugify($id);
-    }
+    // Slugify $id
+    $this->config->set('id', Utils::slugify($id));
 
     return $this;
   }
@@ -293,7 +262,7 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
    */
   public function getId()
   {
-    return $this->__trackable_id;
+    return $this->config->get('id');
   }
 
   /**
@@ -519,6 +488,70 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   }
 
   /**
+   * Sets data
+   * 
+   * @param array $data
+   */
+  public function setData(array $data)
+  {
+    $this->data->set($data);
+
+    return $this;
+  }
+
+  /**
+   * Adds a single key/value data item
+   * 
+   * @param string $key   Data key
+   * @param string $value Data value
+   */
+  public function addDataItem($key, $value)
+  {
+    $this->data->set($key, $value);
+
+    return $this;
+  }
+
+  /**
+   * Returns all data
+   * 
+   * @return array
+   */
+  public function getData()
+  {
+    return $this->data->getAll();
+  }
+
+  /**
+   * Adds a single tab
+   * 
+   * @param string $title Tab title
+   * @param mixed  $args  Tab callable or array of arguments
+   */
+  public function addTab($title, $args)
+  {
+    if (is_string($title) && (is_callable($args) || is_array($args))) {
+
+      $parent_id = $this->config->get('id');
+      $id        = $parent_id .'-'. Utils::slugify($title, array('separator' => '-'));
+
+      $this->tabs->push(new Tab($id, $title, $args));
+    }
+
+    return $this;
+  }
+
+  /**
+   * Returns all tabs
+   * 
+   * @return array
+   */
+  public function getTabs()
+  {
+    return $this->tabs->getAll();
+  }
+
+  /**
    * Adds a single content section
    * 
    * @param string $id   ID of a module in the UI ModuleFactory class
@@ -543,6 +576,111 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   public function getAllSections()
   {
     return $this->sections->getAll();
+  }
+
+  /**
+   * Removes this admin page
+   * 
+   * @return void
+   */
+  public function destroy()
+  {
+    remove_menu_page($this->getMenuSlug());
+  }
+
+  /**
+   * Base Html for any administration page
+   * Executes the function passed in the "function" parameter
+   * 
+   * @return void
+   */
+  public function baseHtml()
+  { 
+    // Check if currently authenticated user can access this page
+    $this->__checkPermissions(); ?>
+
+    <div class="wrap">
+      <h2><?php echo $this->getPageTitle(); ?></h2>
+      <form method="post" action="options.php">
+          
+        <?php settings_errors();
+
+        if ($this->getTabs()) { 
+
+          $this->renderTabs();
+        }
+
+        elseif ($this->getFunction() || $this->getAllSections()) {
+
+          $this->renderSinglePage();
+
+        } ?>
+
+      </form>
+    </div><!-- /.wrap -->
+      
+  <?php }
+
+  /**
+   * Renders tabbed UI
+   * 
+   * @return void
+   */
+  protected function renderTabs()
+  {   
+    $tabs        = $this->getTabs();
+    $page_url    = $this->config->get('url');
+    $current_tab = isset($_GET['tab']) ? $_GET['tab'] : $tabs[0]->getId();
+
+    ?>
+    
+    <h2 class="nav-tab-wrapper">
+      <?php foreach ($tabs as $tab) { ?>
+        <a href="<?php echo $page_url . '&tab=' . $tab->getId(); ?>" class="nav-tab<?php if ($current_tab == $tab->getId()) echo ' nav-tab-active'; ?>">
+            <?php echo $tab->getTitle(); ?>
+        </a>
+      <?php } ?>
+    </h2>
+
+    <div style="padding-top:30px;">
+      <?php foreach ($tabs as $tab) {
+          
+        if ($current_tab == $tab->getId()) {
+
+          settings_fields($tab->getId());
+          $tab->render();
+        }
+      } ?>
+    </div>
+
+  <?php }
+
+  /**
+   * Renders single page UI
+   * 
+   * @return void
+   */
+  protected function renderSinglePage()
+  {
+    echo '<div style="padding-top:30px;">';
+    
+    settings_fields($this->getId());
+    $this->__setData();
+
+    // Execute callable
+    if ($function = $this->getFunction())
+      call_user_func_array($function, array($this->data, $this));
+
+    // Render sections
+    $sections = $this->getAllSections();
+
+    if ($sections) {
+      foreach($sections as $section) {
+        $section->render($this->data->getAll());
+      }
+    }
+
+    echo '</div>';
   }
 
   /**
@@ -578,34 +716,6 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
     foreach($this->sections->getAll() as $section) {
       $section->renderMainTemplate();
     }
-  }
-
-  /**
-   * Adds a single tab
-   * 
-   * @param string $title Tab title
-   * @param mixed  $args  Tab callable or array of arguments
-   */
-  public function addTab($title, $args)
-  {
-    if (is_string($title) && (is_callable($args) || is_array($args))) {
-
-      $id = $this->__trackable_id .'-'. Utils::slugify($title, array('separator' => '-'));
-
-      $this->tabs->push(new Tab($id, $title, $args));
-    }
-
-    return $this;
-  }
-
-  /**
-   * Returns all tabs
-   * 
-   * @return array
-   */
-  public function getTabs()
-  {
-    return $this->tabs->getAll();
   }
 
   /**
@@ -768,16 +878,6 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   }
 
   /**
-   * Removes this admin page
-   * 
-   * @return void
-   */
-  public function destroy()
-  {
-    remove_menu_page($this->getMenuSlug());
-  }
-
-  /**
    * Checks if the user have permission to access this page
    * 
    * @return void
@@ -786,100 +886,5 @@ class AdminPage extends \Ponticlaro\Bebop\Common\Patterns\TrackableObjectAbstrac
   {
     if (!current_user_can($this->getCapability()))
       wp_die(__( 'You do not have sufficient permissions to access this page.'));
-  }
-
-  /**
-   * Base Html for any administration page
-   * Executes the function passed in the "function" parameter
-   * 
-   * @return void
-   */
-  public function baseHtml()
-  { 
-    // Check if currently authenticated user can access this page
-    $this->__checkPermissions(); ?>
-
-    <div class="wrap">
-      <h2><?php echo $this->getPageTitle(); ?></h2>
-      <form method="post" action="options.php">
-          
-        <?php settings_errors();
-
-        if ($this->getTabs()) { 
-
-          $this->renderTabs();
-        }
-
-        elseif ($this->getFunction() || $this->getAllSections()) {
-
-          $this->renderSinglePage();
-
-        } ?>
-
-      </form>
-    </div><!-- /.wrap -->
-      
-  <?php }
-
-  /**
-   * Renders tabbed UI
-   * 
-   * @return void
-   */
-  protected function renderTabs()
-  {   
-    $tabs        = $this->getTabs();
-    $page_url    = $this->config->get('url');
-    $current_tab = isset($_GET['tab']) ? $_GET['tab'] : $tabs[0]->getId();
-
-    ?>
-    
-    <h2 class="nav-tab-wrapper">
-      <?php foreach ($tabs as $tab) { ?>
-        <a href="<?php echo $page_url . '&tab=' . $tab->getId(); ?>" class="nav-tab<?php if ($current_tab == $tab->getId()) echo ' nav-tab-active'; ?>">
-            <?php echo $tab->getTitle(); ?>
-        </a>
-      <?php } ?>
-    </h2>
-
-    <div style="padding-top:30px;">
-      <?php foreach ($tabs as $tab) {
-          
-        if ($current_tab == $tab->getId()) {
-
-          settings_fields($tab->getId());
-          $tab->render();
-        }
-      } ?>
-    </div>
-
-  <?php }
-
-  /**
-   * Renders single page UI
-   * 
-   * @return void
-   */
-  protected function renderSinglePage()
-  {
-    echo '<div style="padding-top:30px;">';
-    
-    settings_fields($this->getId());
-    $this->__setData();
-
-    // Execute callable
-    if ($function = $this->getFunction())
-      call_user_func_array($function, array($this->data, $this));
-
-    // Render sections
-    $sections = $this->getAllSections();
-
-    if ($sections) {
-      foreach($sections as $section) {
-        $section->render($this->data->getAll());
-      }
-    }
-
-    echo '</div>';
   }
 }

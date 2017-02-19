@@ -36,7 +36,6 @@ class ShortcodeCest
   public function _after(UnitTester $I)
   {
     Test::clean();
-    Mockery::close();
   }
 
   /**

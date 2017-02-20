@@ -161,7 +161,7 @@ class AdminPage implements TrackableObjectInterface  {
 
     // Handle 'page_title'
     if (isset($args['page_title']) && $args['page_title']) {
-      $this->setPageTitle($args['title']);
+      $this->setPageTitle($args['page_title']);
       unset($args['page_title']);
     }
 
@@ -205,12 +205,6 @@ class AdminPage implements TrackableObjectInterface  {
     if (isset($args['fn']) && $args['fn']) {
       $this->setFunction($args['fn']);
       unset($args['fn']);
-    }
-
-    // Handle 'options'
-    if (isset($args['options']) && is_array($args['options'])) {
-      $this->setOptions($args['options']);
-      unset($args['options']);
     }
 
     // Handle 'data'
@@ -559,11 +553,14 @@ class AdminPage implements TrackableObjectInterface  {
    */
   public function addSection($id, array $args)
   {
-    if (ModuleFactory::canManufacture($id)) {
-        
-      $section = ModuleFactory::create($id, $args);
-      $this->sections->push($section);
-    }
+    if (!is_string($id))
+      throw new \Exception('AdminPage section $id must be a string.');
+
+    if (!ModuleFactory::canManufacture($id))
+      throw new \Exception("AdminPage don't know how to handle a '$id' UI section.");
+          
+    $section = ModuleFactory::create($id, $args);
+    $this->sections->push($section);
 
     return $this;
   }
@@ -693,15 +690,26 @@ class AdminPage implements TrackableObjectInterface  {
   public function __call($name, array $args = [])
   {   
     // Quick method to add sections
-    if (ModuleFactory::canManufacture($name)) {
-        
-      $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
-      $section = ModuleFactory::create($name, $args);
+    if (!ModuleFactory::canManufacture($name))
+      throw new \Exception("AdminPage don't know how to create undefined '$name' UI section.");
 
-      $this->sections->push($section);
-    }
+    $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
+    $section = ModuleFactory::create($name, $args);
+
+    $this->sections->push($section);
 
     return $this;
+  }
+
+  /**
+   * Checks if the user have permission to access this page
+   * 
+   * @return void
+   */
+  protected function __checkPermissions()
+  {
+    if (!current_user_can($this->getCapability()))
+      wp_die('You do not have sufficient permissions to access this page.');
   }
 
   /**
@@ -737,14 +745,19 @@ class AdminPage implements TrackableObjectInterface  {
 
       // Fetch control elements name attribute from function
       if ($function) {
-
-        $names += Utils::getControlNamesFromCallable($function, array($this->data, $this));
+        $new_names = Utils::getControlNamesFromCallable($function, array($this->data, $this));
+     
+        if($new_names)
+          $names = array_merge($names, $new_names);
       }
+        
 
       // Fetch control elements name attribute from sections
-      if ($this->getAllSections()) {
+      if ($sections) {
+        $new_names = Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], array($this->data, $this));
         
-        $names += Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], array($this->data, $this));
+        if($new_names)
+          $names = array_merge($names, $new_names);
       }
 
       if ($names) {
@@ -787,104 +800,228 @@ class AdminPage implements TrackableObjectInterface  {
   {
     $parent = $this->getParent();
 
-    if ($parent) {
+    // Register top page
+    if (!$parent)
+      return $this->registerTopPage();
 
-      switch ($parent) {
-        case 'dashboard':
-          $fn = 'add_dashboard_page';
-          break;
+    $method_name = 'register'. ucfirst($parent) .'Page';
 
-        case 'posts':
-          $fn = 'add_posts_page';
-          break;
+    // Register sub page
+    if(!method_exists($this, $method_name))
+      return $this->registerSubPage();
 
-        case 'pages':
-          $fn = 'add_pages_page';
-          break;
-
-        case 'media':
-          $fn = 'add_media_page';
-          break;
-
-        case 'links':
-          $fn = 'add_links_page';
-          break;
-
-        case 'comments':
-          $fn = 'add_comments_page';
-          break;
-
-        case 'theme':
-          $fn = 'add_theme_page';
-          break;
-
-        case 'plugins':
-          $fn = 'add_plugins_page';
-          break;
-
-        case 'users':
-          $fn = 'add_users_page';
-          break;
-
-        case 'tools':
-          $fn = 'add_management_page';
-          break;
-
-        case 'settings':
-          $fn = 'add_options_page';
-          break;
-        
-        default:
-          $fn = 'add_submenu_page';
-          break;
-      }
-
-      if ($fn == 'add_submenu_page') {
-
-        $fn(
-          $this->getParent(),
-          $this->getPageTitle(), 
-          $this->getMenuTitle(), 
-          $this->getCapability(), 
-          $this->getMenuSlug(), 
-          array($this, 'baseHtml')
-        );
-      }
-
-      else {
-
-        $fn(
-          $this->getPageTitle(), 
-          $this->getMenuTitle(), 
-          $this->getCapability(), 
-          $this->getMenuSlug(), 
-          array($this, 'baseHtml')
-        );
-      }
-    }
-
-    else {
-
-      add_menu_page(
-        $this->getPageTitle(), 
-        $this->getMenuTitle(), 
-        $this->getCapability(), 
-        $this->getMenuSlug(), 
-        array($this, 'baseHtml'), 
-        $this->getIconUrl(), 
-        $this->getPosition() 
-      );
-    }   
+    // Register specific sub page
+    return call_user_func([$this, $method_name]);
   }
 
   /**
-   * Checks if the user have permission to access this page
-   * 
+   * Register a top AdminPage
+   *
    * @return void
-   */
-  protected function __checkPermissions()
+   **/
+  private function registerTopPage()
   {
-    if (!current_user_can($this->getCapability()))
-      wp_die(__( 'You do not have sufficient permissions to access this page.'));
+    return add_menu_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml'), 
+      $this->getIconUrl(), 
+      $this->getPosition() 
+    );
+  }
+
+  /**
+   * Register a sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerSubPage()
+  {
+    return add_submenu_page(
+      $this->getParent(),
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Dashboard sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerDashboardPage()
+  {
+    return add_dashboard_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Posts sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerPostsPage()
+  {
+    return add_posts_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Pages sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerPagesPage()
+  {
+    return add_pages_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Media sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerMediaPage()
+  {
+    return add_media_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Links sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerLinksPage()
+  {
+    return add_links_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Comments sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerCommentsPage()
+  {
+    return add_comments_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Theme sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerThemePage()
+  {
+    return add_theme_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Plugins sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerPluginsPage()
+  {
+    return add_plugins_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Users sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerUsersPage()
+  {
+    return add_users_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Tools sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerToolsPage()
+  {
+    return add_management_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
+  }
+
+  /**
+   * Register Settings sub AdminPage
+   *
+   * @return void
+   **/
+  private function registerSettingsPage()
+  {
+    return add_options_page(
+      $this->getPageTitle(), 
+      $this->getMenuTitle(), 
+      $this->getCapability(), 
+      $this->getMenuSlug(), 
+      array($this, 'baseHtml')
+    );
   }
 }

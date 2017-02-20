@@ -568,7 +568,6 @@ class MetaboxCest
     }  
   }
 
-
   /**
    * @author  cristianobaptista
    * @covers  Ponticlaro\Bebop\Cms\Metabox::getPostTypes

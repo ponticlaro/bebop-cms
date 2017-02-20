@@ -38,19 +38,15 @@ class AdminPageCest
 
   public function _before(UnitTester $I)
   {
-    $this->field_names_counter = $field_names_counter = 0;
-
     // Mock Utils
     $this->m['Utils'] = Test::double('Ponticlaro\Bebop\Common\Utils', [
       'slugify' => function() {
         return strtolower(func_get_arg(0));
       },
-      'getControlNamesFromCallable' => function() use(&$field_names_counter) {
-
-        $field_names_counter++;
-
+      'getControlNamesFromCallable' => function() {
         return [
-          'dummy_field_name_'. $field_names_counter
+          'dummy_field_name_1',
+          'dummy_field_name_2',
         ];
       }
     ]);
@@ -126,8 +122,6 @@ class AdminPageCest
 
   public function _after(UnitTester $I)
   {
-    $this->field_names_counter = 0;
-
     Test::clean();
     Mockery::close();
   }

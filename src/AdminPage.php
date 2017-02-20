@@ -744,21 +744,12 @@ class AdminPage implements TrackableObjectInterface  {
       $names    = [];
 
       // Fetch control elements name attribute from function
-      if ($function) {
-        $new_names = Utils::getControlNamesFromCallable($function, array($this->data, $this));
-     
-        if($new_names)
-          $names = array_merge($names, $new_names);
-      }
-        
+      if ($function)
+        $names += Utils::getControlNamesFromCallable($function, array($this->data, $this));    
 
       // Fetch control elements name attribute from sections
-      if ($sections) {
-        $new_names = Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], array($this->data, $this));
-        
-        if($new_names)
-          $names = array_merge($names, $new_names);
-      }
+      if ($sections)
+        $names += Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], array($this->data, $this));
 
       if ($names) {
 

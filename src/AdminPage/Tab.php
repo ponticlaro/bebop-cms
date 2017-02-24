@@ -136,8 +136,10 @@ class Tab {
    */
   public function setId($id)
   {
-    if (is_string($id))
-      $this->id = Utils::slugify($id, array('separator' => '-'));
+    if (!is_string($id))
+      throw new \Exception("AdminPage Tab id must be a string");
+    
+    $this->id = Utils::slugify($id, array('separator' => '-'));
 
     return $this;
   }
@@ -149,7 +151,7 @@ class Tab {
    */
   public function getId()
   {
-      return $this->id;
+    return $this->id;
   }
 
   /**
@@ -159,11 +161,10 @@ class Tab {
    */
   public function setTitle($title)
   {
-    if (is_string($title))
-      $this->title = $title;
-
-    if (!$this->id)
-      $this->setId($title);
+    if (!is_string($title))
+      throw new \Exception("AdminPage Tab title must be a string");
+      
+    $this->title = $title;
 
     return $this;
   }
@@ -185,8 +186,10 @@ class Tab {
    */
   public function setFunction($function)
   {
-    if (is_callable($function))
-      $this->function = $function;
+    if (!is_callable($function))
+      throw new \Exception('AdminPage Tab function must be callable');
+        
+    $this->function = $function;
 
     return $this;
   }
@@ -217,8 +220,10 @@ class Tab {
    */
   public function addOption($option)
   {
-    if (is_string($option))
-      $this->options->push($option);
+    if (!is_string($option))
+      throw new \Exception("AdminPage Tab option must be a string");
+
+    $this->options->push($option);
 
     return $this;
   }
@@ -241,11 +246,14 @@ class Tab {
    */
   public function addSection($id, array $args)
   {
-    if (ModuleFactory::canManufacture($id)) {
+    if (!is_string($id))
+      throw new \Exception('AdminPage Tab section $id must be a string.');
 
-      $section = ModuleFactory::create($id, $args);
-      $this->sections->push($section);
-    }
+    if (!ModuleFactory::canManufacture($id))
+      throw new \Exception("AdminPage Tab don't know how to handle a '$id' UI section.");
+          
+    $section = ModuleFactory::create($id, $args);
+    $this->sections->push($section);
 
     return $this;
   }
@@ -270,13 +278,13 @@ class Tab {
   public function __call($name, array $args = [])
   {   
     // Quick method to add sections
-    if (ModuleFactory::canManufacture($name)) {
-        
-      $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
-      $section = ModuleFactory::create($name, $args);
+    if (!ModuleFactory::canManufacture($name))
+      throw new \Exception("AdminPage Tab don't know how to create undefined '$name' UI section.");
 
-      $this->sections->push($section);
-    }
+    $args    = isset($args[0]) && is_array($args[0]) ? $args[0] : [];
+    $section = ModuleFactory::create($name, $args);
+
+    $this->sections->push($section);
 
     return $this;
   }
@@ -303,33 +311,24 @@ class Tab {
   public function __handleSettingsRegistration()
   {
     // Get sections & callable
-    $sections = $this->sections->getAll();
+    $sections = $this->getAllSections();
     $function = $this->getFunction();
     $names    = [];
 
     // Fetch control elements name attribute from function
-    if ($function) {
-
+    if ($function)
       $names += Utils::getControlNamesFromCallable($function, array($this->data, $this));
 
-      if ($names)
-        $this->setOptions($names);
-    }
-
     // Fetch control elements name attribute from sections
-    if ($sections) {
-      
+    if ($sections)
       $names += Utils::getControlNamesFromCallable([$this, '__collectSectionsFieldNames'], array($this->data, $this));
-
-      if ($names)
-        $this->setOptions($names);
-    }
     
-    $options = $this->options->getAll();
+    if ($names) {
 
-    if ($options) {
-      foreach ($options as $option) {      
-        register_setting($this->getId(), $option);
+      $this->options->pushList($names);
+
+      foreach ($names as $name) {  
+        register_setting($this->getId(), $name);
       }
     }
 
@@ -367,12 +366,8 @@ class Tab {
         call_user_func_array($function, array($this->data, $this));
 
     // Render sections
-    $sections = $this->getAllSections();
-
-    if ($sections) {
-      foreach($sections as $section) {
-        $section->render($this->data->getAll());
-      }
+    foreach($this->getAllSections() as $section) {
+      $section->render($this->data->getAll());
     }
   }
 }

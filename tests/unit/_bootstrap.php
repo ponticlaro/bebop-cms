@@ -1,5 +1,21 @@
 <?php
 
+use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
+
+class UnitTestShortcodeContainer extends ShortcodeContainerAbstract {
+
+  protected $id = 'unit_test_shortcode';
+
+  public function render($attrs, $content = null, $tag)
+  {
+    
+  }
+}
+
+class InvalidUnitTestShortcodeContainer {
+
+}
+
 /**
  * Used by:
  * - AdminPage

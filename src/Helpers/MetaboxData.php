@@ -9,7 +9,7 @@ class MetaboxData {
     /**
      * List of environments
      * 
-     * @var Ponticlaro\Bebop\Common\Collection;
+     * @var object Ponticlaro\Bebop\Common\Collection;
      */
     private $__data;
 

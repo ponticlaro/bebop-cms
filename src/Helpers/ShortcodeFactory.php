@@ -101,9 +101,9 @@ class ShortcodeFactory {
   /**
    * Creates instance of target class
    * 
-   * @param  string] $type Class ID
-   * @param  array   $args Class arguments
-   * @return object        Class instance
+   * @param  string $type Class ID
+   * @param  array  $args Class arguments
+   * @return object       Class instance
    */
   public static function create($id, array $args = array())
   {

@@ -18,7 +18,9 @@ class MetaboxDataCest
   public function _before(UnitTester $I)
   {
     // Mocks
-    $this->m['maybe_unserialize'] = Test::func('Ponticlaro\Bebop\Cms\Helpers', 'maybe_unserialize', '/wp-admin/');
+    $this->m['maybe_unserialize'] = Test::func('Ponticlaro\Bebop\Cms\Helpers', 'maybe_unserialize', function() {
+      return func_get_arg(0);
+    });
   }
 
   public function _after(UnitTester $I)
@@ -56,18 +58,10 @@ class MetaboxDataCest
       ]
     ]);
 
-    $I->assertEquals($data->get('key', true), [
-      'value_1',
-      'value_2',
-    ]);
+    $I->assertEquals($data->get('key', true), 'value_1');
 
     // Verify that maybe_unserialize was invoked
-    $this->m['maybe_unserialize']->verifyInvokedOnce([
-      [
-        'value_1',
-        'value_2',
-      ]
-    ]);
+    $this->m['maybe_unserialize']->verifyInvokedOnce(['value_1']);
   }
 
   /**

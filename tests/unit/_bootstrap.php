@@ -1,20 +1,50 @@
 <?php
 
+use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
+use Ponticlaro\Bebop\Cms\Patterns\Factory;
 use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
 
-class UnitTestShortcodeContainer extends ShortcodeContainerAbstract {
-
-  protected $id = 'unit_test_shortcode';
-
-  public function render($attrs, $content = null, $tag)
-  {
-    
-  }
+/**
+ * Used by:
+ * - Patterns\Factory
+ * 
+ */
+class UnitTestFactoryManufacturableClass {
+  public function __construct() {}
 }
 
-class InvalidUnitTestShortcodeContainer {
-
+/**
+ * Used by:
+ * - Patterns\Factory
+ *
+ */
+class UnitTestFactoryManufacturableClassAlt {
+  public function __construct() {}
 }
+
+/**
+ * Used by:
+ * - Patterns\Factory
+ * 
+ */
+class UnitTestFactory extends Factory {
+  protected static $manufacturable_class = 'UnitTestFactoryManufacturableClass';
+}
+
+/**
+ * Used by:
+ * - Patterns\Factory
+ * 
+ */
+class UnitTestFactoryItem extends UnitTestFactoryManufacturableClass {}
+
+/**
+ * Used by:
+ * - Patterns\Factory
+ * 
+ */
+class InvalidUnitTestFactoryItem {}
 
 /**
  * Used by:

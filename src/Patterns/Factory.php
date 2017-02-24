@@ -111,7 +111,7 @@ abstract class Factory implements FactoryInterface {
    * @param  array  $args Class arguments
    * @return object       Class instance
    */
-  public static function create($id, array $args = array())
+  public static function create($id, array $args = [])
   {
     if (!is_string($id))
       throw new \Exception("Factory manufacturable id must be a string");

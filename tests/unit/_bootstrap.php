@@ -11,7 +11,10 @@ use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
  * 
  */
 class UnitTestFactoryManufacturableClass {
-  public function __construct() {}
+  public $args = [];
+  public function __construct(array $args = null) {
+    $this->args = $args;
+  }
 }
 
 /**

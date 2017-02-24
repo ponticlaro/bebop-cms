@@ -217,6 +217,12 @@ class FactoryCest
     // Verify that returned value matches expected object
     $I->assertTrue($object instanceof \UnitTestFactoryItem);
 
+    // Verify that the returned object received the arguments
+    $I->assertEquals($object->args, [
+      'key_1' => 'value_1',
+      'key_2' => 'value_2',
+    ]);
+
     // Test ::create with undefined manufacturable id
     $object = \UnitTestFactory::create('___undefined_manufacturable_id___');
 

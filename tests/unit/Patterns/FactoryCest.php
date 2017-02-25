@@ -30,10 +30,10 @@ class FactoryCest
    */
   public function verifyDefaultManufacturableClass(UnitTester $I)
   {
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable_class');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable_class');
     $prop_refl->setAccessible(true);
 
-    $I->assertEquals($prop_refl->getValue(), 'UnitTestFactoryManufacturableClass');
+    $I->assertEquals($prop_refl->getValue(), 'BebopUnitTests\FactoryManufacturableClass');
   }
 
   /**
@@ -45,19 +45,19 @@ class FactoryCest
   public function set(UnitTester $I)
   {
     // Test ::set
-    \UnitTestFactory::set('unit_test', 'UnitTestFactoryItem');
+    \BebopUnitTests\Factory::set('unit_test', 'BebopUnitTests\FactoryItem');
 
     // Get manufacturable property and make it accessible
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable');
     $prop_refl->setAccessible(true);
     $prop_value = $prop_refl->getValue();
 
     $I->assertTrue(isset($prop_value['unit_test']));
-    $I->assertEquals($prop_value['unit_test'], 'UnitTestFactoryItem');
+    $I->assertEquals($prop_value['unit_test'], 'BebopUnitTests\FactoryItem');
 
     // Test ::set with class that do not extend manufacturable class
     $I->expectException(\Exception::class, function() {
-      \UnitTestFactory::set('unit_test_alt', 'InvalidUnitTestFactoryItem');
+      \BebopUnitTests\Factory::set('unit_test_alt', 'InvalidBebopUnitTests\FactoryItem');
     });
 
     // Test ::set with bad arguments
@@ -78,7 +78,7 @@ class FactoryCest
 
       // Check if exception is thrown with bad arguments
       $I->expectException(\Exception::class, function() use($bad_arg_val) {
-        \UnitTestFactory::set($bad_arg_val[0], $bad_arg_val[1]);
+        \BebopUnitTests\Factory::set($bad_arg_val[0], $bad_arg_val[1]);
       });
     }  
   }
@@ -92,16 +92,16 @@ class FactoryCest
   public function remove(UnitTester $I)
   {
     // Get manufacturable property and make it accessible
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable');
     $prop_refl->setAccessible(true);
     $prop_value = $prop_refl->getValue();
 
     // Set value for test on $manufacturables property
-    $prop_value['unit_test'] = 'UnitTestFactoryItem';
+    $prop_value['unit_test'] = 'BebopUnitTests\FactoryItem';
     $prop_refl->setValue($prop_value);
 
     // Test ::remove
-    \UnitTestFactory::remove('unit_test');
+    \BebopUnitTests\Factory::remove('unit_test');
 
     // Verify mock manufacturable was removed
     $prop_value = $prop_refl->getValue();
@@ -121,7 +121,7 @@ class FactoryCest
 
       // Check if exception is thrown with bad arguments
       $I->expectException(\Exception::class, function() use($bad_arg_val) {
-        \UnitTestFactory::remove($bad_arg_val);
+        \BebopUnitTests\Factory::remove($bad_arg_val);
       });
     }    
   }
@@ -135,19 +135,19 @@ class FactoryCest
   public function canManufacture(UnitTester $I)
   {
     // Get manufacturable property and make it accessible
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable');
     $prop_refl->setAccessible(true);
     $prop_value = $prop_refl->getValue();
 
     // Set value for test on $manufacturables property
-    $prop_value['unit_test'] = 'UnitTestFactoryItem';
+    $prop_value['unit_test'] = 'BebopUnitTests\FactoryItem';
     $prop_refl->setValue($prop_value);
 
     // Test ::canManufacture with defined manufacturable id
-    $I->assertTrue(\UnitTestFactory::canManufacture('unit_test'));
+    $I->assertTrue(\BebopUnitTests\Factory::canManufacture('unit_test'));
 
     // Test ::canManufacture with undefined manufacturable id
-    $I->assertFalse(\UnitTestFactory::canManufacture('___undefined_manufacturable_id___'));
+    $I->assertFalse(\BebopUnitTests\Factory::canManufacture('___undefined_manufacturable_id___'));
 
     // Test ::canManufacture with bad arguments
     $bad_args = [
@@ -162,7 +162,7 @@ class FactoryCest
 
       // Check if exception is thrown with bad arguments
       $I->expectException(\Exception::class, function() use($bad_arg_val) {
-        \UnitTestFactory::canManufacture($bad_arg_val);
+        \BebopUnitTests\Factory::canManufacture($bad_arg_val);
       });
     }    
   }
@@ -176,19 +176,19 @@ class FactoryCest
   public function getInstanceId(UnitTester $I)
   {
     // Get manufacturable property and make it accessible
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable');
     $prop_refl->setAccessible(true);
     $prop_value = $prop_refl->getValue();
 
     // Set value for test on $manufacturables property
-    $prop_value['unit_test'] = 'UnitTestFactoryItem';
+    $prop_value['unit_test'] = 'BebopUnitTests\FactoryItem';
     $prop_refl->setValue($prop_value);
 
     // Test ::canManufacture with defined manufacturable id
-    $I->assertEquals('unit_test', \UnitTestFactory::getInstanceId(new \UnitTestFactoryItem));
+    $I->assertEquals('unit_test', \BebopUnitTests\Factory::getInstanceId(new \BebopUnitTests\FactoryItem));
 
     // Test ::canManufacture with undefined manufacturable id
-    $I->assertNull(\UnitTestFactory::getInstanceId('___undefined_manufacturable_id___'));
+    $I->assertNull(\BebopUnitTests\Factory::getInstanceId('___undefined_manufacturable_id___'));
   }
 
   /**
@@ -200,22 +200,22 @@ class FactoryCest
   public function create(UnitTester $I)
   {
     // Get manufacturable property and make it accessible
-    $prop_refl = new \ReflectionProperty('UnitTestFactory', 'manufacturable');
+    $prop_refl = new \ReflectionProperty('BebopUnitTests\Factory', 'manufacturable');
     $prop_refl->setAccessible(true);
     $prop_value = $prop_refl->getValue();
 
     // Set value for test on $manufacturables property
-    $prop_value['unit_test'] = 'UnitTestFactoryItem';
+    $prop_value['unit_test'] = 'BebopUnitTests\FactoryItem';
     $prop_refl->setValue($prop_value);
 
     // Test ::create with defined manufacturable id
-    $object = \UnitTestFactory::create('unit_test', [
+    $object = \BebopUnitTests\Factory::create('unit_test', [
       'key_1' => 'value_1',
       'key_2' => 'value_2',
     ]);
 
     // Verify that returned value matches expected object
-    $I->assertTrue($object instanceof \UnitTestFactoryItem);
+    $I->assertTrue($object instanceof \BebopUnitTests\FactoryItem);
 
     // Verify that the returned object received the arguments
     $I->assertEquals($object->args, [
@@ -224,7 +224,7 @@ class FactoryCest
     ]);
 
     // Test ::create with undefined manufacturable id
-    $object = \UnitTestFactory::create('___undefined_manufacturable_id___');
+    $object = \BebopUnitTests\Factory::create('___undefined_manufacturable_id___');
 
     // Verify that returned value is null
     $I->assertNull($object);
@@ -242,7 +242,7 @@ class FactoryCest
 
       // Check if exception is thrown with bad arguments
       $I->expectException(\Exception::class, function() use($bad_arg_val) {
-        \UnitTestFactory::create($bad_arg_val);
+        \BebopUnitTests\Factory::create($bad_arg_val);
       });
     }   
   }
@@ -257,13 +257,13 @@ class FactoryCest
   public function manageManufacturableParentClass(UnitTester $I)
   {
     // Verify default value for ::getManufacturableParentClass
-    $I->assertEquals(\UnitTestFactory::getManufacturableParentClass(), 'UnitTestFactoryManufacturableClass');
+    $I->assertEquals(\BebopUnitTests\Factory::getManufacturableParentClass(), 'BebopUnitTests\FactoryManufacturableClass');
 
     // Test ::setManufacturableParentClass
-    \UnitTestFactory::setManufacturableParentClass('UnitTestFactoryManufacturableClassAlt');
+    \BebopUnitTests\Factory::setManufacturableParentClass('BebopUnitTests\FactoryManufacturableClassAlt');
 
     // Verify default value for ::getManufacturableParentClass
-    $I->assertEquals(\UnitTestFactory::getManufacturableParentClass(), 'UnitTestFactoryManufacturableClassAlt');
+    $I->assertEquals(\BebopUnitTests\Factory::getManufacturableParentClass(), 'BebopUnitTests\FactoryManufacturableClassAlt');
   
     // Test ::setManufacturableParentClass with bad arguments
     $bad_args = [
@@ -278,7 +278,7 @@ class FactoryCest
 
       // Check if exception is thrown with bad arguments
       $I->expectException(\Exception::class, function() use($bad_arg_val) {
-        \UnitTestFactory::setManufacturableParentClass($bad_arg_val);
+        \BebopUnitTests\Factory::setManufacturableParentClass($bad_arg_val);
       });
     }   
   }

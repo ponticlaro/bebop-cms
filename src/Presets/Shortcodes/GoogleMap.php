@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class GoogleMap extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
+class GoogleMap extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
 
   /**
    * Shortcode ID

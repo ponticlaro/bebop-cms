@@ -16,9 +16,9 @@ class MetaboxCest
       'context'       => 'normal',
       'priority'      => 'default',
       'callback_args' => array(),
-      'id'            => 'title',                   // Added dynamically
-      'title'         => 'Title',                   // Added dynamically
-      'callback'      => 'sample_control_elements', // Added dynamically
+      'id'            => 'title',                                  // Added dynamically
+      'title'         => 'Title',                                  // Added dynamically
+      'callback'      => 'BebopUnitTests\sample_control_elements', // Added dynamically
     ],
     'post_types'   => [
       'type1'
@@ -71,7 +71,7 @@ class MetaboxCest
   public function create(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Verify add_action was invoked
     $this->mocks['add_action']->verifyInvokedOnce(['save_post', [$metabox, '__saveMeta']]);
@@ -134,7 +134,7 @@ class MetaboxCest
     $metabox = new Metabox('Title', [
       'type1',
       $refl_type->newInstance('Type2')
-    ], 'sample_control_elements');
+    ], 'BebopUnitTests\sample_control_elements');
 
     // Check $type->post_types
     $prop = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Metabox', 'post_types');
@@ -163,7 +163,7 @@ class MetaboxCest
 
     $args = [
       'post_types' => 'type1',
-      'fn'         => 'sample_control_elements'
+      'fn'         => 'BebopUnitTests\sample_control_elements'
     ];
 
     // Create test instance
@@ -183,7 +183,7 @@ class MetaboxCest
   public function getObjectId(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getObjectId
     $I->assertEquals($this->expected_cfg['config']['id'], $metabox->getObjectId());
@@ -199,7 +199,7 @@ class MetaboxCest
   public function getObjectType(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getObjectType
     $I->assertEquals('metabox', $metabox->getObjectType());
@@ -216,7 +216,7 @@ class MetaboxCest
   public function setAndGetId(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getId default value
     $I->assertEquals($this->expected_cfg['config']['id'], $metabox->getId());
@@ -256,7 +256,7 @@ class MetaboxCest
   public function setAndGetTitle(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getTitle default value
     $I->assertEquals($this->expected_cfg['config']['title'], $metabox->getTitle());
@@ -296,7 +296,7 @@ class MetaboxCest
   public function setAndGetCallback(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getCallback default value
     $I->assertEquals($this->expected_cfg['config']['callback'], $metabox->getCallback());
@@ -336,7 +336,7 @@ class MetaboxCest
   public function setAndGetContext(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getContext default value
     $I->assertEquals($this->expected_cfg['config']['context'], $metabox->getContext());
@@ -376,7 +376,7 @@ class MetaboxCest
   public function setAndGetPriority(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getPriority default value
     $I->assertEquals($this->expected_cfg['config']['priority'], $metabox->getPriority());
@@ -416,7 +416,7 @@ class MetaboxCest
   public function setAndGetCallbackArgs(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getCallbackArgs default value
     $I->assertEquals($this->expected_cfg['config']['callback_args'], $metabox->getCallbackArgs());
@@ -443,7 +443,7 @@ class MetaboxCest
   public function manageMetaFields(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getMetaFields default value
     $I->assertEquals($this->expected_cfg['meta_fields'], $metabox->getMetaFields());
@@ -526,7 +526,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getAllSections default value
     $I->assertEquals($this->expected_cfg['sections'], $metabox->getAllSections());
@@ -585,7 +585,7 @@ class MetaboxCest
     $refl_type = new \ReflectionClass('Ponticlaro\Bebop\Cms\PostType');
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::getPostTypes default value
     $I->assertEquals($this->expected_cfg['post_types'], $metabox->getPostTypes());
@@ -684,7 +684,7 @@ class MetaboxCest
   public function callMagicMethod(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Mock bebop-ui ModuleFactory
     $mock = Test::double('Ponticlaro\Bebop\UI\Helpers\ModuleFactory', [
@@ -742,7 +742,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Add section
     $metabox->addSection('section_1', []);
@@ -778,7 +778,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Get reflection of ::__setMetaFields and make it accessible
     $method = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Metabox', '__setMetaFields');
@@ -857,7 +857,7 @@ class MetaboxCest
   public function doNotSetMetaFieldsIfAlreadyManuallyAdded(UnitTester $I)
   {
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Add section
     $metabox->addMetaField('test_meta_field_1');
@@ -936,7 +936,7 @@ class MetaboxCest
       'meta_field_1' => 'meta_field_1_value'
     ]);
 
-    // Verify sample_control_elements was invoked correctly
+    // Verify BebopUnitTests\sample_control_elements was invoked correctly
     $callback_mock->verifyInvoked([
       $data,
       $wp_post_mock,
@@ -977,7 +977,7 @@ class MetaboxCest
           'type1',
           $refl_type->newInstance('Type2')
       ],
-      'fn'      => 'sample_control_elements',
+      'fn'      => 'BebopUnitTests\sample_control_elements',
       'fn_args' => [
         'arg1',
         'arg2',
@@ -998,7 +998,7 @@ class MetaboxCest
     $I->assertEquals($metabox->getId(), 'metabox_id');
     $I->assertEquals($metabox->getTitle(), 'Title');
     $I->assertEquals($metabox->getPostTypes(), ['type1', 'type2']);
-    $I->assertEquals($metabox->getCallback(), 'sample_control_elements');
+    $I->assertEquals($metabox->getCallback(), 'BebopUnitTests\sample_control_elements');
     $I->assertEquals($metabox->getCallbackArgs(), ['arg1', 'arg2']);
     $I->assertEquals($metabox->getContext(), 'context');
     $I->assertEquals($metabox->getPriority(), 'priority');
@@ -1078,7 +1078,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::__saveMeta
     $metabox->__saveMeta(1);
@@ -1134,7 +1134,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::__saveMeta
     $metabox->__saveMeta(1);
@@ -1178,7 +1178,7 @@ class MetaboxCest
     ]);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Flag that we're doing an autosave
     define('DOING_AUTOSAVE', true);
@@ -1207,7 +1207,7 @@ class MetaboxCest
     $wp_verify_nonce_mock = Test::func('Ponticlaro\Bebop\Cms', 'wp_verify_nonce', true);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Test ::__saveMeta
     $metabox->__saveMeta(1);
@@ -1231,7 +1231,7 @@ class MetaboxCest
     $mock = Test::func('Ponticlaro\Bebop\Cms', 'add_meta_box', true);
 
     // Create test instance
-    $metabox = new Metabox('Title', 'type1', 'sample_control_elements');
+    $metabox = new Metabox('Title', 'type1', 'BebopUnitTests\sample_control_elements');
 
     // Call __register
     $metabox->__register();

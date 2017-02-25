@@ -1,16 +1,18 @@
 <?php
 
+namespace BebopUnitTests;
+
 use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 use Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
-use Ponticlaro\Bebop\Cms\Patterns\Factory;
-use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
+use Ponticlaro\Bebop\Cms\Patterns\Factory as FactoryAbstract;
+use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer as ShortcodeContainerAbstract;
 
 /**
  * Used by:
  * - Patterns\Factory
  * 
  */
-class UnitTestFactoryManufacturableClass {
+class FactoryManufacturableClass {
   public $args = [];
   public function __construct(array $args = null) {
     $this->args = $args;
@@ -22,7 +24,7 @@ class UnitTestFactoryManufacturableClass {
  * - Patterns\Factory
  *
  */
-class UnitTestFactoryManufacturableClassAlt {
+class FactoryManufacturableClassAlt {
   public function __construct() {}
 }
 
@@ -31,8 +33,8 @@ class UnitTestFactoryManufacturableClassAlt {
  * - Patterns\Factory
  * 
  */
-class UnitTestFactory extends Factory {
-  protected static $manufacturable_class = 'UnitTestFactoryManufacturableClass';
+class Factory extends FactoryAbstract {
+  protected static $manufacturable_class = 'BebopUnitTests\FactoryManufacturableClass';
 }
 
 /**
@@ -40,14 +42,31 @@ class UnitTestFactory extends Factory {
  * - Patterns\Factory
  * 
  */
-class UnitTestFactoryItem extends UnitTestFactoryManufacturableClass {}
+class FactoryItem extends FactoryManufacturableClass {}
 
 /**
  * Used by:
  * - Patterns\Factory
  * 
  */
-class InvalidUnitTestFactoryItem {}
+class TestFactoryItem {}
+
+/**
+ * Used by:
+ * - Patterns\ShortcodeContainer
+ * 
+ */
+class ShortcodeContainer extends ShortcodeContainerAbstract {
+
+  protected $id            = 'unit_test';
+  protected $template_path = '/path/to/template.php';
+  protected $default_attrs = [
+    'key_1' => 'value_1',
+    'key_2' => 'value_2',
+  ];
+
+  public function render($attrs, $content = null, $tag) {}
+}
 
 /**
  * Used by:

@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class Formstack extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
+class Formstack extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
 
   /**
    * Shortcode ID

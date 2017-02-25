@@ -4,7 +4,7 @@ namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
 use Ponticlaro\Bebop\Mvc\View;
 
-class Youtube extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
+class Youtube extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
 
   /**
    * Shortcode ID

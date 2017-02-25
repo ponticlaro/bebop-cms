@@ -4,7 +4,7 @@ namespace Ponticlaro\Bebop\Cms\Patterns;
 
 use Ponticlaro\Bebop\Cms\Shortcode;
 
-abstract class ShortcodeContainerAbstract {
+abstract class ShortcodeContainer {
 
   /**
    * Shortcode ID
@@ -43,8 +43,13 @@ abstract class ShortcodeContainerAbstract {
    */
   final public function setTemplatePath($path)
   {
-    if (is_string($path) && is_readable($path))
-      $this->template_path = $path;
+    if (!is_string($path))
+      throw new \Exception("ShortcodeContainer template path must be a string");
+
+    if (!is_readable($path))
+      throw new \Exception("ShortcodeContainer template path must be readable");
+    
+    $this->template_path = $path;
 
     return $this;
   }

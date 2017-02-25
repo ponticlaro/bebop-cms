@@ -10,7 +10,7 @@ class ShortcodeFactory extends Factory {
    * Holds the class that manufacturables must extend
    *
    */
-  protected static $manufacturable_class = 'Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract';
+  protected static $manufacturable_class = 'Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer';
 
   /**
    * List of manufacturable classes

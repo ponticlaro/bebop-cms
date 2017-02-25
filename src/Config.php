@@ -4,7 +4,7 @@ namespace Ponticlaro\Bebop\Cms;
 
 use Ponticlaro\Bebop\Cms\Helpers\ConfigItemFactory;
 use Ponticlaro\Bebop\Cms\Helpers\ConfigSectionFactory;
-use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigItemInterface;
 use Ponticlaro\Bebop\Common\Collection;
 use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
@@ -246,12 +246,12 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Merges configuration item object with its preset, it it exists
    * 
-   * @param  string     $env          Environment ID
-   * @param  string     $section_name Configuraton section
-   * @param  ConfigItem $config_obj   Configuraton item object
-   * @return ConfigItem               Merged configuraton item object
+   * @param  string                                            $env          Environment ID
+   * @param  string                                            $section_name Configuraton section
+   * @param  Ponticlaro\Bebop\Cms\Patterns\ConfigItemInterface $config_obj   Configuraton item object
+   * @return ConfigItem                                                      Merged configuraton item object
    */
-  protected function mergeConfigItemWithPreset($env, $section_name, ConfigItem $config_obj)
+  protected function mergeConfigItemWithPreset($env, $section_name, ConfigItemInterface $config_obj)
   {
     // Get preset path
     $preset_path = "presets.$env.$section_name.". $config_obj->getPresetId();
@@ -271,13 +271,13 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Adds single configuration item object to build config
    * 
-   * @param  string     $hook         Hook ID
-   * @param  string     $env          Environment ID
-   * @param  string     $section_name Configuraton section
-   * @param  ConfigItem $config_obj   Configuraton item object
+   * @param  string                                            $hook         Hook ID
+   * @param  string                                            $env          Environment ID
+   * @param  string                                            $section_name Configuraton section
+   * @param  Ponticlaro\Bebop\Cms\Patterns\ConfigItemInterface $config_obj   Configuraton item object
    * @return void
    */
-  protected function addConfigItem($hook, $env, $section_name, ConfigItem $config_obj)
+  protected function addConfigItem($hook, $env, $section_name, ConfigItemInterface $config_obj)
   {
     // Getting the correct configuration id
     $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
@@ -332,11 +332,11 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   /**
    * Builds single config item
    * 
-   * @param  string                                    $section_name Configuraton section
-   * @param  \Ponticlaro\Bebop\Cms\Patterns\ConfigItem $config_obj   Configuraton item object
+   * @param  string                                            $section_name Configuraton section
+   * @param  Ponticlaro\Bebop\Cms\Patterns\ConfigItemInterface $config_obj   Configuraton item object
    * @return void                                                 
    */
-  protected function buildConfigItem($section_name, ConfigItem $config_obj)
+  protected function buildConfigItem($section_name, ConfigItemInterface $config_obj)
   {
     // Get configuration object id
     $object_id = $config_obj->getId();

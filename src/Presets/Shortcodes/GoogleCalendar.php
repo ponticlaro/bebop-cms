@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class GoogleCalendar extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
+class GoogleCalendar extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID

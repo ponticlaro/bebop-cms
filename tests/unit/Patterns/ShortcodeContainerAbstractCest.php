@@ -4,7 +4,7 @@ namespace Patterns;
 use \UnitTester;
 use AspectMock\Test;
 
-class ShortcodeContainerCest
+class ShortcodeContainerAbstractCest
 {
   public function _before(UnitTester $I)
   {
@@ -18,7 +18,7 @@ class ShortcodeContainerCest
 
   /**
    * @author  cristianobaptista
-   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer::__construct
+   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract::__construct
    * 
    * @param UnitTester $I Tester Module
    */
@@ -32,8 +32,8 @@ class ShortcodeContainerCest
 
   /**
    * @author  cristianobaptista
-   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer::getTemplatePath
-   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer::setTemplatePath
+   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract::getTemplatePath
+   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract::setTemplatePath
    * 
    * @param UnitTester $I Tester Module
    */
@@ -85,7 +85,7 @@ class ShortcodeContainerCest
 
   /**
    * @author  cristianobaptista
-   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer::register
+   * @covers  Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract::register
    * 
    * @param UnitTester $I Tester Module
    */

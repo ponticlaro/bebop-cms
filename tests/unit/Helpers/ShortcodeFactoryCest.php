@@ -27,7 +27,7 @@ class ShortcodeFactoryCest
     $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Helpers\ShortcodeFactory', 'manufacturable_class');
     $prop_refl->setAccessible(true);
 
-    $I->assertEquals($prop_refl->getValue(), 'Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer');
+    $I->assertEquals($prop_refl->getValue(), 'Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract');
   }
 
   /**

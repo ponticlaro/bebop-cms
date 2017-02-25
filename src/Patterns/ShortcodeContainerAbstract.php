@@ -4,7 +4,7 @@ namespace Ponticlaro\Bebop\Cms\Patterns;
 
 use Ponticlaro\Bebop\Cms\Shortcode;
 
-abstract class ShortcodeContainer {
+abstract class ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID

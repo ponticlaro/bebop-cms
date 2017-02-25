@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class Quote extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
+class Quote extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID

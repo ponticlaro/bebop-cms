@@ -2,7 +2,7 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-class FacebookPost extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainer {
+class FacebookPost extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
    * Shortcode ID

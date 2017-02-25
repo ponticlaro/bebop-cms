@@ -551,7 +551,7 @@ class Metabox implements TrackableObjectInterface {
    * @param  object $metabox This metabox instance
    * @return void    
    */
-  private function __collectSectionsFieldNames($data, $post, $metabox)
+  public function __collectSectionsFieldNames($data, $post, $metabox)
   {
     foreach($this->sections->getAll() as $section) {
       $section->renderMainTemplate();

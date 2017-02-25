@@ -145,7 +145,7 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
         $config = $config['environments'];
 
       // Handle configuration without environment specific sections
-      if (ConfigItemFactory::canManufacture(key($config)))
+      if ($config && ConfigItemFactory::canManufacture(key($config)))
         $config = ['all' => $config];
 
       // Handle configuration for each environment

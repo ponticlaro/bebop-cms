@@ -15,8 +15,8 @@ class PathConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $id    = $this->config->get('id');
-    $path  = $this->config->get('path');
+    $id    = $this->get('id');
+    $path  = $this->get('path');
 
     // 'id' must be a string
     if (!$id || !is_string($id))
@@ -36,6 +36,6 @@ class PathConfigItem extends ConfigItem {
    */
   public function build()
   {
-    PathManager::getInstance()->set($this->getId(), $this->config->get('path'));
+    PathManager::getInstance()->set($this->getId(), $this->get('path'));
   }
 } 

@@ -17,7 +17,7 @@ class StyleConfigItem extends ScriptConfigItem {
     parent::__construct($config);
 
     // Define events channel
-    $channel = 'cms.config.styles.'. $this->config->get('handle');
+    $channel = 'cms.config.styles.'. $this->get('handle');
 
     // Subscribe for events targeting this script
     $event_emitter = EventEmitter::getInstance()
@@ -40,7 +40,7 @@ class StyleConfigItem extends ScriptConfigItem {
       if ($action == 'register') {
         
         // Get dependencies
-        $deps = $this->config->get('deps') ?: [];
+        $deps = $this->get('deps') ?: [];
 
         // Enqueue dependencies
         if ($deps) {
@@ -58,17 +58,17 @@ class StyleConfigItem extends ScriptConfigItem {
 
         // Register script
         $hook->register(
-          $this->config->get('handle'),
-          $this->config->get('src'),
+          $this->get('handle'),
+          $this->get('src'),
           $deps,
-          $this->config->get('version') ?: null,
-          $this->config->get('in_footer') ?: null
+          $this->get('version') ?: null,
+          $this->get('in_footer') ?: null
         );
       }
 
       else {
 
-        $hook->$action($this->config->get('handle'));
+        $hook->$action($this->get('handle'));
       }
     }
 

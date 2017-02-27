@@ -15,8 +15,8 @@ class UrlConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $id    = $this->config->get('id');
-    $url   = $this->config->get('url');
+    $id    = $this->get('id');
+    $url   = $this->get('url');
 
     // 'id' must be a string
     if (!$id || !is_string($id))
@@ -36,6 +36,6 @@ class UrlConfigItem extends ConfigItem {
    */
   public function build()
   {
-    UrlManager::getInstance()->set($this->getId(), $this->config->get('url'));
+    UrlManager::getInstance()->set($this->getId(), $this->get('url'));
   }
 } 

@@ -20,8 +20,8 @@ class TaxonomyConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $name  = $this->config->get('name');
-    $types = $this->config->get('types');
+    $name  = $this->get('name');
+    $types = $this->get('types');
 
     // 'name' must be a string or an array
     if (!$name || (!is_string($name) && !is_array($name)))
@@ -41,8 +41,8 @@ class TaxonomyConfigItem extends ConfigItem {
    */
   public function build()
   {
-    $type = new Taxonomy($this->config->get('name'), $this->config->get('types'));
-    $type->applyRawArgs($this->config->getAll());
+    $type = new Taxonomy($this->get('name'), $this->get('types'));
+    $type->applyRawArgs($this->getAll());
 
     return $this;
   }

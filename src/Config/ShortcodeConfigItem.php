@@ -15,7 +15,7 @@ class ShortcodeConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $id    = $this->config->get('id');
+    $id    = $this->get('id');
 
     // 'id' must be a string
     if (!$id || !is_string($id))
@@ -32,7 +32,7 @@ class ShortcodeConfigItem extends ConfigItem {
   public function build()
   {
     $id    = $this->getId();
-    $class = $this->config->get('class');
+    $class = $this->get('class');
 
     // Replace default class
     if ($class && class_exists($class))

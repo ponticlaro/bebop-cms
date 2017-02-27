@@ -19,7 +19,7 @@ class ImageSizeConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid  = true;
-    $config = $this->config->getAll();
+    $config = $this->getAll();
 
     // 'name' must be a string
     if (!isset($config['name']) || !$config['name'])
@@ -47,10 +47,10 @@ class ImageSizeConfigItem extends ConfigItem {
   public function build()
   {
     add_image_size(
-      $this->config->get('name'),
-      $this->config->get('width'),
-      $this->config->get('height'),
-      $this->config->get('crop') ?: false // Defaults to false
+      $this->get('name'),
+      $this->get('width'),
+      $this->get('height'),
+      $this->get('crop') ?: false // Defaults to false
     );
 
     return $this;

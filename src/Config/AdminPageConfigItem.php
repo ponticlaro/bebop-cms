@@ -20,7 +20,7 @@ class AdminPageConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $title = $this->config->get('title');
+    $title = $this->get('title');
 
     // 'title' must be a string
     if (!$title || !is_string($title))
@@ -36,7 +36,7 @@ class AdminPageConfigItem extends ConfigItem {
    */
   public function build()
   {
-    new AdminPage($this->config->getAll());
+    new AdminPage($this->getAll());
 
     return $this;
   }

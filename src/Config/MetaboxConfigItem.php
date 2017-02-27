@@ -20,8 +20,8 @@ class MetaboxConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $title = $this->config->get('title');
-    $types = $this->config->get('types');
+    $title = $this->get('title');
+    $types = $this->get('types');
 
     // 'title' must be a string or array
     if (!$title || !is_string($title))
@@ -41,7 +41,7 @@ class MetaboxConfigItem extends ConfigItem {
    */
   public function build()
   {
-    new Metabox($this->config->getAll());
+    new Metabox($this->getAll());
 
     return $this;
   }

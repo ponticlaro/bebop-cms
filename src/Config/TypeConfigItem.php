@@ -20,7 +20,7 @@ class TypeConfigItem extends ConfigItem {
   public function isValid()
   {
     $valid = true;
-    $name  = $this->config->get('name');
+    $name  = $this->get('name');
 
     // 'name' must be a string or an array
     if (!$name || (!is_string($name) && !is_array($name)))
@@ -36,8 +36,8 @@ class TypeConfigItem extends ConfigItem {
    */
   public function build()
   {
-    $type = new PostType($this->config->get('name'));
-    $type->applyRawArgs($this->config->getAll());
+    $type = new PostType($this->get('name'));
+    $type->applyRawArgs($this->getAll());
 
     return $this;
   }

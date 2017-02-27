@@ -31,7 +31,7 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
     parent::__construct($config);
 
     // Define events channel
-    $channel = 'cms.config.scripts.'. $this->config->get('handle');
+    $channel = 'cms.config.scripts.'. $this->get('handle');
 
     // Subscribe for events targeting this script
     $event_emitter = EventEmitter::getInstance()
@@ -49,9 +49,9 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
   public function isValid()
   {
     $valid  = true;
-    $handle = $this->config->get('handle');
-    $src    = $this->config->get('src');
-    $hooks  = $this->config->get('hooks');
+    $handle = $this->get('handle');
+    $src    = $this->get('src');
+    $hooks  = $this->get('hooks');
 
     // 'handle' must be a string
     if (!$handle || !is_string($handle))
@@ -76,7 +76,7 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
   public function build()
   {
     // Get script hooks
-    $hooks = $this->config->get('hooks') ?: [];
+    $hooks = $this->get('hooks') ?: [];
 
     // Handle each hook
     foreach ($hooks as $hook_name => $actions) {
@@ -99,10 +99,10 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
       if ($action == 'register') {
         
         // Get handle
-        $handle = $this->config->get('handle');
+        $handle = $this->get('handle');
 
         // Get dependencies
-        $deps = $this->config->get('deps') ?: [];
+        $deps = $this->get('deps') ?: [];
 
         // Enqueue dependencies
         if ($deps) {
@@ -121,24 +121,24 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
         // Register script
         $hook->register(
           $handle,
-          $this->config->get('src'),
+          $this->get('src'),
           $deps,
-          $this->config->get('version') ?: null,
-          $this->config->get('in_footer') ?: null
+          $this->get('version') ?: null,
+          $this->get('in_footer') ?: null
         );
 
         // Handle asynchronous loading
-        if ($this->config->get('async'))
+        if ($this->get('async'))
           $hook->getFile($handle)->setAsync(true);
 
         // Handle defered loading
-        if ($this->config->get('defer'))
+        if ($this->get('defer'))
           $hook->getFile($handle)->setDefer(true);
       }
 
       else {
 
-        $hook->$action($this->config->get('handle'));
+        $hook->$action($this->get('handle'));
       }
     }
 

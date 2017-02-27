@@ -118,7 +118,7 @@ class UrlConfigItemCest
    *
    * @param UnitTester $I Tester Module
    */
-  public function validPath(UnitTester $I)
+  public function validUrl(UnitTester $I)
   {
     $args_list = [
       '/unit/test',

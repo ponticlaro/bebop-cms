@@ -221,6 +221,7 @@ class ShortcodeConfigItemCest
     $shortcode_factory_mock = Test::double('Ponticlaro\Bebop\Cms\Helpers\ShortcodeFactory', [
       'canManufacture' => true,
       'create'         => $shortcode_container_mock->construct(),
+      'set'            => true,
     ]);
 
     // Create test instance

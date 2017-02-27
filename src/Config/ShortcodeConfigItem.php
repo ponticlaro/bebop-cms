@@ -24,9 +24,14 @@ class ShortcodeConfigItem extends ConfigItem {
   {
     $valid = true;
     $id    = $this->get('id');
+    $class = $this->get('class');
 
     // 'id' must be a string
     if (!$id || !is_string($id))
+      $valid = false;
+
+    // 'class' must be a string
+    if ($class && (!class_exists($class) || !is_subclass_of($class, 'Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract')))
       $valid = false;
 
     return $valid;

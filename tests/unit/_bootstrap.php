@@ -76,10 +76,28 @@ class TestFactoryItem {}
 
 /**
  * Used by:
+ * - Patterns\ShortcodeConfigItem
  * - Patterns\ShortcodeContainer
  * 
  */
 class ShortcodeContainer extends ShortcodeContainerAbstract {
+
+  protected $id            = 'unit_test';
+  protected $template_path = '/path/to/template.php';
+  protected $default_attrs = [
+    'key_1' => 'value_1',
+    'key_2' => 'value_2',
+  ];
+
+  public function render($attrs, $content = null, $tag) {}
+}
+
+/**
+ * Used by:
+ * - Patterns\ShortcodeConfigItem
+ * 
+ */
+class ShortcodeContainerAlt extends ShortcodeContainerAbstract {
 
   protected $id            = 'unit_test';
   protected $template_path = '/path/to/template.php';

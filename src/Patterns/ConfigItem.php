@@ -8,70 +8,54 @@ use Ponticlaro\Bebop\Common\Utils;
 abstract class ConfigItem extends Collection implements ConfigItemInterface {
 
   /**
-   * Configuration proprety of the ID
+   * {@inheritDoc}
    */
-  const IDENTIFIER = 'id';
+  abstract public static function getIdKey();
 
   /**
-   * Checks if configuration is valid
-   * 
-   * @return boolean True if valid, false otherwise
-   */
-  abstract public function isValid();
-
-  /**
-   * Returns unique configuration item ID
-   * 
-   * @return string Configuration item ID
+   * {@inheritDoc}
    */
   public function getUniqueId()
   {
     // Check if config have an '_id' property
-    $id = $this->get('_id');
+    if ($id = $this->get('_id'))
+      return static::__getNormalizedId($id);
 
     // If we have no '_id', return preset ID
-    return $id ? static::__getNormalizedId($id) : $this->getId();
+    return $this->getId();
   }
 
   /**
-   * Returns configuration item ID
-   * 
-   * @return string Configuration item preset ID
+   * {@inheritDoc}
    */
   public function getId()
   {
     // Check if config have a value on its identifier property
-    $id = $this->get(static::IDENTIFIER);
+    $id = $this->get(static::getIdKey());
 
-    // Return if there is no ID
-    if (!$id)
-      return null;
+    // Return ID if we have one
+    if ($id)
+      return static::__getNormalizedId($id);
 
-    // Making sure types and taxonomies get their IDs from the singular name
-    if (is_array($id))
-        $id = reset($id);
-
-    // Return ID
-    return $id ? static::__getNormalizedId($id) : null;
+    // Return null
+    return null;
   }
 
   /**
-   * Returns configuration item preset ID, if any
-   * 
-   * @return string Configuration item preset ID
+   * {@inheritDoc}
    */
   public function getPresetId()
   {
-    $id = $this->get('preset');
+    // Return preset id if we have one
+    if ($id = $this->get('preset'))
+      return static::__getNormalizedId($id);
 
-    // Return preset ID
-    return $id ? static::__getNormalizedId($id) : null;
+    // Return null
+    return null;
   }
 
   /**
-   * Returns configuration item requirements aray
-   * 
-   * @return array Configuration item requirements array
+   * {@inheritDoc}
    */
   public function getRequirements()
   {
@@ -79,10 +63,7 @@ abstract class ConfigItem extends Collection implements ConfigItemInterface {
   }
 
   /**
-   * Merges current configuration item with another one
-   * 
-   * @param  ConfigItemInterface $config_item Configuration object we're going to merge with
-   * @return object                           Current class object
+   * {@inheritDoc}
    */
   public function merge(ConfigItem $config_item)
   {
@@ -96,12 +77,22 @@ abstract class ConfigItem extends Collection implements ConfigItemInterface {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  abstract public function isValid();
+
+  /**
+   * {@inheritDoc}
+   */
+  abstract public function build();
+
+  /**
    * Normalizes ID string
    * 
    * @param  string $source_string ID string to clean
    * @return string                Clean string
    */
-  private static function __getNormalizedId($raw_id)
+  protected static function __getNormalizedId($raw_id)
   {
     // Slugify
     $id = Utils::slugify($raw_id);
@@ -112,11 +103,4 @@ abstract class ConfigItem extends Collection implements ConfigItemInterface {
     // Return ID
     return $id;
   }
-
-  /**
-   * Builds configuration item
-   * 
-   * @return object 
-   */
-  abstract public function build();
 } 

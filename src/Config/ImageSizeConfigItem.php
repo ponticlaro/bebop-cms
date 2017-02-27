@@ -7,9 +7,12 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 class ImageSizeConfigItem extends ConfigItem {
 
   /**
-   * Configuration proprety of the ID
+   * {@inheritDoc}
    */
-  const IDENTIFIER = 'name';
+  public static function getIdKey()
+  {
+    return 'name';
+  }
 
   /**
    * Checks if configuration is valid

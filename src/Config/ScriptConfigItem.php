@@ -17,9 +17,12 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
   use EventConsumerTrait;
 
   /**
-   * Configuration proprety of the ID
+   * {@inheritDoc}
    */
-  const IDENTIFIER = 'handle';
+  public static function getIdKey()
+  {
+    return 'handle';
+  }
 
   /**
    * Instantiates configuration item

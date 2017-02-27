@@ -8,9 +8,12 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 class AdminPageConfigItem extends ConfigItem {
   
   /**
-   * Configuration proprety of the ID
+   * {@inheritDoc}
    */
-  const IDENTIFIER = 'title';
+  public static function getIdKey()
+  {
+    return 'title';
+  }
 
   /**
    * Checks if configuration is valid

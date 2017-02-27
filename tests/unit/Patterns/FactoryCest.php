@@ -6,13 +6,6 @@ use AspectMock\Test;
 
 class FactoryCest
 {
-  /**
-   * List of mocks
-   * 
-   * @var array
-   */
-  private $m = [];
-
   public function _before(UnitTester $I)
   {
 

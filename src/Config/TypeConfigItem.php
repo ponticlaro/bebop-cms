@@ -8,9 +8,34 @@ use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 class TypeConfigItem extends ConfigItem {
   
   /**
-   * Configuration proprety of the ID
+   * {@inheritDoc}
    */
-  const IDENTIFIER = 'name';
+  public static function getIdKey()
+  {
+    return 'name';
+  }
+
+  /**
+   * Returns configuration item ID
+   * 
+   * @return string Configuration item preset ID
+   */
+  public function getId()
+  {
+    // Check if config have a value on its identifier property
+    $id = $this->get(static::getIdKey());
+
+    // Return if there is no ID
+    if (!$id)
+      return null;
+
+    // Making sure we get the ID from the singular name
+    if (is_array($id))
+        $id = reset($id);
+
+    // Return ID
+    return $id ? static::__getNormalizedId($id) : null;
+  }
 
   /**
    * Checks if configuration is valid

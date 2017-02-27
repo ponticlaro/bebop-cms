@@ -12,11 +12,11 @@ interface ConfigItemInterface {
   public function __construct(array $config = []);
 
   /**
-   * Checks if configuration is valid
+   * Returns the key name containing the ID
    * 
-   * @return boolean True if valid, false otherwise
+   * @return string Key name
    */
-  public function isValid();
+  public static function getIdKey();
 
   /**
    * Returns unique configuration item ID
@@ -84,6 +84,13 @@ interface ConfigItemInterface {
    * @return object                           Current class object
    */
   public function merge(ConfigItem $config_item);
+  
+  /**
+   * Checks if configuration is valid
+   * 
+   * @return boolean True if valid, false otherwise
+   */
+  public function isValid();
 
   /**
    * Builds configuration item

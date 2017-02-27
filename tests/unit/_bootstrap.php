@@ -2,10 +2,33 @@
 
 namespace BebopUnitTests;
 
-use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
-use Ponticlaro\Bebop\Cms\Patterns\ConfigSection;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigItem as ConfigItemAbstract;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigSection as ConfigSectionAbstract;
 use Ponticlaro\Bebop\Cms\Patterns\Factory as FactoryAbstract;
 use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
+
+/**
+ * Used by:
+ * - Patterns\ConfigItem
+ * 
+ */
+class ConfigItem extends ConfigItemAbstract {
+
+  public static function getIdKey()
+  {
+    return 'unit_test';
+  }
+
+  public function isValid()
+  {
+    return true;
+  }
+
+  public function build()
+  {
+    
+  }
+}
 
 /**
  * Used by:

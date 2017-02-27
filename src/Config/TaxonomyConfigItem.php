@@ -52,8 +52,8 @@ class TaxonomyConfigItem extends ConfigItem {
     if (!$name || (!is_string($name) && !is_array($name)))
       $valid = false;
 
-    // 'type' must be a string or an array
-    if (!$name || (!is_string($name) && !is_array($name)))
+    // 'types' must be a string or an array
+    if (!$types || (!is_string($types) && !is_array($types)))
       $valid = false;
 
     return $valid;

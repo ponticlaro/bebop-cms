@@ -10,7 +10,14 @@ use Ponticlaro\Bebop\Common\EnvManager;
 use Ponticlaro\Bebop\Common\PathManager;
 use Ponticlaro\Bebop\Common\Utils;
 
-class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
+class Config {
+
+  /**
+   * Class instance
+   * 
+   * @var object
+   */
+  private static $instance;
 
   /**
    * Hooks
@@ -35,8 +42,9 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
   protected $already_built = false;
 
   /**
-   * Instantiates this class
+   * Instantiates class
    * 
+   * @return void
    */
   public function __construct()
   {
@@ -59,6 +67,26 @@ class Config extends \Ponticlaro\Bebop\Common\Patterns\SingletonAbstract {
 
     // Build configuration on the after_setup_theme hook
     add_action('after_setup_theme', [$this, 'build']);
+  }
+
+  /**
+   * Do not allow clones
+   * 
+   * @return void
+  */
+  private final function __clone() {}
+
+  /**
+   * Gets single instance of called class
+   * 
+   * @return object
+   */
+  public static function getInstance() 
+  {
+    if (!isset(static::$instance))
+      static::$instance = new static();
+
+    return static::$instance;
   }
 
   /**

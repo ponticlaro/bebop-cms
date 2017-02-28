@@ -42,6 +42,47 @@ class TypeConfigItemCest
 
   /**
    * @author cristianobaptista
+   * @covers Ponticlaro\Bebop\Cms\Config\TypeConfigItem::getId
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function getId(UnitTester $I)
+  {
+    // Mock ConfigItem::__getNormalizedId
+    Test::Double('Ponticlaro\Bebop\Cms\Patterns\ConfigItem', [
+      '__getNormalizedId' => function() {
+        return func_get_arg(0);
+      }
+    ]);
+
+    // Test when there is the key to get an id from
+    $item = new TypeConfigItem([
+       TypeConfigItem::getIdKey() => 'config_id',
+    ]);
+
+    // Verify that ::getId returns expected value
+    $I->assertEquals($item->getId(), 'config_id');
+
+    // Test when there is the key to get an id from, and it is an array
+    $item = new TypeConfigItem([
+      TypeConfigItem::getIdKey() => [
+        'singular',
+        'plural',
+      ],
+    ]);
+
+    // Verify that ::getId returns expected value
+    $I->assertEquals($item->getId(), 'singular');
+
+    // Test when there is no key to get an id from
+    $item = new TypeConfigItem();
+
+    // Verify that ::getId returns expected value
+    $I->assertNull($item->getId());
+  }
+
+  /**
+   * @author cristianobaptista
    * @covers Ponticlaro\Bebop\Cms\Config\TypeConfigItem::isValid
    * 
    * @param UnitTester $I Tester Module

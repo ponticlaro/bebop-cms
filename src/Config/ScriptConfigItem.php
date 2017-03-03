@@ -2,12 +2,14 @@
 
 namespace Ponticlaro\Bebop\Cms\Config;
 
-use \Ponticlaro\Bebop\ScriptsLoader\Js;
-use \Ponticlaro\Bebop\Common\EventEmitter;
-use \Ponticlaro\Bebop\Common\Patterns\EventEmitterInterface;
-use \Ponticlaro\Bebop\Common\Patterns\EventConsumerTrait;
-use \Ponticlaro\Bebop\Common\Patterns\EventConsumerInterface;
-use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
+use Ponticlaro\Bebop\ScriptsLoader\Js;
+use Ponticlaro\Bebop\Common\EventEmitter;
+use Ponticlaro\Bebop\Common\EventMessage;
+use Ponticlaro\Bebop\Common\Patterns\EventConsumerTrait;
+use Ponticlaro\Bebop\Common\Patterns\EventConsumerInterface;
+use Ponticlaro\Bebop\Common\Patterns\EventEmitterInterface;
+use Ponticlaro\Bebop\Common\Patterns\EventMessageInterface;
+use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
 class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
 
@@ -33,15 +35,20 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
   {
     parent::__construct($config);
 
-    // Define events channel
-    $channel = 'cms.config.scripts.'. $this->get('handle');
+    // Get handle
+    $handle = $this->get('handle');
 
-    // Subscribe for events targeting this script
-    $event_emitter = EventEmitter::getInstance()
-                                 ->subscribe($channel, [$this, 'consumeEvent']);
+    if ($handle && is_string($handle)) {
 
-    // Set event emitter
-    $this->setEventEmitter($event_emitter);
+      // Define events channel
+      $channel = "cms.config.scripts.$handle";
+
+      // Subscribe for events targeting this script
+      $event_emitter = EventEmitter::getInstance()->subscribe($channel, [$this, 'consumeEvent']);
+
+      // Set event emitter
+      $this->setEventEmitter($event_emitter);
+    }
   }
 
   /**
@@ -111,13 +118,16 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
         if ($deps) {
           foreach ($deps as $dep_handle) {
 
-            // Publish event
-            $this->getEventEmitter()->publish("cms.config.scripts.$dep_handle", [
-              'action' => 'enqueue_as_dependency',
-              'hooks'  => [
-                $hook_name
-              ]
+            // Set event channel
+            $channel = "cms.config.scripts.$dep_handle";
+
+            // Create message
+            $message = new EventMessage('enqueue_as_dependency', [
+              'hooks' => [$hook_name]
             ]);
+
+            // Publish event
+            $this->getEventEmitter()->publish($channel, $message);
           }
         }
         
@@ -153,27 +163,30 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
    * 
    * @param mixed $message Event message
    */
-  public function consumeEvent($message)
+  public function consumeEvent(EventMessageInterface $message)
   {
-    if (is_array($message)) {
-      
-      $action = isset($message['action']) ? $message['action'] : null;
-
-      // Enqueue this script as a dependency
-      if ($action && $action == 'enqueue_as_dependency') {
-        
-        $hooks = isset($message['hooks']) ? $message['hooks'] : [];
-
-        if ($hooks) {
-          foreach ($hooks as $hook_name) {
-
-            $this->handleAction($hook_name, 'register');
-            $this->handleAction($hook_name, 'enqueue');
-          }
-        }
-      }
-    }
+    if ('enqueue_as_dependency' == $message->getAction())
+      $this->enqueueAsDependency($message);
 
     return $this;
+  }
+
+  /**
+   * Enqueues this script as a dependency of another script
+   * 
+   * @param object $message Event message
+   */
+  protected function enqueueAsDependency(EventMessageInterface $message)
+  {
+    $data  = $message->getData();
+    $hooks = isset($data['hooks']) ? $data['hooks'] : [];
+
+    if ($hooks) {
+      foreach ($hooks as $hook_name) {
+
+        $this->handleAction($hook_name, 'register');
+        $this->handleAction($hook_name, 'enqueue');
+      }
+    }
   }
 } 

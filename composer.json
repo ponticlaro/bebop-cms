@@ -14,7 +14,7 @@
         "role": "Developer"
     }],
     "require": {
-        "ponticlaro/bebop-common": "^1.1",
+        "ponticlaro/bebop-common": "^1.1.4",
         "ponticlaro/bebop-ui": "^1",
         "ponticlaro/bebop-scripts-loader": "^1.1"
     },

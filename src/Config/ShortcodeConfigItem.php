@@ -6,14 +6,6 @@ use \Ponticlaro\Bebop\Cms\Helpers\ShortcodeFactory;
 use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
 class ShortcodeConfigItem extends ConfigItem {
-  
-  /**
-   * {@inheritDoc}
-   */
-  public static function getIdKey()
-  {
-    return 'id';
-  }
 
   /**
    * Checks if configuration is valid

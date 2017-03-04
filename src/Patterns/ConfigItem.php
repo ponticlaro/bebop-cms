@@ -10,7 +10,10 @@ abstract class ConfigItem extends Collection implements ConfigItemInterface {
   /**
    * {@inheritDoc}
    */
-  abstract public static function getIdKey();
+  public static function getIdKey()
+  {
+    return 'id';
+  }
 
   /**
    * {@inheritDoc}

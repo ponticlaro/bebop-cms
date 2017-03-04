@@ -30,6 +30,17 @@ class ConfigItemCest
 
   /**
    * @author cristianobaptista
+   * @covers Ponticlaro\Bebop\Cms\Patterns\ConfigItem::getIdKey
+   * 
+   * @param UnitTester $I Tester Module
+   */
+  public function getIdKey(UnitTester $I)
+  {
+    $I->assertEquals(\BebopUnitTests\ConfigItem::getIdKey(), 'id');
+  }
+
+  /**
+   * @author cristianobaptista
    * @covers Ponticlaro\Bebop\Cms\Patterns\ConfigItem::getUniqueId
    * 
    * @param UnitTester $I Tester Module
@@ -45,16 +56,16 @@ class ConfigItemCest
 
     // Test '_id' as the 'unique id'
     $item = new \BebopUnitTests\ConfigItem([
-      '_id'       => 'unique_id',
-      'unit_test' => 'config_id',
+      '_id' => 'unique_id',
+      'id'  => 'config_id',
     ]);
 
     // Verify that ::getUniqueId returns expected value
     $I->assertEquals($item->getUniqueId(), 'unique_id');
 
-    // Test 'unit_test' as the 'unique id'
+    // Test 'id' as the 'unique id'
     $item = new \BebopUnitTests\ConfigItem([
-      'unit_test' => 'config_id',
+      'id' => 'config_id',
     ]);
 
     // Verify that ::getUniqueId returns expected value

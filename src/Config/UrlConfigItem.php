@@ -6,14 +6,6 @@ use \Ponticlaro\Bebop\Common\UrlManager;
 use \Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
 
 class UrlConfigItem extends ConfigItem {
-  
-  /**
-   * {@inheritDoc}
-   */
-  public static function getIdKey()
-  {
-    return 'id';
-  }
 
   /**
    * Checks if configuration is valid

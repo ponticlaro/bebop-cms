@@ -15,20 +15,12 @@ use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
  */
 class ConfigItem extends ConfigItemAbstract {
 
-  public static function getIdKey()
-  {
-    return 'unit_test';
-  }
-
   public function isValid()
   {
     return true;
   }
 
-  public function build()
-  {
-    
-  }
+  public function build() {}
 }
 
 /**

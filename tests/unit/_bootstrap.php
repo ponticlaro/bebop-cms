@@ -25,6 +25,18 @@ class ConfigItem extends ConfigItemAbstract {
 
 /**
  * Used by:
+ * - Patterns\ConfigSection
+ * 
+ */
+class ConfigSection extends ConfigSectionAbstract {
+
+  public function getItems() {
+    return [];
+  }
+}
+
+/**
+ * Used by:
  * - Patterns\Factory
  * 
  */

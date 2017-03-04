@@ -2,10 +2,13 @@
 
 namespace Ponticlaro\Bebop\Cms\Config;
 
-use \Ponticlaro\Bebop\ScriptsLoader\Css;
-use \Ponticlaro\Bebop\Common\EventEmitter;
+use Ponticlaro\Bebop\Cms\Patterns\ScriptConfigItem as ScriptConfigItemAbstract;
+use Ponticlaro\Bebop\Common\EventEmitter;
+use Ponticlaro\Bebop\Common\EventMessage;
+use Ponticlaro\Bebop\ScriptsLoader\Css;
+use Ponticlaro\Bebop\ScriptsLoader\Patterns\ScriptsHook;
 
-class StyleConfigItem extends ScriptConfigItem {
+class StyleConfigItem extends ScriptConfigItemAbstract {
 
   /**
    * Instantiates configuration item
@@ -38,40 +41,51 @@ class StyleConfigItem extends ScriptConfigItem {
     if($hook = CSS::getInstance()->getHook($hook_name)) {
 
       if ($action == 'register') {
-        
-        // Get dependencies
-        $deps = $this->get('deps') ?: [];
 
         // Enqueue dependencies
-        if ($deps) {
-          foreach ($deps as $dep_handle) {
-
-            // Publish event
-            $this->getEventEmitter()->publish("cms.config.styles.$dep_handle", [
-              'action' => 'enqueue_as_dependency',
-              'hooks'  => [
-                $hook_name
-              ]
-            ]);
-          }
-        }
+        $this->ensureDependenciesAreEnqueued($hook_name);
 
         // Register script
         $hook->register(
           $this->get('handle'),
           $this->get('src'),
-          $deps,
+          $this->get('deps') ?: [],
           $this->get('version') ?: null,
-          $this->get('in_footer') ?: null
+          $this->get('media') ?: null
         );
+      
+        return $this;
       }
-
-      else {
-
-        $hook->$action($this->get('handle'));
-      }
+      
+      $hook->$action($this->get('handle'));
     }
 
     return $this;
+  }
+
+  /**
+   * Makes sure script dependencies are enqueued
+   * 
+   * @param  string $hook_name CSS Hook name
+   * @return void
+   */
+  protected function ensureDependenciesAreEnqueued($hook_name)
+  {
+    // Get dependencies
+    $deps = $this->get('deps') ?: [];
+
+    foreach ($deps as $dep_handle) {
+
+      // Set event channel
+      $channel = "cms.config.styles.$dep_handle";
+
+      // Create message
+      $message = new EventMessage('enqueue_as_dependency', [
+        'hooks' => [$hook_name]
+      ]);
+
+      // Publish event
+      $this->getEventEmitter()->publish($channel, $message);
+    }
   }
 } 

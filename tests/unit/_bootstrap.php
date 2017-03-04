@@ -5,6 +5,7 @@ namespace BebopUnitTests;
 use Ponticlaro\Bebop\Cms\Patterns\ConfigItem as ConfigItemAbstract;
 use Ponticlaro\Bebop\Cms\Patterns\ConfigSection as ConfigSectionAbstract;
 use Ponticlaro\Bebop\Cms\Patterns\Factory as FactoryAbstract;
+use Ponticlaro\Bebop\Cms\Patterns\ScriptConfigItem as ScriptConfigItemAbstract;
 use Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract;
 
 /**

@@ -2,29 +2,13 @@
 
 namespace Ponticlaro\Bebop\Cms\Config;
 
-use Ponticlaro\Bebop\ScriptsLoader\Js;
+use Ponticlaro\Bebop\Cms\Patterns\ScriptConfigItem as ScriptConfigItemAbstract;
 use Ponticlaro\Bebop\Common\EventEmitter;
 use Ponticlaro\Bebop\Common\EventMessage;
-use Ponticlaro\Bebop\Common\Patterns\EventConsumerTrait;
-use Ponticlaro\Bebop\Common\Patterns\EventConsumerInterface;
-use Ponticlaro\Bebop\Common\Patterns\EventEmitterInterface;
-use Ponticlaro\Bebop\Common\Patterns\EventMessageInterface;
-use Ponticlaro\Bebop\Cms\Patterns\ConfigItem;
+use Ponticlaro\Bebop\ScriptsLoader\Js;
+use Ponticlaro\Bebop\ScriptsLoader\Patterns\ScriptsHook;
 
-class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
-
-  /**
-   * Inherit default EventConsumerTrait attributes and methods
-   */
-  use EventConsumerTrait;
-
-  /**
-   * {@inheritDoc}
-   */
-  public static function getIdKey()
-  {
-    return 'handle';
-  }
+class ScriptConfigItem extends ScriptConfigItemAbstract {
 
   /**
    * Instantiates configuration item
@@ -52,52 +36,7 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
   }
 
   /**
-   * Checks if configuration is valid
-   * 
-   * @return boolean True if valid, false otherwise
-   */
-  public function isValid()
-  {
-    $valid  = true;
-    $handle = $this->get('handle');
-    $src    = $this->get('src');
-    $hooks  = $this->get('hooks');
-
-    // 'handle' must be a string
-    if (!$handle || !is_string($handle))
-      $valid = false;
-
-    // 'src' must be a string, if it exists
-    if ($src && !is_string($src))
-      $valid = false;
-
-    // 'hooks' must be an array, if it exists
-    if ($hooks && !is_array($hooks))
-      $valid = false;
-
-    return $valid;
-  }
-  
-  /**
-   * Builds configuration item
-   * 
-   * @return object Current object
-   */
-  public function build()
-  {
-    // Get script hooks
-    $hooks = $this->get('hooks') ?: [];
-
-    // Handle each hook
-    foreach ($hooks as $hook_name => $actions) {
-      foreach ($actions as $action) {
-        $this->handleAction($hook_name, $action);
-      }
-    }
-  }
-
-  /**
-   * Registers script
+   * Registers, deregisters, enqueues and dequeues script
    * 
    * @param  object $hook_name JS Hook instance
    * @return object            Current object
@@ -107,86 +46,83 @@ class ScriptConfigItem extends ConfigItem implements EventConsumerInterface {
     if($hook = JS::getInstance()->getHook($hook_name)) {
 
       if ($action == 'register') {
-        
-        // Get handle
-        $handle = $this->get('handle');
-
-        // Get dependencies
-        $deps = $this->get('deps') ?: [];
 
         // Enqueue dependencies
-        if ($deps) {
-          foreach ($deps as $dep_handle) {
+        $this->ensureDependenciesAreEnqueued($hook_name);
 
-            // Set event channel
-            $channel = "cms.config.scripts.$dep_handle";
-
-            // Create message
-            $message = new EventMessage('enqueue_as_dependency', [
-              'hooks' => [$hook_name]
-            ]);
-
-            // Publish event
-            $this->getEventEmitter()->publish($channel, $message);
-          }
-        }
-        
         // Register script
         $hook->register(
-          $handle,
+          $this->get('handle'),
           $this->get('src'),
-          $deps,
+          $this->get('deps') ?: [],
           $this->get('version') ?: null,
           $this->get('in_footer') ?: null
         );
 
         // Handle asynchronous loading
         if ($this->get('async'))
-          $hook->getFile($handle)->setAsync(true);
+          $this->setAsync($hook);
 
         // Handle defered loading
         if ($this->get('defer'))
-          $hook->getFile($handle)->setDefer(true);
+          $this->setDefer($hook);
+      
+        return $this;
       }
 
-      else {
+      $handle = $this->get('handle');
 
-        $hook->$action($this->get('handle'));
-      }
+      call_user_func_array([$hook, $action], [$handle]);
     }
 
     return $this;
   }
 
   /**
-   * Consumes event
+   * Makes sure script dependencies are enqueued
    * 
-   * @param mixed $message Event message
+   * @param  string $hook_name JS Hook name
+   * @return void
    */
-  public function consumeEvent(EventMessageInterface $message)
+  protected function ensureDependenciesAreEnqueued($hook_name)
   {
-    if ('enqueue_as_dependency' == $message->getAction())
-      $this->enqueueAsDependency($message);
+    // Get dependencies
+    $deps = $this->get('deps') ?: [];
 
-    return $this;
+    foreach ($deps as $dep_handle) {
+
+      // Set event channel
+      $channel = "cms.config.scripts.$dep_handle";
+
+      // Create message
+      $message = new EventMessage('enqueue_as_dependency', [
+        'hooks' => [$hook_name]
+      ]);
+
+      // Publish event
+      $this->getEventEmitter()->publish($channel, $message);
+    }
   }
 
   /**
-   * Enqueues this script as a dependency of another script
+   * Sets script to use async loading
    * 
-   * @param object $message Event message
+   * @param  object $hook JS Hook instance
+   * @return void
    */
-  protected function enqueueAsDependency(EventMessageInterface $message)
+  protected function setAsync(ScriptsHook $hook)
   {
-    $data  = $message->getData();
-    $hooks = isset($data['hooks']) ? $data['hooks'] : [];
+    $hook->getFile($this->get('handle'))->setAsync(true);
+  }
 
-    if ($hooks) {
-      foreach ($hooks as $hook_name) {
-
-        $this->handleAction($hook_name, 'register');
-        $this->handleAction($hook_name, 'enqueue');
-      }
-    }
+  /**
+   * Sets script to use deferred loading
+   * 
+   * @param  object $hook JS Hook instance
+   * @return void
+   */
+  protected function setDefer(ScriptsHook $hook)
+  {
+    $hook->getFile($this->get('handle'))->setDefer(true);
   }
 } 

@@ -16,6 +16,8 @@ class ScriptConfigItemCest
 
   public function _before(UnitTester $I)
   {
+    Test::clean();
+
     // Utils mock
     $this->m['Utils'] = Test::double('Ponticlaro\Bebop\Common\Utils', [
       'slugify' => function() {

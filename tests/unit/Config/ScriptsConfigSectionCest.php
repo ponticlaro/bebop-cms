@@ -297,9 +297,19 @@ class ScriptsConfigSectionCest
     // Create test instance
     $section = new ScriptsConfigSection();
 
+    // Get items property and make it accessible
+    $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Config\ScriptsConfigSection', 'items');
+    $prop_refl->setAccessible(true);
+
     // Get ::handleItemRegistration and make it accessible
     $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Config\ScriptsConfigSection', 'handleItemRegistration');
     $method_refl->setAccessible(true);
+
+    // Test ::handleItemRegistration with config without 'handle'
+    $method_refl->invoke($section, []);
+
+    // Verify items property matches expected value
+    $I->assertEquals($prop_refl->getValue($section), []);
 
     // Test ::handleItemRegistration
     $method_refl->invokeArgs($section, [
@@ -312,10 +322,6 @@ class ScriptsConfigSectionCest
         ]
       ]
     ]);
-
-    // Get items property and make it accessible
-    $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Config\ScriptsConfigSection', 'items');
-    $prop_refl->setAccessible(true);
 
     // Verify items property matches expected value
     $I->assertEquals($prop_refl->getValue($section), [
@@ -432,6 +438,32 @@ class ScriptsConfigSectionCest
         'handle' => 'unit_test_handle_2'
       ]
     ]);
+
+    // Test ::handleActionOnHook
+    $bad_args = [
+      [null, 'string'],
+      [false, 'string'],
+      [true, 'string'],
+      [0, 'string'],
+      [1, 'string'],
+      [[1], 'string'],
+      [new \stdClass, 'string'],
+      ['string', null],
+      ['string', false],
+      ['string', true],
+      ['string', 0],
+      ['string', 1],
+      ['string', [1]],
+      ['string', new \stdClass],
+    ];
+
+    foreach ($bad_args as $bad_args_set) {
+
+      // Check if exception is thrown with bad arguments
+      $I->expectException(\Exception::class, function() use($method_refl, $section, $bad_args_set) {
+        $method_refl->invokeArgs($section, $bad_args_set);
+      });
+    }  
   }
 
   /**

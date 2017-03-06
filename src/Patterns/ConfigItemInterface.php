@@ -83,7 +83,7 @@ interface ConfigItemInterface {
    * @param  ConfigItemInterface $config_item Configuration object we're going to merge with
    * @return object                           Current class object
    */
-  public function merge(ConfigItem $config_item);
+  public function merge(ConfigItemInterface $config_item);
   
   /**
    * Checks if configuration is valid

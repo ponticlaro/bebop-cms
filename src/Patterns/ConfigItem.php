@@ -68,7 +68,7 @@ abstract class ConfigItem extends Collection implements ConfigItemInterface {
   /**
    * {@inheritDoc}
    */
-  public function merge(ConfigItem $config_item)
+  public function merge(ConfigItemInterface $config_item)
   {
     $current_config = $this->getAll();
     $merging_config = $config_item->getAll();

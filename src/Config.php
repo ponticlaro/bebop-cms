@@ -77,7 +77,7 @@ class Config {
   private final function __clone() {}
 
   /**
-   * Gets single instance of called class
+   * Gets single instance
    * 
    * @return object
    */
@@ -87,19 +87,6 @@ class Config {
       static::$instance = new static();
 
     return static::$instance;
-  }
-
-  /**
-   * Adds configuration to target hook
-   * 
-   * @param string $hook   Hook ID
-   * @param mixed  $config Configuration JSON file or array
-   */
-  public function addToHook($hook, $config)
-  {
-    $this->hooks->push($config, $hook);
-
-    return $this;
   }
 
   /**
@@ -124,6 +111,19 @@ class Config {
   public function getHook($hook)
   {
     return $this->hooks->get($hook);
+  }
+
+  /**
+   * Adds configuration to target hook
+   * 
+   * @param string $hook   Hook ID
+   * @param mixed  $config Configuration JSON file or array
+   */
+  public function addToHook($hook, $config)
+  {
+    $this->hooks->push($config, $hook);
+
+    return $this;
   }
 
   /**
@@ -307,8 +307,12 @@ class Config {
    */
   protected function addConfigItem($hook, $env, $section_name, ConfigItemInterface $config_obj)
   {
-    // Getting the correct configuration id
-    $id = $hook == 'presets' ? $config_obj->getId() : $config_obj->getUniqueId();
+    // Get the unique configuration id
+    $id = $config_obj->getUniqueId();
+
+    // Get the preset configuration id if we're handling the preset hook
+    if ($hook == 'presets')
+      $id = $config_obj->getId();
 
     // Define path for config item
     $path = "$hook.$env.$section_name.$id";

@@ -25,13 +25,17 @@ class ConfigItem extends ConfigItemAbstract {
 
 /**
  * Used by:
+ * - Config
  * - Patterns\ConfigSection
  * 
  */
 class ConfigSection extends ConfigSectionAbstract {
 
   public function getItems() {
-    return [];
+    return [
+      'dummy_section_item_1',
+      'dummy_section_item_2',
+    ];
   }
 }
 

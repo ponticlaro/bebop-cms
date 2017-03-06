@@ -42,18 +42,7 @@ class ShortcodeFactoryCest
     $prop_value = $prop_refl->getValue();
 
     $I->assertEquals(array_keys($prop_value), [
-      'facebook_post',
-      'faq_list',
-      'form',
-      'formstack',
-      'gallery',
-      'google_calendar',
-      'google_map',
       'image',
-      'pardot_form',
-      'quote',
-      'soundcloud',
-      'tweet',
       'video', 
       'vimeo',
       'youtube',

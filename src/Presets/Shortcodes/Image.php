@@ -2,8 +2,6 @@
 
 namespace Ponticlaro\Bebop\Cms\Presets\Shortcodes;
 
-use Ponticlaro\Bebop\Mvc\View;
-
 class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
   /**
@@ -55,7 +53,15 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
         $attrs->set('url', reset($image_data));
     }
 
-    if ($attrs->get('url'))
-      (new View())->render($this->getTemplatePath(), $attrs->getAll());
+    // Render if we have an URL
+    if ($attrs->get('url')) {
+
+      extract(array_intersect_key(
+        $attrs->getAll(),
+        array_flip(['url', 'alt', 'caption'])
+      ));
+
+      include $this->getTemplatePath();
+    }  
   }
 }

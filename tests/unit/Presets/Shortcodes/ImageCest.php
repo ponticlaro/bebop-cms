@@ -9,7 +9,6 @@ class ImageCest
 {
   public function _before(UnitTester $I)
   {
-
   }
 
   public function _after(UnitTester $I)
@@ -29,14 +28,14 @@ class ImageCest
     $shortcode = new Image;
 
     // Get $id property and make it accessible
-    $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'id');
+    $prop_refl = new \ReflectionProperty(Image::class, 'id');
     $prop_refl->setAccessible(true);
 
     // Verify that $id matches expected value
     $I->assertEquals('image', $prop_refl->getValue($shortcode));
 
     // Get $template_path property and make it accessible
-    $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'template_path');
+    $prop_refl = new \ReflectionProperty(Image::class, 'template_path');
     $prop_refl->setAccessible(true);
 
     // Set expected template path
@@ -46,7 +45,7 @@ class ImageCest
     $I->assertEquals($template_path, $prop_refl->getValue($shortcode));
 
     // Get $default_attrs property and make it accessible
-    $prop_refl = new \ReflectionProperty('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'default_attrs');
+    $prop_refl = new \ReflectionProperty(Image::class, 'default_attrs');
     $prop_refl->setAccessible(true);
 
     // Verify that $default_attrs matches expected value
@@ -80,14 +79,12 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn(null)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -95,14 +92,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -147,14 +143,12 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn(null)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -162,14 +156,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -214,14 +207,12 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn(null)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -229,14 +220,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -282,14 +272,12 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn(null)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -297,14 +285,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -362,30 +349,25 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn($image_id)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('get')
          ->with('size')
          ->andReturn($image_size)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', null])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', $image_url])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -393,14 +375,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -457,30 +438,25 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn($image_id)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('get')
          ->with('size')
          ->andReturn($image_size)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', null])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', $image_url])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -488,14 +464,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -552,30 +527,25 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn($image_id)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('get')
          ->with('size')
          ->andReturn($image_size)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', null])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', $image_url])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -583,14 +553,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();
@@ -648,30 +617,25 @@ class ImageCest
     $coll->shouldReceive('get')
          ->with('id')
          ->andReturn($image_id)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('get')
          ->with('size')
          ->andReturn($image_size)
-         ->twice()
-         ->mock();
+         ->twice();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', null])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('set')
          ->withArgs(['url', $image_url])
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('get')
          ->with('url')
          ->andReturn($image_url)
-         ->once()
-         ->mock();
+         ->once();
 
     $coll->shouldReceive('getAll')
          ->andReturn([
@@ -679,14 +643,13 @@ class ImageCest
            'alt'     => $image_alt,
            'caption' => $image_caption,
          ])
-         ->once()
-         ->mock();
+         ->once();
 
     // Create test instance
     $image = new Image;
 
     // Get ::render reflection
-    $method_refl = new \ReflectionMethod('Ponticlaro\Bebop\Cms\Presets\Shortcodes\Image', 'render');
+    $method_refl = new \ReflectionMethod(Image::class, 'render');
   
     // Test ::render
     ob_start();

@@ -16,4 +16,5 @@ coverage:
     - src/presets.json
     - src/Presets/AdminPages/*
     - src/Presets/Metaboxes/*
+    - src/Presets/Shortcodes/templates/*
     - src/Presets/Types/*

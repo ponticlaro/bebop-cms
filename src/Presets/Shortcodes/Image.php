@@ -58,7 +58,11 @@ class Image extends \Ponticlaro\Bebop\Cms\Patterns\ShortcodeContainerAbstract {
 
       extract(array_intersect_key(
         $attrs->getAll(),
-        array_flip(['url', 'alt', 'caption'])
+        array_flip([
+          'url', 
+          'alt', 
+          'caption',
+        ])
       ));
 
       include $this->getTemplatePath();

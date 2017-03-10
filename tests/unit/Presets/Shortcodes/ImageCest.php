@@ -68,7 +68,6 @@ class ImageCest
   public function renderUsingUrl(UnitTester $I)
   {
     // Set test variables
-    $image_id      = 111;
     $image_size    = 'large';
     $image_url     = 'http://unit-test';
     $image_alt     = '';
@@ -118,8 +117,13 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="" src="'. $image_url .'"> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="" src="'. $image_url .'">';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);
   }
 
  /**
@@ -180,8 +184,13 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="'. $image_alt .'" src="'. $image_url .'"> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="'. $image_alt .'" src="'. $image_url .'">';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);
   }
 
   /**
@@ -242,8 +251,14 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="" src="'. $image_url .'"> <figcaption class="caption">'. $image_caption .'</figcaption> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="" src="'. $image_url .'">';
+    $expected_html .= ' <figcaption class="caption">'. $image_caption .'</figcaption>';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);
   }
 
   /**
@@ -304,8 +319,14 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="'. $image_alt .'" src="'. $image_url .'"> <figcaption class="caption">'. $image_caption .'</figcaption> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="'. $image_alt .'" src="'. $image_url .'">';
+    $expected_html .= ' <figcaption class="caption">'. $image_caption .'</figcaption>';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);  
   }
 
   /**
@@ -394,8 +415,13 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="" src="'. $image_url .'"> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="" src="'. $image_url .'">';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);  
   }
 
   /**
@@ -484,8 +510,13 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="'. $image_alt .'" src="'. $image_url .'"> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="'. $image_alt .'" src="'. $image_url .'">';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);  
   }
 
   /**
@@ -574,8 +605,14 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="" src="'. $image_url .'"> <figcaption class="caption">'. $image_caption .'</figcaption> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="" src="'. $image_url .'">';
+    $expected_html .= ' <figcaption class="caption">'. $image_caption .'</figcaption>';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);  
   }
 
   /**
@@ -664,7 +701,13 @@ class ImageCest
     $html = preg_replace('/\s+/S', ' ', $html);
     $html = trim($html);
 
-    // Verify output
-    $I->assertEquals('<figure class="media-wrap is-image"> <img alt="'. $image_alt .'" src="'. $image_url .'"> <figcaption class="caption">'. $image_caption .'</figcaption> </figure>', $html);
+    // Define expected HTML
+    $expected_html  = '<figure class="media-wrap is-image">';
+    $expected_html .= ' <img alt="'. $image_alt .'" src="'. $image_url .'">';
+    $expected_html .= ' <figcaption class="caption">'. $image_caption .'</figcaption>';
+    $expected_html .= ' </figure>';
+
+    // Verify output matches
+    $I->assertEquals($expected_html, $html);  
   }
 }

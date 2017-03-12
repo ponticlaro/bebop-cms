@@ -2,9 +2,9 @@
 
 namespace Ponticlaro\Bebop\Cms\Helpers;
 
-use Ponticlaro\Bebop\Common\Patterns\CollectionAbstract;
+use Ponticlaro\Bebop\Common\Collection;
 
-class MetaboxData extends CollectionAbstract {
+class MetaboxData extends Collection {
 
   /**
     * Gets data with target key

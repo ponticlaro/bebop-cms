@@ -174,7 +174,8 @@ class UrlConfigItemCest
   {
     // Mock UrlManager
     $urls_mock = Test::double('Ponticlaro\Bebop\Common\UrlManager', [
-      '__construct' => null
+      '__construct' => null,
+      'set'         => null,
     ]);
 
     // Mock UrlManager::getInstance
@@ -184,8 +185,8 @@ class UrlConfigItemCest
 
     // Create test instance
     $item = new UrlConfigItem([
-      'id'  => 'unit_test',
-      'url' => '/unit/test',
+      'id'  => 'url_config_item_unit_test',
+      'url' => '/url/config/item/unit/test',
     ]);
 
     // Test ::isValid()

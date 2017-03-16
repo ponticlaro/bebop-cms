@@ -174,7 +174,8 @@ class PathConfigItemCest
   {
     // Mock PathManager
     $paths_mock = Test::double('Ponticlaro\Bebop\Common\PathManager', [
-      '__construct' => null
+      '__construct' => null,
+      'set'         => null,
     ]);
 
     // Mock PathManager::getInstance
@@ -184,8 +185,8 @@ class PathConfigItemCest
 
     // Create test instance
     $item = new PathConfigItem([
-      'id'   => 'unit_test',
-      'path' => '/unit/test',
+      'id'   => 'path_config_item_unit_test',
+      'path' => '/path/config/item/unit/test',
     ]);
 
     // Test ::isValid()

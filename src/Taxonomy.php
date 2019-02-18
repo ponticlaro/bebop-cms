@@ -84,7 +84,8 @@ class Taxonomy implements TrackableObjectInterface {
       'hierarchical'      => true,
       'show_ui'           => true,
       'show_admin_column' => true,
-      'query_var'         => true
+      'query_var'         => true,
+      'show_in_rest'  => true
     ));
 
      // Instantiate labels object

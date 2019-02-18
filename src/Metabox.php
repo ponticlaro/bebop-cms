@@ -75,6 +75,7 @@ class Metabox implements TrackableObjectInterface {
     $default_config = array(
       'context'       => 'normal',
       'priority'      => 'default',
+      'show_in_rest'  => true,
       'callback_args' => array()
     );
 
